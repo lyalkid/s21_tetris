@@ -49,5 +49,5 @@ void initBoard(GameInfo_t *board);
 int get_random();
 int get_highScore();
 void get_next(GameInfo_t *gameInfo, int type);
-void get_start(GameInfo_t* gameInfo, int type);
+void get_start(GameInfo_t *gameInfo, int type);
 #endif  // FRONTEND_H

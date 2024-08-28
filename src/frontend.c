@@ -87,11 +87,9 @@ void get_next(GameInfo_t* gameInfo, int type) {
       break;
   }
 }
-void get_start(GameInfo_t* gameInfo, int type){
-    get_next(gameInfo, type);
-    gameInfo ->field = gameInfo->next;
+void get_start(GameInfo_t* gameInfo, int type) {
+  get_next(gameInfo, type);
+  gameInfo->field = gameInfo->next;
 }
 
-void moving_down(GameInfo_t *gameInfo){
-
-}
+void moving_down(GameInfo_t* gameInfo) {}

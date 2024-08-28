@@ -27,4 +27,3 @@ void game_loop() {
   }
   printf("\n");
 }
-
