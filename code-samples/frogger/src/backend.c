@@ -8,23 +8,23 @@ int lvlproc(board_t *map, game_stats_t *stats)
 
     sprintf(levelname, LEVEL_DIR"%d.txt", stats->level);
     
-    FILE *level = fopen(levelname, "r");
+//    FILE *level = fopen(levelname, "r");
     
     int rc = SUCCESS;
 
-    if (level)
-    {
-        for (int i = 0; i < ROWS_MAP && !rc; i++)
-        {
-            if (fgets(map->ways[i], COLS_MAP + 2, level) == NULL)
-                rc = ERROR;
-            else
-                map->ways[i][strcspn(map->ways[i], "\n")] = '\0';
-        }
-        fclose(level);
-    }
-    else
-        rc = ERROR;
+//    if (level)
+//    {
+//        for (int i = 0; i < ROWS_MAP && !rc; i++)
+//        {
+//            if (fgets(map->ways[i], COLS_MAP + 2, level) == NULL)
+//                rc = ERROR;
+//            else
+//                map->ways[i][strcspn(map->ways[i], "\n")] = '\0';
+//        }
+//        fclose(level);
+//    }
+//    else
+//        rc = ERROR;
 
     return rc;
 }
