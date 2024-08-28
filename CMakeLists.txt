@@ -5,7 +5,6 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(tetris
         src/tetris_bro.c
-        code-samples/frogger/inc/frogger.h
-        code-samples/frogger/src/frogger.c
+        src/frontend.c
 )
 target_link_libraries(tetris m ncurses)
