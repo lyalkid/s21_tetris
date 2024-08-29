@@ -33,9 +33,9 @@ clean:
 
 
 style_test:
-	clang-format --style=Google -n *.c *.h
+	clang-format --style=Google -n *.c */*.h */*.c
 style:
-	clang-format --style=Google -i *.c *.h
+	clang-format --style=Google -i *.c */*.h */*.c
 
 # Собираем docker image с тегом 'v1' на основании dockerfile и создаем контейнер
 docker_build:

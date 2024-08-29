@@ -27,14 +27,11 @@ void game_loop() {
     printf("\n");
   }
   printf("\n");
-
-
 }
 
-int move(GameInfo_t* current){
+int move(GameInfo_t* current) {
   int yest_eshe_mesto_znakvoprosa_ = 0;
-  
-  while(){}
-   
-}
 
+  while () {
+  }
+}

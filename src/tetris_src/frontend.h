@@ -23,13 +23,12 @@ typedef enum {
   Action
 } UserAction_t;
 
-typedef struct{
+typedef struct {
   int coordinates[200];
-  int moves[100]; // смещения фигуры до того, пока она встанет
-  int figura; // значение из enum figures
-  int rotate; // всего положений 4
-}Current_figure;
-
+  int moves[100];  // смещения фигуры до того, пока она встанет
+  int figura;  // значение из enum figures
+  int rotate;  // всего положений 4
+} Current_figure;
 
 typedef struct {
   int **field;
