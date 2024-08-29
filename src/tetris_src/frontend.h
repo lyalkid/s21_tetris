@@ -10,11 +10,6 @@
 #define ROWS 20
 #define COLS 10
 
-typedef struct {
-  int rotate;
-  int type;
-} Figure_type;
-
 enum figures { Z, REVERSE_Z, L, REVERSE_L, SQUARE, T, I };
 
 typedef enum {
@@ -28,9 +23,18 @@ typedef enum {
   Action
 } UserAction_t;
 
+typedef struct{
+  int coordinates[200];
+  int moves[100]; // смещения фигуры до того, пока она встанет
+  int figura; // значение из enum figures
+  int rotate; // всего положений 4
+}Current_figure;
+
+
 typedef struct {
   int **field;
   int **next;
+  Current_figure figura;
   int top;   // текущая верхняя позиция
   int size;  //  текущий размер поля
   int score;
@@ -38,6 +42,7 @@ typedef struct {
   int level;
   int speed;
   int pause;
+
 } GameInfo_t;
 
 void userInput(UserAction_t action, bool hold);
