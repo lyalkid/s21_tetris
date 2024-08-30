@@ -13,25 +13,21 @@ int main() {
 void game_loop() {
   GameInfo_t figure = {0};
   initBoard(&figure);
-  get_start(&figure, get_random());
+  get_start(&figure, 0);
   int cont = 0;
-  while (cont++ != 10) {
+  char c = getchar();
+  while (c != 'q') {
     //    printf("%d ", get_random());
-    int tmp = get_random();
-    get_next(&figure, tmp);
-    printf("%d\n", tmp);
-    int c;
+    // int tmp = get_random();
+    //    get_next(&figure, tmp);
+    // printf("%d\n", tmp);
+    move_tetramino(&figure, c);
     figure.field = figure.next;
 
     render(figure);
-    printf("\n");
+    printf("%c\n", c);
+    c = getchar();
+    system("clear");
   }
   printf("\n");
-}
-
-int move(GameInfo_t* current) {
-  int yest_eshe_mesto_znakvoprosa_ = 0;
-
-  while () {
-  }
 }

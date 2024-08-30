@@ -1,15 +1,15 @@
 #include "frontend.h"
 void render(GameInfo_t board) {
   for (int j = 0; j < COLS; j++) {
-    printf("%d ", j);
+    printf("%d", j);
   }
   printf("\n");
   for (int i = 0; i < ROWS; i++) {
     for (int j = 0; j < COLS; j++) {
       if (board.field[i][j] == 1) {
-        printf("[]");
+        printf("*");
       } else {
-        printf("@@");
+        printf("`");
       }
     }
     printf("% d\n", i);
@@ -17,14 +17,19 @@ void render(GameInfo_t board) {
 }
 
 void initBoard(GameInfo_t* board) {
+  board->tetraminoBro = (Tetramino_bro){{0}};
   board->size = 0;
   board->top = 20;
   board->score = 0, board->high_score = get_highScore(), board->level = 0,
   board->pause = 0, board->speed = 0;
   board->field = malloc(sizeof(int*) * ROWS);
+  board->next = malloc(sizeof(int*) * ROWS);
+
   for (int i = 0; i < ROWS; i++) {
     board->field[i] = calloc(COLS, sizeof(int));
+    board->next[i] = calloc(COLS, sizeof(int));
   }
+
   // TODO не забыть чистить память
 }
 
@@ -48,48 +53,102 @@ int get_highScore() {
 
 void get_next(GameInfo_t* gameInfo, int type) {
   // TODO не забыть чистить память
-  gameInfo->next = malloc(sizeof(int*) * ROWS);
-  for (int i = 0; i < ROWS; i++) {
-    gameInfo->next[i] = calloc(COLS, sizeof(int));
-  }
-  switch (type) {
-    case Z:
-      gameInfo->next[1][4] = 1, gameInfo->next[1][3] = 1;
-      gameInfo->next[0][4] = 1, gameInfo->next[0][5] = 1;
-      break;
-    case REVERSE_Z:
-      gameInfo->next[1][4] = 1, gameInfo->next[1][5] = 1;
-      gameInfo->next[0][4] = 1, gameInfo->next[0][3] = 1;
-      break;
-    case SQUARE:
-      gameInfo->next[1][4] = 1, gameInfo->next[1][5] = 1;
-      gameInfo->next[0][4] = 1, gameInfo->next[0][5] = 1;
-      break;
-    case L:
-      gameInfo->next[1][3] = 1, gameInfo->next[0][3] = 1;
-      gameInfo->next[1][4] = 1, gameInfo->next[1][5] = 1;
-      break;
-    case REVERSE_L:
-      gameInfo->next[1][3] = 1, gameInfo->next[0][5] = 1;
-      gameInfo->next[1][4] = 1, gameInfo->next[1][5] = 1;
-      break;
-    case T:
-      gameInfo->next[1][3] = 1, gameInfo->next[0][4] = 1;
-      gameInfo->next[1][4] = 1, gameInfo->next[1][5] = 1;
-      break;
-    case I:
-      gameInfo->next[0][3] = 1;
-      gameInfo->next[0][4] = 1;
-      gameInfo->next[0][5] = 1;
-      gameInfo->next[0][6] = 1;
 
-    default:
-      break;
-  }
+  Tetramino_bro tetraminoBro = {{0}};
+  get_Tetramino(&tetraminoBro, type);
+  gameInfo->tetraminoBro = tetraminoBro;
+  tetramino_into_next(gameInfo, tetraminoBro);
 }
 void get_start(GameInfo_t* gameInfo, int type) {
   get_next(gameInfo, type);
   gameInfo->field = gameInfo->next;
 }
+void tetramino_into_next(GameInfo_t* gameInfo, Tetramino_bro tetraminoBro) {
+  for (int i = 0; i < 8; i += 2) {
+    int x = tetraminoBro.coordinates[i];
+    int y = tetraminoBro.coordinates[i + 1];
+    if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 1;
+  }
+}
 
-void moving_down(GameInfo_t* gameInfo) {}
+void move_tetramino(GameInfo_t* gameInfo, char key) {
+  int dx = 0, dy = 0;
+  switch (key) {
+    case 'w':
+      dy -= 1;
+      break;
+    case 'a':
+      dx -= 1;
+      break;
+    case 's':
+      dy += 1;
+      break;
+    case 'd':
+      dx += 1;
+      break;
+  }
+  for (int i = 0; i < 8; i += 2) {
+    int x = gameInfo->tetraminoBro.coordinates[i];
+    int y = gameInfo->tetraminoBro.coordinates[i + 1];
+    if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 0;
+  }
+  for (int i = 0; i < 8; i += 2) {
+    gameInfo->tetraminoBro.coordinates[i] += dx;
+    gameInfo->tetraminoBro.coordinates[i + 1] += dy;
+  }
+  for (int i = 0; i < 8; i += 2) {
+    int x = gameInfo->tetraminoBro.coordinates[i];
+    int y = gameInfo->tetraminoBro.coordinates[i + 1];
+    if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 1;
+  }
+  // tetramino_into_next(gameInfo, gameInfo->tetraminoBro);
+}
+
+void get_Tetramino(Tetramino_bro* tetraminoBro, int type) {
+  switch (type) {
+    case T:
+      *tetraminoBro = (Tetramino_bro){{0, 0, -1, 0, 1, 0, 0, -1}};
+
+      //      gameInfo->next[1][3] = 1, gameInfo->next[0][4] = 1;
+      //      gameInfo->next[1][4] = 1, gameInfo->next[1][5] = 1;
+      break;
+    case O:
+      *tetraminoBro = (Tetramino_bro){{0, 0, 0, -1, 1, 0, 1, -1}};
+
+      //      gameInfo->next[1][4] = 1, gameInfo->next[1][5] = 1;
+      //      gameInfo->next[0][4] = 1, gameInfo->next[0][5] = 1;
+      break;
+    case J:
+      *tetraminoBro = (Tetramino_bro){{0, 0, -1, 0, 0, -1, 0, -2}};
+
+      //      gameInfo->next[1][3] = 1, gameInfo->next[0][5] = 1;
+      //      gameInfo->next[1][4] = 1, gameInfo->next[1][5] = 1;
+      break;
+    case L:
+      *tetraminoBro = (Tetramino_bro){{0, 0, 1, 0, 0, -1, 0, -2}};
+
+      //      gameInfo->next[1][3] = 1, gameInfo->next[0][3] = 1;
+      //      gameInfo->next[1][4] = 1, gameInfo->next[1][5] = 1;
+      break;
+    case I:
+      *tetraminoBro = (Tetramino_bro){{0, 0, 0, 1, 0, -1, 0, -2}};
+
+      //      gameInfo->next[0][3] = 1;
+      //      gameInfo->next[0][4] = 1;
+      //      gameInfo->next[0][5] = 1;
+      //      gameInfo->next[0][6] = 1;
+      break;
+    case S:
+      *tetraminoBro = (Tetramino_bro){{0, 0, -1, 0, 0, -1, 1, -1}};
+      //      gameInfo->next[1][4] = 1, gameInfo->next[1][5] = 1;
+      //      gameInfo->next[0][4] = 1, gameInfo->next[0][3] = 1;
+      break;
+    case Z:
+      *tetraminoBro = (Tetramino_bro){{0, 0, 1, 0, 0, -1, -1, -1}};
+      //          gameInfo->next[1][4] = 1, gameInfo->next[1][3] = 1;
+      //      gameInfo->next[0][4] = 1, gameInfo->next[0][5] = 1;
+      break;
+    default:
+      break;
+  }
+}

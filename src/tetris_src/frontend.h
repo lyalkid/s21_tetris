@@ -10,7 +10,7 @@
 #define ROWS 20
 #define COLS 10
 
-enum figures { Z, REVERSE_Z, L, REVERSE_L, SQUARE, T, I };
+enum figures { T, O, J, L, I, S, Z };
 
 typedef enum {
   Start,
@@ -24,6 +24,10 @@ typedef enum {
 } UserAction_t;
 
 typedef struct {
+  int coordinates[8];
+} Tetramino_bro;
+
+typedef struct {
   int coordinates[200];
   int moves[100];  // смещения фигуры до того, пока она встанет
   int figura;  // значение из enum figures
@@ -33,7 +37,7 @@ typedef struct {
 typedef struct {
   int **field;
   int **next;
-  Current_figure figura;
+  Tetramino_bro tetraminoBro;
   int top;   // текущая верхняя позиция
   int size;  //  текущий размер поля
   int score;
@@ -54,4 +58,7 @@ int get_random();
 int get_highScore();
 void get_next(GameInfo_t *gameInfo, int type);
 void get_start(GameInfo_t *gameInfo, int type);
+void tetramino_into_next(GameInfo_t *gameInfo, Tetramino_bro tetraminoBro);
+void get_Tetramino(Tetramino_bro *tetraminoBro, int type);
+void move_tetramino(GameInfo_t *gameInfo, char key);
 #endif  // FRONTEND_H
