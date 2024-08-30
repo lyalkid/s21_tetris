@@ -13,15 +13,15 @@ int main() {
 void game_loop() {
   GameInfo_t figure = {0};
   initBoard(&figure);
-//     printf("%d\n", tmp);
+  //     printf("%d\n", tmp);
 
   int tmp = get_random();
-     printf("%d\n", tmp);
+  printf("%d\n", tmp);
 
-     tmp = get_random();
-     printf("%d\n", tmp);
+  tmp = get_random();
+  printf("%d\n", tmp);
 
-     get_start(&figure, tmp);
+  get_start(&figure, L);
   int cont = 0;
   char c = getchar();
   while (c != 'q') {

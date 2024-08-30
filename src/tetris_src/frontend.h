@@ -56,9 +56,9 @@ void render(GameInfo_t board);
 void initBoard(GameInfo_t *board);
 int get_random();
 int get_highScore();
-void get_next(GameInfo_t *gameInfo, int type);
 void get_start(GameInfo_t *gameInfo, int type);
+void get_next(GameInfo_t *gameInfo, int type);
+void move_tetramino(GameInfo_t *gameInfo, char key);
 void tetramino_into_next(GameInfo_t *gameInfo, Tetramino_bro tetraminoBro);
 void get_Tetramino(Tetramino_bro *tetraminoBro, int type);
-void move_tetramino(GameInfo_t *gameInfo, char key);
 #endif  // FRONTEND_H
