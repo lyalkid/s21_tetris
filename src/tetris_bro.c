@@ -21,7 +21,7 @@ void game_loop() {
   tmp = get_random();
   printf("%d\n", tmp);
 
-  get_start(&figure, L);
+  get_start(&figure, Z );
   int cont = 0;
   char c = getchar();
   while (c != 'q') {
@@ -34,6 +34,7 @@ void game_loop() {
 
     render(figure);
     printf("%c\n", c);
+
     c = getchar();
     system("clear");
   }

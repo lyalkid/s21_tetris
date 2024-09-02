@@ -25,6 +25,11 @@ typedef enum {
 
 typedef struct {
   int coordinates[8];
+  int type;
+  int rotate;
+
+  int center_x;
+  int center_y;
 } Tetramino_bro;
 
 typedef struct {
@@ -61,4 +66,11 @@ void get_next(GameInfo_t *gameInfo, int type);
 void move_tetramino(GameInfo_t *gameInfo, char key);
 void tetramino_into_next(GameInfo_t *gameInfo, Tetramino_bro tetraminoBro);
 void get_Tetramino(Tetramino_bro *tetraminoBro, int type);
+void rotate_90_degrees(GameInfo_t *gameInfo);
+void rotate_Tetramino(GameInfo_t *gameInfo);
+
+void get_tetra_two(Tetramino_bro *tetraminoBro);
+void get_tetra_T(Tetramino_bro *tetraMinoBro);
+
+void copy_tetramino(Tetramino_bro *src, Tetramino_bro *dst);
 #endif  // FRONTEND_H
