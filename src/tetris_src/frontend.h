@@ -10,7 +10,8 @@
 #define ROWS 20
 #define COLS 10
 
-enum figures { T, O, J, L, I, S, Z };
+enum figures { T, J, L, I, S, Z, O };
+enum degrees { DON_BRO, COMPLETE, RIGHT, STRAIGHT, REFLEX };
 
 typedef enum {
   Start,
@@ -30,7 +31,7 @@ typedef struct {
 
   int center_x;
   int center_y;
-} Tetramino_bro;
+} TetraMino_bro;
 
 typedef struct {
   int coordinates[200];
@@ -42,9 +43,9 @@ typedef struct {
 typedef struct {
   int **field;
   int **next;
-  Tetramino_bro tetraminoBro;
-  int top;   // текущая верхняя позиция
-  int size;  //  текущий размер поля
+  TetraMino_bro tetraMinoBro;
+  //    int top;   // текущая верхняя позиция
+  //    int size;  //  текущий размер поля
   int score;
   int high_score;
   int level;
@@ -58,19 +59,20 @@ void userInput(UserAction_t action, bool hold);
 GameInfo_t updateCurrentState();
 
 void render(GameInfo_t board);
-void initBoard(GameInfo_t *board);
+
 int get_random();
 int get_highScore();
-void get_start(GameInfo_t *gameInfo, int type);
+void start_initialization(GameInfo_t *gameInfo, int type);
 void get_next(GameInfo_t *gameInfo, int type);
 void move_tetramino(GameInfo_t *gameInfo, char key);
-void tetramino_into_next(GameInfo_t *gameInfo, Tetramino_bro tetraminoBro);
-void get_Tetramino(Tetramino_bro *tetraminoBro, int type);
+void tetramino_into_next(GameInfo_t *gameInfo, TetraMino_bro tetraminoBro);
+void get_TetraMino(TetraMino_bro *tetraMinoBro);
 void rotate_90_degrees(GameInfo_t *gameInfo);
 void rotate_Tetramino(GameInfo_t *gameInfo);
 
-void get_tetra_two(Tetramino_bro *tetraminoBro);
-void get_tetra_T(Tetramino_bro *tetraMinoBro);
+void get_tetra_two(TetraMino_bro *tetraminoBro);
+void get_tetra_four(TetraMino_bro *tetraMinoBro);
 
-void copy_tetramino(Tetramino_bro *src, Tetramino_bro *dst);
+void copy_tetramino(TetraMino_bro *src, TetraMino_bro *dst);
+void setCoordinates(int *coordinates, const int *values);
 #endif  // FRONTEND_H

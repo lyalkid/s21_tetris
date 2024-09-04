@@ -16,24 +16,6 @@ void render(GameInfo_t board) {
   }
 }
 
-void initBoard(GameInfo_t* board) {
-  board->tetraminoBro = (Tetramino_bro){{0}};
-  board->tetraminoBro.rotate = 1;
-  board->size = 0;
-  board->top = 20;
-  board->score = 0, board->high_score = get_highScore(), board->level = 0,
-  board->pause = 0, board->speed = 0;
-  board->field = malloc(sizeof(int*) * ROWS);
-  board->next = malloc(sizeof(int*) * ROWS);
-
-  for (int i = 0; i < ROWS; i++) {
-    board->field[i] = calloc(COLS, sizeof(int));
-    board->next[i] = calloc(COLS, sizeof(int));
-  }
-
-  // TODO не забыть чистить память
-}
-
 int get_random() { return ((rand() % 7)); }
 int get_highScore() {
   return 100;
@@ -51,101 +33,218 @@ int get_highScore() {
   //        fclose(fp);
   //    }
 };
-void get_start(GameInfo_t* gameInfo, int type) {
-  get_next(gameInfo, type);
-  gameInfo->field = gameInfo->next;
-  gameInfo->tetraminoBro.center_x = 3;
-  gameInfo->tetraminoBro.center_y = 1;
-}
+void start_initialization(GameInfo_t* gameInfo, int type) {
+  GameInfo_t gameInfo1 = {0};
+  *gameInfo = gameInfo1;
+  gameInfo->field = malloc(sizeof(int*) * ROWS);
+  gameInfo->next = malloc(sizeof(int*) * ROWS);
 
-void get_next(GameInfo_t* gameInfo, int type) {
-  // TODO не забыть чистить память
-
-  Tetramino_bro tetraminoBro = {{0}};
-
-  get_Tetramino(&tetraminoBro, type);
-  gameInfo->tetraminoBro = tetraminoBro;
-  tetramino_into_next(gameInfo, tetraminoBro);
-}
-
-void get_tetra_two(Tetramino_bro* tetraminoBro) {
-  if (tetraminoBro->rotate % 2 == 1 && tetraminoBro->type == Z) {
-    *tetraminoBro = (Tetramino_bro){{0, 0, 1, 0, 0, -1, -1, -1}};
-  } else if (tetraminoBro->type == Z) {
-    *tetraminoBro = (Tetramino_bro){{0, 0, 0, -1, 1, -1, 1, -2}};
-  } else if (tetraminoBro->rotate % 2 == 1 && tetraminoBro->type == S) {
-    *tetraminoBro = (Tetramino_bro){{0, 0, -1, 0, 0, -1, 1, -1}};
-  } else if (tetraminoBro->type == S) {
-    *tetraminoBro = (Tetramino_bro){{0, -2, 0, -1, 1, -1, 1, 0}};
-  } else if (tetraminoBro->rotate % 2 == 1 && tetraminoBro->type == I) {
-    *tetraminoBro = (Tetramino_bro){{0, 0, 0, 1, 0, -1, 0, -2}};
-  } else if (tetraminoBro->type == I) {
-      *tetraminoBro = (Tetramino_bro){{0, 0, 1, 0, -1, 0, -2, 0}};
-
+  for (int i = 0; i < ROWS; i++) {
+    gameInfo->field[i] = calloc(COLS, sizeof(int));
+    gameInfo->next[i] = calloc(COLS, sizeof(int));
   }
+  gameInfo->score = 0;
+  gameInfo->high_score = get_highScore();
+  gameInfo->level = 0;
+  gameInfo->pause = 0;
+  gameInfo->speed = 0;
+  TetraMino_bro tetraMinoBro = {0};
+  tetraMinoBro.type = type;
+  tetraMinoBro.rotate = COMPLETE;
+  tetraMinoBro.center_x = 4;
+  tetraMinoBro.center_y = 1;
+  get_TetraMino(&tetraMinoBro);
 }
-void get_tetra_T(Tetramino_bro* tetraMinoBro) {
-  if (tetraMinoBro->type == T && tetraMinoBro->rotate == 0) {
-  } else if (tetraMinoBro->type == T && tetraMinoBro->rotate == 1) {
-  } else if (tetraMinoBro->type == T && tetraMinoBro->rotate == 2) {
-  } else if (tetraMinoBro->type == T && tetraMinoBro->rotate == 3) {
-  } else if (tetraMinoBro->type == L && tetraMinoBro->rotate == 0) {
-  } else if (tetraMinoBro->type == L && tetraMinoBro->rotate == 1) {
-  } else if (tetraMinoBro->type == L && tetraMinoBro->rotate == 2) {
-  } else if (tetraMinoBro->type == L && tetraMinoBro->rotate == 3) {
-  } else if (tetraMinoBro->type == J && tetraMinoBro->rotate == 0) {
-  } else if (tetraMinoBro->type == J && tetraMinoBro->rotate == 1) {
-  } else if (tetraMinoBro->type == J && tetraMinoBro->rotate == 2) {
-  } else if (tetraMinoBro->type == J && tetraMinoBro->rotate == 3) {
+
+void get_TetraMino(TetraMino_bro* tetraMinoBro) {
+  if (tetraMinoBro->type >= T && tetraMinoBro->type <= L) {
+    get_tetra_four(tetraMinoBro);
+  } else if (tetraMinoBro->type >= I && tetraMinoBro->type <= Z) {
+    get_tetra_two(tetraMinoBro);
+  } else {
+    int coord[] = {0, 0, 1, 0, 0, -1, 1, -1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
   }
 }
 
-void get_Tetramino(Tetramino_bro* tetraminoBro, int type) {
-  switch (type) {
-    case T:
-      *tetraminoBro = (Tetramino_bro){{4, 1, 3, 1, 5, 1, 4, 0}};
-      tetraminoBro->type = type;
-      break;
-    case O:
-      *tetraminoBro = (Tetramino_bro){{4, 1, 4, 0, 5, 1, 5, 0}};
-      tetraminoBro->type = type;
+void get_tetra_two(TetraMino_bro* tetraMinoBro) {
+  if (tetraMinoBro->rotate % 2 == 1 && tetraMinoBro->type == Z) {
+    int coord[] = {0, 0, 1, 0, 1, -1, 0, 1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
 
-      break;
-    case J:
-      *tetraminoBro = (Tetramino_bro){
-          {3, 1, 3, 0, 4, 1, 5, 1 /*0, 0, -1, 0, 0, -1, 0, -2*/}};
-      tetraminoBro->type = type;
+    /* ..#
+     * .##
+     * .#.
+     *
+     * */
+  } else if (tetraMinoBro->type == Z) {
+    int coord[] = {0, 0, 1, 0, 0, -1, -1, -1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
 
-      break;
-    case L:
-      *tetraminoBro = (Tetramino_bro){
-          {5, 1, 5, 0, 4, 1, 3, 1 /*0, 0, 1, 0, 0, -1, 0, -2*/}};
-      tetraminoBro->type = type;
+    /* ...
+     * ##.
+     * .##
+     *
+     * */
+  } else if (tetraMinoBro->rotate % 2 == 1 && tetraMinoBro->type == S) {
+    int coord[] = {0, 0, 1, 0, 1, 1, 0, -1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
 
-      break;
-    case I:
-      *tetraminoBro = (Tetramino_bro){{/*0, 0, 0, 1, 0, -1, 0, -2*/}};
+    /* .#.
+     * .##
+     * ..#
+     *
+     * */
 
-      tetraminoBro->type = type;
-      break;
-    case S:
-      *tetraminoBro = (Tetramino_bro){{4, 1, 3, 1, 4, 0, 5, 0}};
+  } else if (tetraMinoBro->type == S) {
+    int coord[] = {0, 0, -1, 0, 0, -1, 1, -1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
 
-      tetraminoBro->type = type;
-      break;
-    case Z:
-      //      *tetraminoBro = (Tetramino_bro){{4, 1, 5, 1, 4, 0, 3, 0}};
+    /* ...
+     * .##
+     * ##.
+     *
+     * */
 
-      get_tetra_two(tetraminoBro);
-      tetraminoBro->type = type;
-      break;
-    default:
-      break;
+  } else if (tetraMinoBro->rotate % 2 == 1 && tetraMinoBro->type == I) {
+    int coord[] = {1, -1, 1, 0, 1, 1, 1, 2};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* ..#.
+     * ..#.
+     * ..#.
+     * ..#.
+     *
+     * */
+  } else if (tetraMinoBro->type == I) {
+    int coord[] = {-1, -1, 0, -1, 1, -1, 2, -1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* ....
+     * ....
+     * ####
+     * ....
+     *
+     * */
   }
 }
+void get_tetra_four(TetraMino_bro* tetraMinoBro) {
+  if (tetraMinoBro->type == T && tetraMinoBro->rotate == COMPLETE) {
+    int coord[] = {0, -1, 1, -1, -1, -1, 0, 0};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* ###
+     * .#.
+     * ...
+     *
+     * */
+  } else if (tetraMinoBro->type == T && tetraMinoBro->rotate == RIGHT) {
+    int coord[] = {0, 0, 0, -1, 0, 1, -1, 0};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* .#.
+     * ##.
+     * .#.
+     *
+     * */
+  } else if (tetraMinoBro->type == T && tetraMinoBro->rotate == STRAIGHT) {
+    int coord[] = {0, 0, 1, 0, -1, 0, 0, -1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* .#.
+     * ###
+     * ...
+     *
+     * */
+  } else if (tetraMinoBro->type == T && tetraMinoBro->rotate == REFLEX) {
+    int coord[] = {0, 0, 0, -1, 0, 1, 1, 0};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* .#.
+     * .##
+     * .#.
+     *
+     * */
+  }
+
+  else if (tetraMinoBro->type == L && tetraMinoBro->rotate == COMPLETE) {
+    int coord[] = {0, -1, -1, -1, 1, -1, -1, 0};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* ###
+     * #..
+     * ...
+     *
+     * */
+  } else if (tetraMinoBro->type == L && tetraMinoBro->rotate == RIGHT) {
+    int coord[] = {0, 0, 0, -1, 0, 1, -1, -1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* ##.
+     * .#.
+     * .#.
+     *
+     * */
+  } else if (tetraMinoBro->type == L && tetraMinoBro->rotate == STRAIGHT) {
+    int coord[] = {0, 0, -1, 0, 1, 0, 1, -1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* ..#
+     * ###
+     * ...
+     *
+     * */
+  } else if (tetraMinoBro->type == L && tetraMinoBro->rotate == REFLEX) {
+    int coord[] = {0, 0, 0, -1, 0, 1, 1, 1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* .#.
+     * .#.
+     * .##
+     *
+     * */
+  } else if (tetraMinoBro->type == J && tetraMinoBro->rotate == COMPLETE) {
+    int coord[] = {0, -1, -1, -1, 1, -1, 1, 0};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* ###
+     * ..#
+     * ...
+     *
+     * */
+  } else if (tetraMinoBro->type == J && tetraMinoBro->rotate == RIGHT) {
+    int coord[] = {0, 0, 0, -1, 0, 1, -1, 1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* .#.
+     * .#.
+     * ##.
+     *
+     * */
+  } else if (tetraMinoBro->type == L && tetraMinoBro->rotate == STRAIGHT) {
+    int coord[] = {0, 0, -1, 0, 1, 0, -1, -1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* #..
+     * ###
+     * ...
+     *
+     * */
+  } else if (tetraMinoBro->type == J && tetraMinoBro->rotate == REFLEX) {
+    int coord[] = {0, 0, 0, -1, 0, 1, 1, -1};
+    setCoordinates(tetraMinoBro->coordinates, coord);
+
+    /* .##
+     * .#.
+     * .#.
+     *
+     * */
+  }
+}
+
 void move_tetramino(GameInfo_t* gameInfo, char key) {
-  int dx = gameInfo->tetraminoBro.center_x,
-      dy = gameInfo->tetraminoBro.center_y;
+  int dx = gameInfo->tetraMinoBro.center_x,
+      dy = gameInfo->tetraMinoBro.center_y;
   switch (key) {
     case 'w':
       dy -= 1;
@@ -166,50 +265,50 @@ void move_tetramino(GameInfo_t* gameInfo, char key) {
       break;
   }
   for (int i = 0; i < 8; i += 2) {
-    int x = gameInfo->tetraminoBro.coordinates[i];
-    int y = gameInfo->tetraminoBro.coordinates[i + 1];
+    int x = gameInfo->tetraMinoBro.coordinates[i];
+    int y = gameInfo->tetraMinoBro.coordinates[i + 1];
     if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 0;
   }
   for (int i = 0; i < 8; i += 2) {
-    gameInfo->tetraminoBro.coordinates[i] += dx;
-    gameInfo->tetraminoBro.coordinates[i + 1] += dy;
+    gameInfo->tetraMinoBro.coordinates[i] += dx;
+    gameInfo->tetraMinoBro.coordinates[i + 1] += dy;
   }
   for (int i = 0; i < 8; i += 2) {
-    int x = gameInfo->tetraminoBro.coordinates[i];
-    int y = gameInfo->tetraminoBro.coordinates[i + 1];
+    int x = gameInfo->tetraMinoBro.coordinates[i];
+    int y = gameInfo->tetraMinoBro.coordinates[i + 1];
     if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 1;
   }
-  // tetramino_into_next(gameInfo, gameInfo->tetraminoBro);
+  // tetramino_into_next(gameInfo, gameInfo->tetraMinoBro);
 }
 
-void tetramino_into_next(GameInfo_t* gameInfo, Tetramino_bro tetraminoBro) {
+void tetramino_into_next(GameInfo_t* gameInfo, TetraMino_bro tetraMinoBro) {
   for (int i = 0; i < 8; i += 2) {
-    int x = tetraminoBro.coordinates[i];
-    int y = tetraminoBro.coordinates[i + 1];
+    int x = tetraMinoBro.coordinates[i];
+    int y = tetraMinoBro.coordinates[i + 1];
     if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 1;
   }
 }
 
 void rotate_Tetramino(GameInfo_t* gameInfo) {
-  int type_tetramino = gameInfo->tetraminoBro.type;
+  int type_tetramino = gameInfo->tetraMinoBro.type;
   if (type_tetramino == Z || type_tetramino == S) {
-    get_tetra_two(&(gameInfo->tetraminoBro));
+    get_tetra_two(&(gameInfo->tetraMinoBro));
     // rotate_90_degrees(gameInfo);
   }
 }
 
 void rotate_90_degrees(GameInfo_t* gameInfo) {
   for (int i = 0; i < 8; i += 2) {
-    int x = gameInfo->tetraminoBro.coordinates[i];
-    int y = gameInfo->tetraminoBro.coordinates[i + 1];
+    int x = gameInfo->tetraMinoBro.coordinates[i];
+    int y = gameInfo->tetraMinoBro.coordinates[i + 1];
     if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->field[y][x] = 0;
   }
-  int centerX = gameInfo->tetraminoBro.coordinates[0];
-  int centerY = gameInfo->tetraminoBro.coordinates[1];
+  int centerX = gameInfo->tetraMinoBro.coordinates[0];
+  int centerY = gameInfo->tetraMinoBro.coordinates[1];
 
   for (int i = 0; i < 4; ++i) {
-    int x = gameInfo->tetraminoBro.coordinates[2 * i];
-    int y = gameInfo->tetraminoBro.coordinates[2 * i + 1];
+    int x = gameInfo->tetraMinoBro.coordinates[2 * i];
+    int y = gameInfo->tetraMinoBro.coordinates[2 * i + 1];
 
     // Сдвиг в начало координат
     int translatedX = x - centerX;
@@ -220,13 +319,13 @@ void rotate_90_degrees(GameInfo_t* gameInfo) {
     int rotatedY = -translatedX;
 
     // Возврат на место
-    gameInfo->tetraminoBro.coordinates[2 * i] = rotatedX + centerX;
-    gameInfo->tetraminoBro.coordinates[2 * i + 1] = rotatedY + centerY;
+    gameInfo->tetraMinoBro.coordinates[2 * i] = rotatedX + centerX;
+    gameInfo->tetraMinoBro.coordinates[2 * i + 1] = rotatedY + centerY;
   }
 }
 
-void copy_tetramino(Tetramino_bro* src, Tetramino_bro* dst) {
-  *dst = (Tetramino_bro){{0}};
+void copy_tetramino(TetraMino_bro* src, TetraMino_bro* dst) {
+  *dst = (TetraMino_bro){{0}};
   dst->type = src->type;
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
@@ -234,3 +333,18 @@ void copy_tetramino(Tetramino_bro* src, Tetramino_bro* dst) {
     }
   }
 }
+
+void setCoordinates(int* coordinates, const int* values) {
+  for (int i = 0; i < 8; i++) {
+    coordinates[i] = values[i];
+  }
+}
+// void get_next(GameInfo_t* gameInfo, int type) {
+//   // TODO не забыть чистить память
+//
+//   TetraMino_bro tetraMinoBro = {{0}};
+//
+//   get_Tetramino(&tetraMinoBro, type);
+//   gameInfo->tetraMinoBro = tetraMinoBro;
+//   tetramino_into_next(gameInfo, tetraMinoBro);
+// }

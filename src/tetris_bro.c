@@ -11,17 +11,16 @@ int main() {
 }
 
 void game_loop() {
-  GameInfo_t figure = {0};
-  initBoard(&figure);
-  //     printf("%d\n", tmp);
+  GameInfo_t game_info = {0};
+  // random_type =  get_random();
+  start_initialization(&game_info, Z);
 
-  int tmp = get_random();
-  printf("%d\n", tmp);
+  //  int tmp = get_random();
+  //  printf("%d\n", tmp);
+  //
+  //  tmp = get_random();
+  //  printf("%d\n", tmp);
 
-  tmp = get_random();
-  printf("%d\n", tmp);
-
-  get_start(&figure, Z );
   int cont = 0;
   char c = getchar();
   while (c != 'q') {
@@ -29,10 +28,10 @@ void game_loop() {
     // int tmp = get_random();
     //    get_next(&figure, tmp);
     // printf("%d\n", tmp);
-    move_tetramino(&figure, c);
-    figure.field = figure.next;
+    move_tetramino(&game_info, c);
+    game_info.field = game_info.next;
 
-    render(figure);
+    render(game_info);
     printf("%c\n", c);
 
     c = getchar();
