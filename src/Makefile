@@ -1,6 +1,6 @@
 TETRIS_LIB = tetris.a
 CC = gcc
-CFLAGS = -c #-Wall -Werror -Wextra -std=c11
+CFLAGS = -c -Wall -Werror -Wextra -std=c11
 LDFLAGS = -Wall -Werror -Wextra -std=c11
 SOURCE=$(wildcard tetris_src/*.c)
 UNAME_S := $(shell uname -s)

@@ -11,7 +11,7 @@
 #define COLS 10
 
 enum figures { T, J, L, I, S, Z, O };
-enum degrees { DON_BRO, COMPLETE, RIGHT, STRAIGHT, REFLEX };
+enum degrees { COMPLETE, RIGHT, STRAIGHT, REFLEX };
 
 typedef enum {
   Start,
@@ -73,6 +73,11 @@ void rotate_Tetramino(GameInfo_t *gameInfo);
 void get_tetra_two(TetraMino_bro *tetraminoBro);
 void get_tetra_four(TetraMino_bro *tetraMinoBro);
 
-void copy_tetramino(TetraMino_bro *src, TetraMino_bro *dst);
+// void copy_tetramino(TetraMino_bro *src, TetraMino_bro *dst);
 void setCoordinates(int *coordinates, const int *values);
+void tetra_to_next(TetraMino_bro tetraMinoBro, int **next);
+int get_min(int a, int b);
+
+int get_max(int a, int b);
+int is_rotate_possible(TetraMino_bro tetraMinoBro, int rotate);
 #endif  // FRONTEND_H

@@ -13,29 +13,40 @@ int main() {
 void game_loop() {
   GameInfo_t game_info = {0};
   // random_type =  get_random();
-  start_initialization(&game_info, Z);
-
-  //  int tmp = get_random();
-  //  printf("%d\n", tmp);
-  //
-  //  tmp = get_random();
-  //  printf("%d\n", tmp);
-
-  int cont = 0;
-  char c = getchar();
-  while (c != 'q') {
-    //    printf("%d ", get_random());
-    // int tmp = get_random();
-    //    get_next(&figure, tmp);
-    // printf("%d\n", tmp);
-    move_tetramino(&game_info, c);
-    game_info.field = game_info.next;
-
+  for (int i = 0; i < 7; i++) {
+    start_initialization(&game_info, i);
     render(game_info);
-    printf("%c\n", c);
 
-    c = getchar();
-    system("clear");
+    //  int tmp = get_random();
+    //  printf("%d\n", tmp);
+    //
+    //  tmp = get_random();
+    //  printf("%d\n", tmp);
+
+    int cont = 0;
+    char c = ' ';
+    while (c != 'q') {
+      // render(game_info);
+
+      //    printf("%d ", get_random());
+      // int tmp = get_random();
+      //    get_next(&figure, tmp);
+      // printf("%d\n", tmp);
+      tetra_to_next(game_info.tetraMinoBro, game_info.next);
+      // game_info.field = game_info.next;
+
+      render(game_info);
+      move_tetramino(&game_info, c);
+
+      printf("%c\n", c);
+
+      c = getchar();
+      system("clear");
+    }
+    printf("\n");
   }
-  printf("\n");
 }
+
+// TODO написать сдвиг
+// TODO написать соединение
+// TODO написать game over
