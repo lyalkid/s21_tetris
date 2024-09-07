@@ -17,6 +17,10 @@ void free_array(int** field, int rows) {
 
 int can_i_move(TetraMino_bro tetraMino, int** field, char key) {
   int** tmp_next = malloc_array(ROWS + 1, COLS);
-  move_tetramino(&tetraMino, tmp_next, key );
-  free_array(tmp_next, ROWS+1);
+  move_tetramino(&tetraMino, tmp_next, key);
+  /*
+   * нужно подвинуть tetramino , перевести в tmp_next, чекнуть нет ли коллизий.
+   * если все ок, то вернуть OK, если не ок, то вернуть ERROR
+   * */
+  free_array(tmp_next, ROWS + 1);
 }
