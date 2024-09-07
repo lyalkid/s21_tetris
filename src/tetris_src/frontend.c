@@ -4,10 +4,13 @@ void render(GameInfo_t board) {
     printf("%d", j);
   }
   printf("\n");
-  for (int i = 0; i < ROWS; i++) {
+  for (int i = 0; i < ROWS + 1; i++) {
     for (int j = 0; j < COLS; j++) {
-      if (board.next[i][j] == 1) {
+      int res = board.field[i][j] + board.next[i][j];
+      if (res == 1) {
         printf("*");
+      } else if (res > 1) {
+        printf("@");
       } else {
         printf("`");
       }
@@ -36,25 +39,26 @@ int get_highScore() {
 void start_initialization(GameInfo_t* gameInfo, int type) {
   GameInfo_t gameInfo1 = {0};
   *gameInfo = gameInfo1;
-  gameInfo->field = malloc(sizeof(int*) * ROWS);
-  gameInfo->next = malloc(sizeof(int*) * ROWS);
+  gameInfo->field = malloc(sizeof(int*) * (ROWS + 1));
+  gameInfo->next = malloc(sizeof(int*) * (ROWS + 1));
 
-  for (int i = 0; i < ROWS; i++) {
+  for (int i = 0; i < ROWS + 1; i++) {
     gameInfo->field[i] = calloc(COLS, sizeof(int));
     gameInfo->next[i] = calloc(COLS, sizeof(int));
+  }
+  for (int i = 0; i < COLS; i++) {
+    gameInfo->field[ROWS][i] = 1;
   }
   gameInfo->score = 0;
   gameInfo->high_score = get_highScore();
   gameInfo->level = 0;
   gameInfo->pause = 0;
   gameInfo->speed = 0;
-  TetraMino_bro tetraMinoBro = {0};
-  tetraMinoBro.type = type;
-  tetraMinoBro.rotate = COMPLETE;
-  tetraMinoBro.center_x = 4;
-  tetraMinoBro.center_y = 1;
-  get_TetraMino(&tetraMinoBro);
+  TetraMino_bro tetraMinoBro = get_new_tetraMino(type);
+  // get_TetraMino(&tetraMinoBro);
   gameInfo->tetraMinoBro = tetraMinoBro;
+  tetra_to_next(gameInfo->tetraMinoBro, gameInfo->next);
+  // next_to_field(gameInfo->next, gameInfo->field);
 }
 
 void get_TetraMino(TetraMino_bro* tetraMinoBro) {
@@ -225,7 +229,7 @@ void get_tetra_four(TetraMino_bro* tetraMinoBro) {
      * ##.
      *
      * */
-  } else if (tetraMinoBro->type == L && tetraMinoBro->rotate == STRAIGHT) {
+  } else if (tetraMinoBro->type == J && tetraMinoBro->rotate == STRAIGHT) {
     int coord[] = {0, 0, -1, 0, 1, 0, -1, -1};
     setCoordinates(tetraMinoBro->coordinates, coord);
 
@@ -246,31 +250,31 @@ void get_tetra_four(TetraMino_bro* tetraMinoBro) {
   }
 }
 
-void move_tetramino(GameInfo_t* gameInfo, char key) {
+void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key, int* can_i_move) {
   int dx = 0, dy = 0;
   // TODO уменьшить размер строк
-  int min_y = get_min(get_min(gameInfo->tetraMinoBro.coordinates[1],
-                              gameInfo->tetraMinoBro.coordinates[3]),
-                      get_min(gameInfo->tetraMinoBro.coordinates[5],
-                              gameInfo->tetraMinoBro.coordinates[7])) +
-              gameInfo->tetraMinoBro.center_y;
+  int min_y =
+      get_min(
+          get_min(tetraMinoBro->coordinates[1], tetraMinoBro->coordinates[3]),
+          get_min(tetraMinoBro->coordinates[5], tetraMinoBro->coordinates[7])) +
+      tetraMinoBro->center_y;
 
-  int min_x = get_min(get_min(gameInfo->tetraMinoBro.coordinates[0],
-                              gameInfo->tetraMinoBro.coordinates[2]),
-                      get_min(gameInfo->tetraMinoBro.coordinates[4],
-                              gameInfo->tetraMinoBro.coordinates[6])) +
-              gameInfo->tetraMinoBro.center_x;
-  int max_y = get_max(get_max(gameInfo->tetraMinoBro.coordinates[1],
-                              gameInfo->tetraMinoBro.coordinates[3]),
-                      get_max(gameInfo->tetraMinoBro.coordinates[5],
-                              gameInfo->tetraMinoBro.coordinates[7])) +
-              gameInfo->tetraMinoBro.center_y;
+  int min_x =
+      get_min(
+          get_min(tetraMinoBro->coordinates[0], tetraMinoBro->coordinates[2]),
+          get_min(tetraMinoBro->coordinates[4], tetraMinoBro->coordinates[6])) +
+      tetraMinoBro->center_x;
+  int max_y =
+      get_max(
+          get_max(tetraMinoBro->coordinates[1], tetraMinoBro->coordinates[3]),
+          get_max(tetraMinoBro->coordinates[5], tetraMinoBro->coordinates[7])) +
+      tetraMinoBro->center_y;
 
-  int max_x = get_max(get_max(gameInfo->tetraMinoBro.coordinates[0],
-                              gameInfo->tetraMinoBro.coordinates[2]),
-                      get_max(gameInfo->tetraMinoBro.coordinates[4],
-                              gameInfo->tetraMinoBro.coordinates[6])) +
-              gameInfo->tetraMinoBro.center_x;
+  int max_x =
+      get_max(
+          get_max(tetraMinoBro->coordinates[0], tetraMinoBro->coordinates[2]),
+          get_max(tetraMinoBro->coordinates[4], tetraMinoBro->coordinates[6])) +
+      tetraMinoBro->center_x;
   switch (key) {
     case 'w':
       if ((min_y - 1) >= 0) dy -= 1;
@@ -285,33 +289,33 @@ void move_tetramino(GameInfo_t* gameInfo, char key) {
       if ((max_x + 1 < 10)) dx += 1;
       break;
     case 'h':
-      rotate_Tetramino(gameInfo);
+      rotate_TetraMino(tetraMinoBro);
       break;
     default:
       break;
   }
   for (int i = 0; i < 8; i += 2) {
-    int x = gameInfo->tetraMinoBro.coordinates[i];
-    int y = gameInfo->tetraMinoBro.coordinates[i + 1];
-    if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 0;
+    int x = tetraMinoBro->coordinates[i];
+    int y = tetraMinoBro->coordinates[i + 1];
+    if (x >= 0 && x < COLS && y >= 0 && y < ROWS) next[y][x] = 0;
   }
 
-  gameInfo->tetraMinoBro.center_x += dx;
-  gameInfo->tetraMinoBro.center_y += dy;
-
+  tetraMinoBro->center_x += dx;
+  tetraMinoBro->center_y += dy;
+  if(dx == 0 && dy == 0) *can_i_move = ERROR;
   //  for (int i = 0; i < 8; i += 2) {
-  //    int x = gameInfo->tetraMinoBro.coordinates[i];
-  //    int y = gameInfo->tetraMinoBro.coordinates[i + 1];
+  //    int x = gameInfo->tetraMinoBro->coordinates[i];
+  //    int y = gameInfo->tetraMinoBro->coordinates[i + 1];
   //    if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 1;
   //  }
 }
 
-void rotate_Tetramino(GameInfo_t* gameInfo) {
-  int rotate = (gameInfo->tetraMinoBro.rotate + 1) % 4;
+void rotate_TetraMino(TetraMino_bro* tetraMinoBro) {
+  int rotate = (tetraMinoBro->rotate + 1) % 4;
   // char v = getchar();
-  if (is_rotate_possible(gameInfo->tetraMinoBro, rotate)) {
-    gameInfo->tetraMinoBro.rotate = rotate;
-    get_TetraMino(&(gameInfo->tetraMinoBro));
+  if (is_rotate_possible(*tetraMinoBro, rotate)) {
+    tetraMinoBro->rotate = rotate;
+    get_TetraMino(tetraMinoBro);
   }
 }
 
@@ -360,4 +364,46 @@ int is_rotate_possible(TetraMino_bro tetraMinoBro, int rotate) {
     }
   }
   return possible;
+}
+
+int is_down_possible(TetraMino_bro tetraMinoBro, int** field, int** next) {
+  int possible = 1;
+  for (int i = 1; i < 8; i += 2) {
+    tetraMinoBro.coordinates[i] += 1;
+  }
+  tetra_to_next(tetraMinoBro, next);
+  possible = is_all_ok_bro(field, next);
+  if (possible) {
+    next_to_field(next, field);
+  } else {
+    for (int i = 1; i < 8; i += 2) {
+      tetraMinoBro.coordinates[i] -= 1;
+    }
+    tetra_to_next(tetraMinoBro, next);
+  };
+  return possible;
+}
+int next_to_field(int** next, int** field) {
+  int is_all_ok = is_all_ok_bro(field, next);
+  if (is_all_ok) {
+    for (int i = 0; i < ROWS; i++) {
+      for (int j = 0; j < COLS; j++) {
+        int n_tmp = next[i][j];
+        int f_tmp = field[i][j];
+        int res = n_tmp + f_tmp;
+        field[i][j] = res;
+      }
+    }
+  }
+  return is_all_ok;
+}
+
+TetraMino_bro get_new_tetraMino(int type) {
+  TetraMino_bro tetraMinoBro = {0};
+  tetraMinoBro.type = type;
+  tetraMinoBro.rotate = COMPLETE;
+  tetraMinoBro.center_x = 4;
+  tetraMinoBro.center_y = 1;
+  get_TetraMino(&tetraMinoBro);
+  return tetraMinoBro;
 }
