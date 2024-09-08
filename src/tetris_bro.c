@@ -51,6 +51,8 @@ void game_loop() {
       out(game_info.field);
 #endif
       prev = is_move_possible;
+        scan_bro(game_info.field, ROWS, COLS);
+
       render(game_info);
     } else if (key == 's' && is_move_possible == ERROR) {
       next_to_field(game_info.next, game_info.field);

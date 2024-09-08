@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#define deb 1
+#define deb 0
 #define ROWS 20
 #define ROWS_EXTENDED 21
 #define COLS 10

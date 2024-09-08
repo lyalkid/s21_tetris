@@ -14,5 +14,5 @@ void scan_bro(int** field, int rows, int cols);
 int to_be_destroyed(int a[], int size);
 void copy_array(int from[], int to[], int size_from, int size_to);
 void init_array(int a[], int n);
-void destruction(int** field, int rows, int cols, int row_not_bro);
+void destruction(int** field,  int cols, int row_not_bro);
 #endif  // BACKEND_H

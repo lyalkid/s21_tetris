@@ -8,11 +8,11 @@ void render(GameInfo_t board) {
     for (int j = 0; j < COLS; j++) {
       int res = board.field[i][j] + board.next[i][j];
       if (res == 1) {
-        printf("*");
+        printf("[]");
       } else if (res > 1) {
-        printf("@");
+        printf("@@");
       } else {
-        printf("`");
+        printf("  ");
       }
     }
     printf("% d\n", i);

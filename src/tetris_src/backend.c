@@ -73,9 +73,9 @@ int is_all_ok_bro(int** field, int** next) {
   for (int i = 0; i < ROWS_EXTENDED; i++) {
     for (int j = 0; j < COLS; j++) {
       int n_tmp = next[i][j];
-//      if (i == 15) {
-//        int c;
-//      }
+      //      if (i == 15) {
+      //        int c;
+      //      }
       int f_tmp = field[i][j];
       int res = n_tmp + f_tmp;
       if (res > 1) {
@@ -88,51 +88,56 @@ int is_all_ok_bro(int** field, int** next) {
   return is_all_ok;
 }
 
-// void scan_bro(int** field, int rows, int cols) {
-//     int full_scan = 0;
-//     while(full_scan != 2) {
-//         for(int i = rows-1; i >= 0; i--){
-//             int destroy = to_be_destroyed(field[i], cols);
-//             if(destroy == YES){
-//                 destruction(field, rows, cols, i);
-//             }
-//         }
-//         full_scan++;
-//     }
-// }
-//
-// int to_be_destroyed(int a[], int size){
-//
-//     int sum = 0;
-//     for(int i = 0; i < size; i++){
-//         if(a[i] == 1) sum++;
-//     }
-//     return sum == size ? YES : NO;
-// }
-//
-// void destruction(int** field, int rows, int cols, int row_not_bro){
-//     for(int i = 0; i< cols; i++){
-//         field[row_not_bro][i] =0;
-//     }
-//     for(int i = row_not_bro ; i >0; i--){
-//         int tmp[cols];
-//     }
-// }
-//
+void scan_bro(int** field, int rows, int cols) {
+  int full_scan = 0;
+  while (full_scan != 2) {
+    int flag = 1;
+    for (int i = rows - 1; i >= 0; i--) {
+      int destroy = to_be_destroyed(field[i], cols);
+      if (destroy == YES) {
+        destruction(field,  cols, i);
+        flag = 0;
+      }
+    }
+    if (flag == 1) full_scan++;
+  }
+}
+
+int to_be_destroyed(int a[], int size) {
+  int sum = 0;
+  for (int i = 0; i < size; i++) {
+    if (a[i] == 1) sum++;
+  }
+  return sum == size ? YES : NO;
+}
+
+void destruction(int** field, int cols, int row_not_bro) {
+  for (int i = 0; i < cols; i++) {
+    field[row_not_bro][i] = 0;
+  }
+  for (int j = 0; j < cols; j++) {
+    for (int i = row_not_bro; i > 0; i--) {
+      //        int tmp_a = field[i][j];
+      int tmp_b = field[i - 1][j];
+      field[i][j] = tmp_b;
+    }
+  }
+}
+
 // void copy_array(int from[], int to[], int size_from, int size_to) {
-//     int *pA = from;
-//     int *pB = to;
-//     for (int i = 0; i < size_from; i++) {
-//         *(pB + i) = *(pA + i);
+//   int* pA = from;
+//   int* pB = to;
+//   for (int i = 0; i < size_from; i++) {
+//     *(pB + i) = *(pA + i);
+//   }
+//   if (size_to > size_from) {
+//     for (int i = size_from; i < size_to; i++) {
+//       to[i] = 0;
 //     }
-//     if (size_to > size_from) {
-//         for (int i = size_from; i < size_to; i++) {
-//             to[i] = 0;
-//         }
-//     }
+//   }
 // }
 // void init_array(int a[], int n) {
-//     for (int i = 0; i < n; i++) {
-//         a[i] = 0;
-//     }
+//   for (int i = 0; i < n; i++) {
+//     a[i] = 0;
+//   }
 // }
