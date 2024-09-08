@@ -6,8 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
+#define deb 1
 #define ROWS 20
+#define ROWS_EXTENDED 21
 #define COLS 10
 enum status { ERROR, OK };
 
@@ -65,7 +66,7 @@ int get_random();
 int get_highScore();
 void start_initialization(GameInfo_t *gameInfo, int type);
 void get_next(GameInfo_t *gameInfo, int type);
-void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key, int* can_i_move) ;
+void move_tetramino(TetraMino_bro *tetraMinoBro, int **next, char key);
 void tetramino_into_next(GameInfo_t *gameInfo, TetraMino_bro tetraminoBro);
 void get_TetraMino(TetraMino_bro *tetraMinoBro);
 
@@ -86,4 +87,6 @@ int next_to_field(int **next, int **field);
 int is_down_possible(TetraMino_bro tetraMinoBro, int **field, int **next);
 int is_all_ok_bro(int **field, int **next);
 TetraMino_bro get_new_tetraMino(int type);
+
+void out(int **tmp_next);
 #endif  // FRONTEND_H

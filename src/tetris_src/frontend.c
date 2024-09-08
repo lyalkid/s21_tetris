@@ -4,7 +4,7 @@ void render(GameInfo_t board) {
     printf("%d", j);
   }
   printf("\n");
-  for (int i = 0; i < ROWS + 1; i++) {
+  for (int i = 0; i < ROWS_EXTENDED; i++) {
     for (int j = 0; j < COLS; j++) {
       int res = board.field[i][j] + board.next[i][j];
       if (res == 1) {
@@ -39,10 +39,10 @@ int get_highScore() {
 void start_initialization(GameInfo_t* gameInfo, int type) {
   GameInfo_t gameInfo1 = {0};
   *gameInfo = gameInfo1;
-  gameInfo->field = malloc(sizeof(int*) * (ROWS + 1));
-  gameInfo->next = malloc(sizeof(int*) * (ROWS + 1));
+  gameInfo->field = malloc(sizeof(int*) * (ROWS_EXTENDED));
+  gameInfo->next = malloc(sizeof(int*) * (ROWS_EXTENDED));
 
-  for (int i = 0; i < ROWS + 1; i++) {
+  for (int i = 0; i < ROWS_EXTENDED; i++) {
     gameInfo->field[i] = calloc(COLS, sizeof(int));
     gameInfo->next[i] = calloc(COLS, sizeof(int));
   }
@@ -102,7 +102,7 @@ void get_tetra_two(TetraMino_bro* tetraMinoBro) {
      * */
 
   } else if (tetraMinoBro->type == S) {
-    int coord[] = {0, 0, -1, 0, 0, -1, 1, -1};
+    int coord[] = {0, 18, -1, 18, 0, 17, 1, 17};
     setCoordinates(tetraMinoBro->coordinates, coord);
 
     /* ...
@@ -250,7 +250,7 @@ void get_tetra_four(TetraMino_bro* tetraMinoBro) {
   }
 }
 
-void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key, int* can_i_move) {
+void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key) {
   int dx = 0, dy = 0;
   // TODO уменьшить размер строк
   int min_y =
@@ -283,7 +283,7 @@ void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key, int* can_
       if ((min_x - 1) >= 0) dx -= 1;
       break;
     case 's':
-      if ((max_y + 1) < 20) dy += 1;
+      if ((max_y + 1) < 21) dy += 1;
       break;
     case 'd':
       if ((max_x + 1 < 10)) dx += 1;
@@ -302,12 +302,12 @@ void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key, int* can_
 
   tetraMinoBro->center_x += dx;
   tetraMinoBro->center_y += dy;
-  if(dx == 0 && dy == 0) *can_i_move = ERROR;
-  //  for (int i = 0; i < 8; i += 2) {
-  //    int x = gameInfo->tetraMinoBro->coordinates[i];
-  //    int y = gameInfo->tetraMinoBro->coordinates[i + 1];
-  //    if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 1;
-  //  }
+  // if(dx == 0 && dy == 0) *can_i_move = ERROR;
+  //   for (int i = 0; i < 8; i += 2) {
+  //     int x = gameInfo->tetraMinoBro->coordinates[i];
+  //     int y = gameInfo->tetraMinoBro->coordinates[i + 1];
+  //     if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 1;
+  //   }
 }
 
 void rotate_TetraMino(TetraMino_bro* tetraMinoBro) {
@@ -406,4 +406,23 @@ TetraMino_bro get_new_tetraMino(int type) {
   tetraMinoBro.center_y = 1;
   get_TetraMino(&tetraMinoBro);
   return tetraMinoBro;
+}
+void out(int** tmp_next) {
+  for (int j = 0; j < COLS; j++) {
+    printf("%d", j);
+  }
+  printf("\n");
+  for (int i = 0; i < ROWS_EXTENDED; i++) {
+    for (int j = 0; j < COLS; j++) {
+      int res = tmp_next[i][j];
+      if (res == 1) {
+        printf("*");
+      } else if (res > 1) {
+        printf("@");
+      } else {
+        printf("`");
+      }
+    }
+    printf("% d\n", i);
+  }
 }

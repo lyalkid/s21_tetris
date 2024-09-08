@@ -17,6 +17,8 @@ void game_loop() {
   int random_type = get_random();
   // for (int i = 0; i < 7; i++) {
   start_initialization(&game_info, random_type);
+  render(game_info);
+
   // render(game_info);
 
   //  int tmp = get_random();
@@ -29,21 +31,41 @@ void game_loop() {
   char key = 's';
   int status = 1;
   int is_move_possible = -1;
-  int prev = -1;
+  int prev = OK;
   while (key != 'q') {
-    render(game_info);
     is_move_possible = can_i_move(game_info.tetraMinoBro, game_info.field, key);
+#if deb
+    printf("next\n");
+    out(game_info.next);
+    printf("field\n");
+    out(game_info.field);
+#endif
     if (is_move_possible == OK) {
-      move_tetramino(&game_info.tetraMinoBro, game_info.next, key, &is_move_possible);
+      move_tetramino(&game_info.tetraMinoBro, game_info.next, key);
+
       tetra_to_next(game_info.tetraMinoBro, game_info.next);
+#if deb
+      printf("next\n");
+      out(game_info.next);
+      printf("field\n");
+      out(game_info.field);
+#endif
       prev = is_move_possible;
-    } else if (prev == OK &&  is_move_possible == ERROR) {
+      render(game_info);
+    } else if (key == 's' && is_move_possible == ERROR) {
       next_to_field(game_info.next, game_info.field);
+#if deb
+      printf("next\n");
+      out(game_info.next);
+      printf("field\n");
+      out(game_info.field);
+#endif
       game_info.tetraMinoBro = (TetraMino_bro)get_new_tetraMino(get_random());
+      tetra_to_next(game_info.tetraMinoBro, game_info.next);
     }
 
     key = getchar();
-    printf("%c\n", key);
+    printf("%c %d\n ", key, ++cont);
     system("clear");
   }
   printf("\n");
