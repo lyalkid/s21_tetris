@@ -8,7 +8,7 @@ int main() {
     b[i] = calloc(m, sizeof(int));
   }
   int k = 0;
-  int a[] = {0, 0, 1, 0, 0, -1, 1, -1};
+  int a[] = {0, 0, 0, -1, 0, 1, 1, 1};
   // int a[] = {-1, -1, 0, -1, 1, -1, 2, -1};
 
   int dx = 4;
