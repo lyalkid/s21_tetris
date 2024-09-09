@@ -95,7 +95,7 @@ void scan_bro(int** field, int rows, int cols) {
     for (int i = rows - 1; i >= 0; i--) {
       int destroy = to_be_destroyed(field[i], cols);
       if (destroy == YES) {
-        destruction(field,  cols, i);
+        destruction(field, cols, i);
         flag = 0;
       }
     }
@@ -103,7 +103,7 @@ void scan_bro(int** field, int rows, int cols) {
   }
 }
 
-int to_be_destroyed(int a[], int size) {
+int to_be_destroyed(const int a[], int size) {
   int sum = 0;
   for (int i = 0; i < size; i++) {
     if (a[i] == 1) sum++;
