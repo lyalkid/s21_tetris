@@ -7,6 +7,7 @@ add_executable(tetris
         src/tetris_bro.c
         src/tetris_src/frontend.c
         src/tetris_src/backend.c
+        src/tetris_src/objects.c
 
 )
 target_link_libraries(tetris m ncurses)

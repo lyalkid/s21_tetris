@@ -8,6 +8,8 @@
 #include <time.h>
 #define deb 0
 #define ROWS 20
+
+// TODO исправить эту заглушку, написать нормальный тетрис с слонярским полем 10 на 20
 #define ROWS_EXTENDED 21
 #define COLS 10
 enum status { ERROR, OK };
@@ -47,7 +49,7 @@ typedef struct {
   int **next;
   TetraMino_bro tetraMinoBro;
   //    int top;   // текущая верхняя позиция
-  //    int size;  //  текущий размер поля
+  //    int size;  //  текущий размер пол
   int score;
   int high_score;
   int level;
