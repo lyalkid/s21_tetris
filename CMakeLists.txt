@@ -4,10 +4,11 @@ project(tetris C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(tetris
-        src/tetris_bro.c
-        src/tetris_src/frontend.c
-        src/tetris_src/backend.c
-        src/tetris_src/objects.c
+        src/brick_game/tetris/tetris_bro.c
+        src/sandbox/ncurses_tutorials/tutor0.c
+        src/gui/cli/frontend.c
+        src/brick_game/tetris/src/backend.c
+        src/brick_game/tetris/src/fsm.c
 
 )
 target_link_libraries(tetris m ncurses)

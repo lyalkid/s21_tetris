@@ -1,19 +1,20 @@
 
-#include "tetris_src/backend.h"
-#include "tetris_src/frontend.h"
+#include "inc/backend.h"
+#include "../../gui/cli/frontend.h"
 
 void game_loop();
 int move(GameInfo_t* current);
-int main() {
-  srand(time(0));
-
-  game_loop();
-
-  return 0;
-}
+//int main() {
+//  srand(time(0));
+//
+//  game_loop();
+//
+//  return 0;
+//}
 
 void game_loop() {
-  GameInfo_t game_info = {0};
+
+    //GameInfo_t game_info = {0};
   int random_type = get_random();
   // for (int i = 0; i < 7; i++) {
   start_initialization(&game_info, random_type);
