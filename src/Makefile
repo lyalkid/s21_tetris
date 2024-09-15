@@ -2,7 +2,7 @@ TETRIS_LIB = tetris.a
 CC = gcc
 CFLAGS = -c -Wall -Werror -Wextra -std=c11
 LDFLAGS = -Wall -Werror -Wextra -std=c11
-SOURCE=$(wildcard tetris_src/*.c)
+SOURCE=$(wildcard brick_game/tetris/*.c brick_game/tetris/src/*.c gui/cli/*.c)
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
@@ -19,7 +19,7 @@ endif
 all: s21_tetris.a
 
 run: s21_tetris.a
-	gcc tetris_bro.c $(TETRIS_LIB) -o tetris && ./tetris 
+	gcc  $(TETRIS_LIB) -o tetris && ./tetris
 
 s21_tetris.a: ${SOURCE}
 	$(CC) $(CFLAGS) $(ADD_LIB) $(SOURCE)
