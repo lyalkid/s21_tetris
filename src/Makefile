@@ -3,27 +3,26 @@ CC = gcc
 CFLAGS = -c -Wall -Werror -Wextra -std=c11
 LDFLAGS = -Wall -Werror -Wextra -std=c11
 SOURCE=$(wildcard brick_game/tetris/*.c brick_game/tetris/src/*.c gui/cli/*.c)
+HEADERS=$(wildcard brick_game/tetris/inc/*.h gui/cli/*.h)
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
   	OPEN_CMD = xdg-open
-	ADD_LIB = -lcheck -lsubunit -lm -lrt -lpthread -D_GNU_SOURCE
+	ADD_LIB = -lcheck -lsubunit -lm -lrt -lpthread -D_GNU_SOURCE -lncurses
 endif
 ifeq ($(UNAME_S),Darwin)
 	OPEN_CMD = open
-	ADD_LIB =
+	ADD_LIB = -lncurses
 endif
-
-
 
 all: s21_tetris.a
 
 run: s21_tetris.a
-	gcc  $(TETRIS_LIB) -o tetris && ./tetris
+	gcc  $(TETRIS_LIB) -o tetris $(ADD_LIB) && ./tetris
 
 s21_tetris.a: ${SOURCE}
-	$(CC) $(CFLAGS) $(ADD_LIB) $(SOURCE)
-	ar rc $(TETRIS_LIB) *.o
+	$(CC) $(CFLAGS)  $(SOURCE) $(ADD_LIB)
+	ar rc $(TETRIS_LIB) *.o 
 	ranlib $(TETRIS_LIB)
 	-rm -rf *.o
 
@@ -32,10 +31,12 @@ clean:
 	rm -rf *.o tetris *.a *.out
 
 
+rebuild: clean run
+
 style_test:
-	clang-format --style=Google -n *.c */*.h */*.c
+	clang-format --style=Google -n $(SOURCE) $(HEADERS)
 style:
-	clang-format --style=Google -i *.c */*.h */*.c
+	clang-format --style=Google -i $(SOURCE) $(HEADERS)
 
 # Собираем docker image с тегом 'v1' на основании dockerfile и создаем контейнер
 docker_build:
