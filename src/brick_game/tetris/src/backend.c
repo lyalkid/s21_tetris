@@ -171,7 +171,7 @@ void get_TetraMino(TetraMino_bro* tetraMinoBro) {
     get_tetra_four(tetraMinoBro);
   } else if (tetraMinoBro->type >= I && tetraMinoBro->type <= Z) {
     get_tetra_two(tetraMinoBro);
-  } else {
+  } else if (tetraMinoBro->type == O) {
     int coord[] = {0, 0, 1, 0, 0, -1, 1, -1};
     setCoordinates(tetraMinoBro->coordinates, coord);
   }
@@ -585,6 +585,8 @@ Game_Objects_t init_empty_game_objects() {
   Game_Objects_t gameObjects = {0};
   gameObjects.tetraMinoBro = init_empty_tetraMino();
   gameObjects.gameInfo = init_empty_gameInfo();
-  gameObjects.userAction = Start;
+  gameObjects.userAction = -1;
   return gameObjects;
 }
+
+// TODO сделать логирование игрового поля

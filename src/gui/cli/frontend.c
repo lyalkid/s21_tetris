@@ -44,7 +44,7 @@ void render_simple(GameInfo_t board) {
         printf("  ");
       }
     }
-    printf("|\n");
+    printf("| %d\n", i);
   }
   for (int j = 0; j < COLS; j++) {
     printf("##");

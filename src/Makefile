@@ -28,6 +28,7 @@ s21_tetris.a: ${SOURCE}
 
 
 clean:
+	clear
 	rm -rf *.o tetris *.a *.out
 
 

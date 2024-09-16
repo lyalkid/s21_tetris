@@ -18,8 +18,7 @@ void free_array(int **field, int rows);
 
 void scan_bro(int **field, int rows, int cols);
 int to_be_destroyed(const int a[], int size);
-void copy_array(int from[], int to[], int size_from, int size_to);
-void init_array(int a[], int n);
+
 void destruction(int **field, int cols, int row_not_bro);
 int is_all_ok_bro(int **field, int **next);
 int is_it_board(int **next);
@@ -38,8 +37,8 @@ TetraMino_bro get_new_tetraMino(int type);
 void setCoordinates(int *coordinates, const int *values);
 
 void tetra_to_next(TetraMino_bro tetraMinoBro, int **next);
-int get_min(int a, int b);
 
+int get_min(int a, int b);
 int get_max(int a, int b);
 int is_rotate_possible(TetraMino_bro tetraMinoBro, int rotate);
 
