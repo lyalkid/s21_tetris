@@ -2,8 +2,16 @@
 #define BG_DEFINES_H_
 
 #define deb 0
-#define ROWS 20
-#define COLS 10
+#define MY_ROWS 20
+#define MY_COLS 10
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+//#include <ncurses.h>
+#define TIME 50000
 
 // TODO исправить эту заглушку, написать нормальный тетрис с слонярским полем 10
 // на 20

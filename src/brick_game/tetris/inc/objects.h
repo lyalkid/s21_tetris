@@ -1,5 +1,6 @@
 #ifndef OBJECTS_H_
 #define OBJECTS_H_
+#include <stdbool.h>
 #include <string.h>
 
 enum status { ERROR, OK_BRO };
@@ -7,16 +8,16 @@ enum status { ERROR, OK_BRO };
 enum figures { T, J, L, I, S, Z, O };
 enum degrees { COMPLETE, RIGHT, STRAIGHT, REFLEX };
 
-typedef enum {
-  Start,
-  Pause,
-  Terminate,
-  Left,
-  Right,
-  Up,
-  Down,
-  Action
-} UserAction_t;
+// typedef enum {
+//   Start,
+//   Pause,
+//   Terminate,
+//   Left,
+//   Right,
+//   Up,
+//   Down,
+//   Action
+// } UserAction_t;
 
 typedef enum {
   MAIN_MENU,  // getch
@@ -27,8 +28,10 @@ typedef enum {
   ATTACHING,
   CHECK_DESTROY,
   CHECK_GAME_OVER,
+  DESTROY,
   PAUSE,      // getch
   GAME_OVER,  // getch
+  EXIT_BRO
 } State_t;
 
 typedef struct {
@@ -40,7 +43,8 @@ typedef struct {
 } TetraMino_bro;
 
 typedef struct {
-  // TetraMino_bro tetraMinoBro;
+  // TODO убрать эту фигуру из этой структуры
+  TetraMino_bro tetraMinoBro;
   int score;
   int high_score;
   int level;
@@ -60,10 +64,11 @@ typedef struct {
 //} UserInfo_t;
 
 typedef struct {
-  UserAction_t userAction;
+  bool game_is_running;
+  State_t state;
+  // UserAction_t userAction;
   TetraMino_bro tetraMinoBro;
   GameInfo_t gameInfo;
-  //  UserInfo_t userInfo;
 } Game_Objects_t;
 
 #endif  // OBJECTS_H_

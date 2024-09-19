@@ -1,65 +1,85 @@
-#include <ncurses.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+
 
 #include "../../gui/cli/frontend.h"
 #include "inc/backend.h"
+#include "inc/fsm.h"
+
+void gay_loop();
 
 void game_loop();
 
 int main() {
   srand(time(0));
+  get_random();
   game_loop();
 
   return 0;
 }
 
 void game_loop() {
-  GameInfo_t game_info = {0};
-  int random_type = get_random();
-  // for (int i = 0; i < 7; i++) {
-  start_initialization(&game_info, random_type);
-  // render_simple(game_info);
+  Game_Objects_t* gameObjects = get_game_instance();
+  *gameObjects = init_empty_game_objects();
+  // char key = 0;
+  while (gameObjects->game_is_running == true) {
+    render_simple(gameObjects);
+    main_fsm(gameObjects);
+    char k;
+    if (gameObjects->state == MOVE || gameObjects->state == PAUSE ||
+        gameObjects->state == START || gameObjects->state == GAME_OVER) {
+      k = getchar();
+    }
+    if (k == 'q') {
+      gameObjects->game_is_running = false;
+    }
+#if deb
+    printf("next\n");
+    out(gameObjects->gameInfo.next);
+    printf("field\n");
+    out(gameObjects->gameInfo.field);
+#endif
+  }
+}
 
-  //        int time = TIME;
-  // render_simple(game_info);
+void gay_loop() {
+  Game_Objects_t gameObjects = init_empty_game_objects();
+  int random_type = get_random();
+
+  start_initialization(&gameObjects.gameInfo, random_type);
+
   int flag = 1;
-  //  int tmp = get_random();
-  //  printf("%d\n", tmp);
-  //
-  //  tmp = get_random();
-  //  printf("%d\n", tmp);
 
   int cont = 0;
   char key = 's';
-  // int status = 1;
   int is_move_possible = -1;
-  // int prev = OK_BRO;
   while (flag) {
-    is_move_possible = can_i_move(game_info.tetraMinoBro, game_info.field, key);
+    is_move_possible = can_i_move(gameObjects.gameInfo.tetraMinoBro,
+                                  gameObjects.gameInfo.field, key);
 #if deb
     printf("next\n");
     out(game_info.next);
     printf("field\n");
     out(game_info.field);
 #endif
-    if (is_it_board(game_info.next) == ERROR ||
+    if (is_it_board(gameObjects.gameInfo.next) == ERROR ||
         (key == 's' && is_move_possible == ERROR)) {
-      next_to_field(game_info.next, game_info.field);
+      next_to_field(gameObjects.gameInfo.next, gameObjects.gameInfo.field);
 #if deb
       printf("next\n");
       out(game_info.next);
       printf("field\n");
       out(game_info.field);
 #endif
-      game_info.tetraMinoBro = (TetraMino_bro)get_new_tetraMino(get_random());
-      tetra_to_next(game_info.tetraMinoBro, game_info.next);
+      gameObjects.gameInfo.tetraMinoBro =
+          (TetraMino_bro)get_new_tetraMino(get_random());
+      tetra_to_next(gameObjects.gameInfo.tetraMinoBro,
+                    gameObjects.gameInfo.next);
 
     } else if (is_move_possible == OK_BRO) {
-      move_tetramino(&game_info.tetraMinoBro, game_info.next, key);
+      move_tetramino(&gameObjects.gameInfo.tetraMinoBro,
+                     gameObjects.gameInfo.next, key);
 
-      tetra_to_next(game_info.tetraMinoBro, game_info.next);
+      tetra_to_next(gameObjects.gameInfo.tetraMinoBro,
+                    gameObjects.gameInfo.next);
 #if deb
       printf("next\n");
       out(game_info.next);
@@ -67,25 +87,21 @@ void game_loop() {
       out(game_info.field);
 #endif
       //  prev = is_move_possible;
-      scan_bro(game_info.field, ROWS, COLS);
+      scan_bro(gameObjects.gameInfo.field, MY_ROWS, COLS);
 
 #if !deb
       system("clear");
 #endif
       printf("\n");
 
-      render_simple(game_info);
+      render_simple(&gameObjects);
     }
-    //  render_simple(game_info);
     key = getchar();
-    //    usleep(time);
     if (key == 'q') flag = 0;
 
     printf("%c %d\n ", key, ++cont);
-    // system("clear");
   }
   printf("\n");
-  // }
 }
 
 // TODO написать сдвиг

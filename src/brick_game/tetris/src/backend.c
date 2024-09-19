@@ -1,11 +1,11 @@
 #include "../inc/backend.h"
 void out(int** tmp_next) {
-  for (int j = 0; j < COLS; j++) {
+  for (int j = 0; j < MY_COLS; j++) {
     printf("%d", j);
   }
   printf("\n");
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLS; j++) {
+  for (int i = 0; i < MY_ROWS; i++) {
+    for (int j = 0; j < MY_COLS; j++) {
       int res = tmp_next[i][j];
       if (res == 1) {
         printf("*");
@@ -35,7 +35,7 @@ void free_array(int** field, int rows) {
 }
 
 int can_i_move(TetraMino_bro tetraMino, int** field, char key) {
-  int** tmp_next = malloc_array(ROWS, COLS);
+  int** tmp_next = malloc_array(MY_ROWS, MY_COLS);
   tetra_to_next(tetraMino, tmp_next);
 #if deb
   out(tmp_next);
@@ -57,12 +57,12 @@ int can_i_move(TetraMino_bro tetraMino, int** field, char key) {
    * нужно подвинуть tetramino , перевести в tmp_next, чекнуть нет ли коллизий.
    * если все ок, то вернуть OK_BRO, если не ок, то вернуть ERROR
    * */
-  free_array(tmp_next, ROWS);
+  free_array(tmp_next, MY_ROWS);
   return is_all_ok;
 }
 
 int can_i_rotate(TetraMino_bro tetraMino, int** field) {
-  int** tmp_next = malloc_array(ROWS, COLS);
+  int** tmp_next = malloc_array(MY_ROWS, MY_COLS);
   tetra_to_next(tetraMino, tmp_next);
 #if deb
   out(tmp_next);
@@ -84,14 +84,14 @@ int can_i_rotate(TetraMino_bro tetraMino, int** field) {
    * нужно подвинуть tetramino , перевести в tmp_next, чекнуть нет ли коллизий.
    * если все ок, то вернуть OK_BRO, если не ок, то вернуть ERROR
    * */
-  free_array(tmp_next, ROWS);
+  free_array(tmp_next, MY_ROWS);
   return is_all_ok;
 }
 int is_all_ok_bro(int** field, int** next) {
   int is_all_ok = OK_BRO;
 
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLS; j++) {
+  for (int i = 0; i < MY_ROWS; i++) {
+    for (int j = 0; j < MY_COLS; j++) {
       int n_tmp = next[i][j];
       //      if (i == 15) {
       //        int c;
@@ -111,8 +111,8 @@ int is_all_ok_bro(int** field, int** next) {
 // Проверка, что фигура встретилась с границей
 int is_it_board(int** next) {
   int is_all_ok = OK_BRO;
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLS; j++) {
+  for (int i = 0; i < MY_ROWS; i++) {
+    for (int j = 0; j < MY_COLS; j++) {
       int n_tmp = next[i][j];
       //      if (i == 15) {
       //        int c;
@@ -405,10 +405,10 @@ void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key) {
       if ((min_x - 1) >= 0) dx -= 1;
       break;
     case 's':
-      if ((max_y + 1) < ROWS) dy += 1;
+      if ((max_y + 1) < MY_ROWS) dy += 1;
       break;
     case 'd':
-      if ((max_x + 1 < COLS)) dx += 1;
+      if ((max_x + 1 < MY_COLS)) dx += 1;
       break;
     case 'h':
       rotate_TetraMino(tetraMinoBro);
@@ -419,7 +419,7 @@ void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key) {
   for (int i = 0; i < 8; i += 2) {
     int x = tetraMinoBro->coordinates[i];
     int y = tetraMinoBro->coordinates[i + 1];
-    if (x >= 0 && x < COLS && y >= 0 && y < ROWS) next[y][x] = 0;
+    if (x >= 0 && x < MY_COLS && y >= 0 && y < MY_ROWS) next[y][x] = 0;
   }
 
   tetraMinoBro->center_x += dx;
@@ -428,7 +428,8 @@ void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key) {
   //   for (int i = 0; i < 8; i += 2) {
   //     int x = gameInfo->tetraMinoBro->coordinates[i];
   //     int y = gameInfo->tetraMinoBro->coordinates[i + 1];
-  //     if (x >= 0 && x < COLS && y >= 0 && y < ROWS) gameInfo->next[y][x] = 1;
+  //     if (x >= 0 && x < MY_COLS && y >= 0 && y < MY_ROWS)
+  //     gameInfo->next[y][x] = 1;
   //   }
 }
 
@@ -441,8 +442,8 @@ void rotate_TetraMino(TetraMino_bro* tetraMinoBro) {
   }
 }
 void tetra_to_next(TetraMino_bro tetraMinoBro, int** next) {
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLS; j++) {
+  for (int i = 0; i < MY_ROWS; i++) {
+    for (int j = 0; j < MY_COLS; j++) {
       next[i][j] = 0;
     }
   }
@@ -464,7 +465,7 @@ int is_rotate_possible(TetraMino_bro tetraMinoBro, int rotate) {
   for (int i = 0; i < 8; i += 2) {
     int x = tetraMinoBro.coordinates[i] + tetraMinoBro.center_x;
     int y = tetraMinoBro.coordinates[i + 1] + tetraMinoBro.center_y;
-    if (x < 0 || x >= COLS || y >= ROWS || y < 0) {
+    if (x < 0 || x >= MY_COLS || y >= MY_ROWS || y < 0) {
       possible = 0;
       break;
     }
@@ -475,15 +476,15 @@ int is_rotate_possible(TetraMino_bro tetraMinoBro, int rotate) {
 void start_initialization(GameInfo_t* gameInfo, int type) {
   GameInfo_t gameInfo1 = {0};
   *gameInfo = gameInfo1;
-  gameInfo->field = malloc(sizeof(int*) * (ROWS));
-  gameInfo->next = malloc(sizeof(int*) * (ROWS));
+  gameInfo->field = malloc(sizeof(int*) * (MY_ROWS));
+  gameInfo->next = malloc(sizeof(int*) * (MY_ROWS));
 
-  for (int i = 0; i < ROWS; i++) {
-    gameInfo->field[i] = calloc(COLS, sizeof(int));
-    gameInfo->next[i] = calloc(COLS, sizeof(int));
+  for (int i = 0; i < MY_ROWS; i++) {
+    gameInfo->field[i] = calloc(MY_COLS, sizeof(int));
+    gameInfo->next[i] = calloc(MY_COLS, sizeof(int));
   }
-  for (int i = 0; i < COLS; i++) {
-    gameInfo->field[ROWS][i] = 1;
+  for (int i = 0; i < MY_COLS; i++) {
+    gameInfo->field[MY_ROWS][i] = 1;
   }
   gameInfo->score = 0;
   gameInfo->high_score = get_highScore();
@@ -520,8 +521,8 @@ int get_highScore() {
 int next_to_field(int** next, int** field) {
   int is_all_ok = is_all_ok_bro(field, next);
   if (is_all_ok) {
-    for (int i = 0; i < ROWS; i++) {
-      for (int j = 0; j < COLS; j++) {
+    for (int i = 0; i < MY_ROWS; i++) {
+      for (int j = 0; j < MY_COLS; j++) {
         int n_tmp = next[i][j];
         int f_tmp = field[i][j];
         int res = n_tmp + f_tmp;
@@ -568,14 +569,11 @@ GameInfo_t init_empty_gameInfo() {
   gameInfo.level = 0;
   gameInfo.pause = 0;
   gameInfo.speed = 0;
-  gameInfo.field = malloc(sizeof(int*) * (ROWS));
-  gameInfo.next = malloc(sizeof(int*) * (ROWS));
-  for (int i = 0; i < ROWS; i++) {
-    gameInfo.field[i] = calloc(COLS, sizeof(int));
-    gameInfo.next[i] = calloc(COLS, sizeof(int));
-  }
-  for (int i = 0; i < COLS; i++) {
-    gameInfo.field[ROWS][i] = 1;
+  gameInfo.field = malloc(sizeof(int*) * (MY_ROWS));
+  gameInfo.next = malloc(sizeof(int*) * (MY_ROWS));
+  for (int i = 0; i < MY_ROWS; i++) {
+    gameInfo.field[i] = calloc(MY_COLS, sizeof(int));
+    gameInfo.next[i] = calloc(MY_COLS, sizeof(int));
   }
 
   return gameInfo;
@@ -585,8 +583,16 @@ Game_Objects_t init_empty_game_objects() {
   Game_Objects_t gameObjects = {0};
   gameObjects.tetraMinoBro = init_empty_tetraMino();
   gameObjects.gameInfo = init_empty_gameInfo();
-  gameObjects.userAction = -1;
+  // gameObjects.userAction = -1;
+  gameObjects.game_is_running = true;
+  gameObjects.state = MAIN_MENU;
   return gameObjects;
 }
+
+Game_Objects_t* get_game_instance() {
+  static Game_Objects_t gameObjects;
+  //    gameObjects.game_is_running = true;
+  return &gameObjects;
+};
 
 // TODO сделать логирование игрового поля

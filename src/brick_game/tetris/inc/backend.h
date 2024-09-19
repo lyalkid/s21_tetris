@@ -50,12 +50,11 @@ int get_highScore();
 void start_initialization(GameInfo_t *gameInfo, int type);
 int next_to_field(int **next, int **field);
 
+Game_Objects_t *get_game_instance();
+
 void shift(GameInfo_t gameInfo, char *key);
 int is_down_possible(TetraMino_bro tetraMinoBro, int **field, int **next);
 
 //
 
-void userInput(UserAction_t action, bool hold);
-
-GameInfo_t updateCurrentState();
 #endif  // BACKEND_H_
