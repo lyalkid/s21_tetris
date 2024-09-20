@@ -8,16 +8,16 @@ enum status { ERROR, OK_BRO };
 enum figures { T, J, L, I, S, Z, O };
 enum degrees { COMPLETE, RIGHT, STRAIGHT, REFLEX };
 
-// typedef enum {
-//   Start,
-//   Pause,
-//   Terminate,
-//   Left,
-//   Right,
-//   Up,
-//   Down,
-//   Action
-// } UserAction_t;
+typedef enum {
+  Start,
+  Pause,
+  Terminate,
+  Left,
+  Right,
+  Up,
+  Down,
+  Action
+} UserAction_t;
 
 typedef enum {
   MAIN_MENU,  // getch
@@ -44,7 +44,7 @@ typedef struct {
 
 typedef struct {
   // TODO убрать эту фигуру из этой структуры
-  TetraMino_bro tetraMinoBro;
+  // TetraMino_bro tetraMinoBro;
   int score;
   int high_score;
   int level;
@@ -66,7 +66,7 @@ typedef struct {
 typedef struct {
   bool game_is_running;
   State_t state;
-  // UserAction_t userAction;
+  UserAction_t userAction;
   TetraMino_bro tetraMinoBro;
   GameInfo_t gameInfo;
 } Game_Objects_t;

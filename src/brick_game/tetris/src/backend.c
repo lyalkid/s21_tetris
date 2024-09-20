@@ -493,8 +493,8 @@ void start_initialization(GameInfo_t* gameInfo, int type) {
   gameInfo->speed = 0;
   TetraMino_bro tetraMinoBro = get_new_tetraMino(type);
   // get_TetraMino(&tetraMinoBro);
-  gameInfo->tetraMinoBro = tetraMinoBro;
-  tetra_to_next(gameInfo->tetraMinoBro, gameInfo->next);
+  // gameInfo->tetraMinoBro = tetraMinoBro;
+  // tetra_to_next(gameInfo->tetraMinoBro, gameInfo->next);
   // next_to_field(gameInfo->next, gameInfo->field);
 }
 

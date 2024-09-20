@@ -17,7 +17,8 @@ void onCheck_destroy(Game_Objects_t* params);
 void onDestroy_state(Game_Objects_t* params);
 void onCheck_game_over(Game_Objects_t* params);
 void onPause_state(Game_Objects_t* params);
+UserAction_t getSignal(int user_input);
 
-// void userInput(UserAction_t action, bool hold);
+// void userInput(UserAction_t action);
 GameInfo_t updateCurrentState();
 #endif  // FSM_H_

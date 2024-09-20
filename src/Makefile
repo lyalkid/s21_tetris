@@ -1,7 +1,7 @@
 TETRIS_LIB = tetris.a
 CC = gcc
-CFLAGS = -c -Wall -Werror -Wextra -std=c11
-LDFLAGS = -Wall -Werror -Wextra -std=c11
+CFLAGS = -c #-Wall -Werror -Wextra -std=c11
+LDFLAGS = #-Wall -Werror -Wextra -std=c11
 SOURCE=$(wildcard brick_game/tetris/*.c brick_game/tetris/src/*.c gui/cli/*.c)
 HEADERS=$(wildcard brick_game/tetris/inc/*.h gui/cli/*.h)
 UNAME_S := $(shell uname -s)
@@ -17,7 +17,7 @@ endif
 
 all: s21_tetris.a
 
-run: s21_tetris.a
+run: style s21_tetris.a
 	gcc  $(TETRIS_LIB) -o tetris $(ADD_LIB) && ./tetris
 
 s21_tetris.a: ${SOURCE}

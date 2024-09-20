@@ -1,34 +1,50 @@
 
+#include <sys/time.h>
+#include <time.h>
 
 #include "../../gui/cli/frontend.h"
 #include "inc/backend.h"
 #include "inc/fsm.h"
 
-void gay_loop();
+// void gay_loop();
 
 void game_loop();
+
+// int is_later(struct timeval after, struct timeval before, suseconds_t timer)
+// {
+//     return ((suseconds_t)(after.tv_sec * 1000000 + after.tv_usec) -
+//             ((suseconds_t)before.tv_sec * 1000000 + before.tv_usec)) > timer;
+//   }
 
 int main() {
   srand(time(0));
   get_random();
   game_loop();
-
+  terminate_ncurses_bro();
   return 0;
 }
 
 void game_loop() {
+  init_bro_ncurses();
+  //
+  //  struct timeval before, after;
+  //  gettimeofday(&before, NULL);
+  //  struct timespec ts = {0, 1000000};  // sleep for 0.1 millisec = 100
+  //  microsec
   Game_Objects_t* gameObjects = get_game_instance();
   *gameObjects = init_empty_game_objects();
   // char key = 0;
+
+  char k = '0';
   while (gameObjects->game_is_running == true) {
     render_simple(gameObjects);
+    //    refresh();
     main_fsm(gameObjects);
-    char k;
     if (gameObjects->state == MOVE || gameObjects->state == PAUSE ||
         gameObjects->state == START || gameObjects->state == GAME_OVER) {
-      k = getchar();
+      k = getch();
     }
-    if (k == 'q') {
+    if (gameObjects->state == EXIT_BRO || k == 'q') {
       gameObjects->game_is_running = false;
     }
 #if deb
@@ -38,8 +54,10 @@ void game_loop() {
     out(gameObjects->gameInfo.field);
 #endif
   }
+  // endwin();
 }
 
+#if deb
 void gay_loop() {
   Game_Objects_t gameObjects = init_empty_game_objects();
   int random_type = get_random();
@@ -103,7 +121,7 @@ void gay_loop() {
   }
   printf("\n");
 }
-
+#endif
 // TODO написать сдвиг
 // TODO написать соединение
 // TODO написать game over

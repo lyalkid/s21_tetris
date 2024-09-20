@@ -13,6 +13,10 @@
 //#include <ncurses.h>
 #define TIME 50000
 
+#define ESCAPE 27
+#define ENTER_KEY 10
+#define SPACE 32
+
 // TODO исправить эту заглушку, написать нормальный тетрис с слонярским полем 10
 // на 20
 // DONE исправлено
