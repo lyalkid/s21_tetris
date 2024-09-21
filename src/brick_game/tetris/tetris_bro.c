@@ -20,17 +20,21 @@ int main() {
   srand(time(0));
   get_random();
   game_loop();
+#if curses_bro
   terminate_ncurses_bro();
+#endif
   return 0;
 }
 
 void game_loop() {
+#if curses_bro
   init_bro_ncurses();
+#endif
   //
-  //  struct timeval before, after;
-  //  gettimeofday(&before, NULL);
-  //  struct timespec ts = {0, 1000000};  // sleep for 0.1 millisec = 100
-  //  microsec
+  //   struct timeval before, after;
+  //   gettimeofday(&before, NULL);
+  //   struct timespec ts = {0, 1000000};  // sleep for 0.1 millisec = 100
+  //   microsec
   Game_Objects_t* gameObjects = get_game_instance();
   *gameObjects = init_empty_game_objects();
   // char key = 0;
@@ -38,11 +42,16 @@ void game_loop() {
   char k = '0';
   while (gameObjects->game_is_running == true) {
     render_simple(gameObjects);
-    //    refresh();
+
     main_fsm(gameObjects);
-    if (gameObjects->state == MOVE || gameObjects->state == PAUSE ||
+    if (gameObjects->state == SPAWN || gameObjects->state == PAUSE ||
         gameObjects->state == START || gameObjects->state == GAME_OVER) {
+#if curses_bro
       k = getch();
+#else
+      printf("you can exit\n");
+      k = getchar();
+#endif
     }
     if (gameObjects->state == EXIT_BRO || k == 'q') {
       gameObjects->game_is_running = false;

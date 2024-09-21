@@ -1,6 +1,8 @@
 #ifndef BG_DEFINES_H_
 #define BG_DEFINES_H_
 
+#define curses_bro 0
+
 #define deb 0
 #define MY_ROWS 20
 #define MY_COLS 10

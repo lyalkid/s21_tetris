@@ -11,7 +11,7 @@ void init_bro_ncurses() {
 
 void terminate_ncurses_bro() { endwin(); }
 
-void render_gui(int** field, int** next) {
+void render_gui(int** field, int** next, int score) {
   for (int j = 0; j < MY_COLS; j++) {
     printw("##");
     // refresh();
@@ -46,35 +46,51 @@ void render_gui(int** field, int** next) {
   }
   printw("\n");
   // refresh();
-  printw("score: %d\n", 100);
+  printw("score: %d\n", score);
   refresh();
 }
 
 void render_simple(Game_Objects_t* gameObjects) {
-  //  system("clear");
+#if curses_bro
   clear();
+#else
+  system("clear");
+#endif
   switch (gameObjects->state) {
     case MAIN_MENU:
       print_main_menu(gameObjects);
       break;
     default:
-      render_gui(gameObjects->gameInfo.field, gameObjects->gameInfo.next);
-      // show_game_field(gameObjects->gameInfo.field,
-      // gameObjects->gameInfo.next);
+#if curses_bro
+      render_gui(gameObjects->gameInfo.field, gameObjects->gameInfo.next,
+                 gameObjects->gameInfo.score);
+#else
+      show_game_field(gameObjects->gameInfo.field, gameObjects->gameInfo.next,
+                      gameObjects->gameInfo.score, gameObjects->gameInfo.level);
+#endif
       break;
   }
 }
 
 void print_main_menu(Game_Objects_t* gameObjects) {
+#if curses_bro
+
   printw("press N to start a new game\n");
-  // refresh();
+  refresh();
 
   printw("press Q to exit from tetris\n");
   refresh();
+#else
+  printf("press N to start a new game\n");
+  // refresh();
+
+  printf("press Q to exit from tetris\n");
+  //  refresh();
+#endif
 }
 
 // TODO добавить отображение количества очков
-void show_game_field(int** field, int** next) {
+void show_game_field(int** field, int** next, int score, int level) {
   for (int j = 0; j < MY_COLS; j++) {
     printf("##");
   }
@@ -87,7 +103,7 @@ void show_game_field(int** field, int** next) {
       } else if (res > 1) {
         printf("@@");
       } else {
-        printf("");
+        printf("  ");
       }
     }
     printf("| %d\n", i);
@@ -96,4 +112,6 @@ void show_game_field(int** field, int** next) {
     printf("##");
   }
   printf("\n");
+  printf("score: %d\n", score);
+  printf("level: %d\n", level);
 };
