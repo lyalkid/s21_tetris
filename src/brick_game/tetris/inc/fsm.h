@@ -18,6 +18,8 @@ void onDestroy_state(Game_Objects_t* params);
 void onCheck_game_over(Game_Objects_t* params);
 void onPause_state(Game_Objects_t* params);
 UserAction_t getSignal(int user_input);
+void move_brother(Game_Objects_t* params, char key);
+void main_move(Game_Objects_t* params, char key);
 
 // void userInput(UserAction_t action);
 GameInfo_t updateCurrentState();

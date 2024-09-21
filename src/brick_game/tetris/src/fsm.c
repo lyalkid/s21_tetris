@@ -62,8 +62,12 @@ void main_fsm(Game_Objects_t* game_params) {
 }
 
 void main_menu(Game_Objects_t* params) {
-  // print_main_menu(params);
-  int key = getch();
+  int key;
+#if curses_bro
+  key = getch();
+#else
+  key = getchar();
+#endif
   UserAction_t signal = getSignal(key);
   //  char key = getchar();
   switch (signal) {
@@ -97,6 +101,7 @@ void onSpawn(Game_Objects_t* params) {
   switch (params->state) {
     case SPAWN:
       params->tetraMinoBro = get_new_tetraMino(get_random());
+      tetra_to_next(params->tetraMinoBro, params->gameInfo.next);
       params->state = MOVE;
       break;
     default:
@@ -104,17 +109,30 @@ void onSpawn(Game_Objects_t* params) {
   }
 }
 void onMoving(Game_Objects_t* params) {
+#if curses_bro
   char key = getch();
-  if (params->state == MOVE &&
-      can_i_move(params->tetraMinoBro, params->gameInfo.field, key) == OK_BRO) {
-    move_tetramino(&params->tetraMinoBro, params->gameInfo.next, key);
-  }
+#else
+  char key = getchar();
+#endif
+  main_move(params, key);
 }
 void onShifting(Game_Objects_t* params) {
   switch (params->state) {}
 }
 void onAttaching(Game_Objects_t* params) {
-  switch (params->state) {}
+  switch (params->state) {
+    case ATTACHING:
+      next_to_field(params->gameInfo.next, params->gameInfo.field);
+      int lines = scan_bro(params->gameInfo.field, MY_ROWS, MY_COLS);
+      // TODO не забыть менять скорость
+      params->gameInfo.score += calc_score(lines);
+      params->gameInfo.level = calc_level(params->gameInfo.score);
+      params->state = SPAWN;
+      break;
+
+    default:
+      break;
+  }
 }
 
 void onGame_over(Game_Objects_t* params) {
@@ -149,12 +167,42 @@ UserAction_t getSignal(int user_input) {
     sig = Right;
   } else if (user_input == ESCAPE || user_input == 'q') {
     sig = Terminate;
-  } else if (user_input == ENTER_KEY || user_input == 'n') {
+  } else if (user_input == ENTER_KEY || user_input == 'n' ||
+             user_input == '\n') {
     sig = Start;
   } else if (user_input == SPACE) {
     sig = Pause;
   }
   return sig;
+}
+void main_move(Game_Objects_t* params, char key) {
+  int is_move_possible =
+      can_i_move(params->tetraMinoBro, params->gameInfo.field, key);
+  if (key == 'f') {
+    key = 's';
+    //    int prev = is_move_possible;
+    while (params->state != ATTACHING) {
+      move_brother(params, key);
+      //
+      //      is_move_possible =
+      //          can_i_move(params->tetraMinoBro, params->gameInfo.field, key);
+    }
+  } else {
+    move_brother(params, key);
+  }
+}
+void move_brother(Game_Objects_t* params, char key) {
+  int is_move_possible =
+      can_i_move(params->tetraMinoBro, params->gameInfo.field, key);
+
+  if (is_it_board(params->gameInfo.next) == ERROR ||
+      (key == 's' && is_move_possible == ERROR)) {
+    // TODO исправить на attaching
+    params->state = ATTACHING;
+  } else if (params->state == MOVE && is_move_possible == OK_BRO) {
+    move_tetramino(&params->tetraMinoBro, params->gameInfo.next, key);
+    tetra_to_next(params->tetraMinoBro, params->gameInfo.next);
+  }
 }
 
 // void userInput(UserAction_t action) {
