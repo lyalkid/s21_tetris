@@ -126,9 +126,10 @@ int is_it_board(int** next) {
   }
   return is_all_ok;
 }
-void scan_bro(int** field, int rows, int cols) {
+int scan_bro(int** field, int rows, int cols) {
   // TODO должен возвращать количество строк, которые удалились, чтобы
   // увеличивать очки
+  int count = 0;
   int full_scan = 0;
   while (full_scan != 2) {
     int flag = 1;
@@ -136,13 +137,40 @@ void scan_bro(int** field, int rows, int cols) {
       int destroy = to_be_destroyed(field[i], cols);
       if (destroy == YES) {
         destruction(field, cols, i);
+        count++;
         flag = 0;
       }
     }
     if (flag == 1) full_scan++;
   }
+  return count;
 }
 
+int calc_score(int lines) {
+  int res = 0;
+  if (lines != 0) {
+    switch (lines) {
+      case 1:
+        res = 100;
+        break;
+      case 2:
+        res = 300;
+        break;
+      case 3:
+        res = 700;
+        break;
+      default:
+        res = 1500;
+        break;
+    }
+  }
+  return res;
+}
+
+int calc_level(int current_score) {
+  int res = current_score / 600;
+  return res > 10 ? 10 : res;
+}
 int to_be_destroyed(const int a[], int size) {
   int sum = 0;
   for (int i = 0; i < size; i++) {
@@ -207,7 +235,7 @@ void get_tetra_two(TetraMino_bro* tetraMinoBro) {
      * */
 
   } else if (tetraMinoBro->type == S) {
-    int coord[] = {0, 18, -1, 18, 0, 17, 1, 17};
+    int coord[] = {0, 0, -1, 0, 0, -1, 1, -1};
     setCoordinates(tetraMinoBro->coordinates, coord);
 
     /* ...
@@ -410,7 +438,7 @@ void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key) {
     case 'd':
       if ((max_x + 1 < MY_COLS)) dx += 1;
       break;
-    case 'h':
+    case 'w':
       rotate_TetraMino(tetraMinoBro);
       break;
     default:

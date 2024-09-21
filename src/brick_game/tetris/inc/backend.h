@@ -16,8 +16,10 @@ int can_i_rotate(TetraMino_bro tetraMino, int **field);
 int **malloc_array(int rows, int cols);
 void free_array(int **field, int rows);
 
-void scan_bro(int **field, int rows, int cols);
+int scan_bro(int **field, int rows, int cols);
 int to_be_destroyed(const int a[], int size);
+int calc_score(int lines);
+int calc_level(int current_score);
 
 void destruction(int **field, int cols, int row_not_bro);
 int is_all_ok_bro(int **field, int **next);
