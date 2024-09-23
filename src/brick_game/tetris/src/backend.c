@@ -167,6 +167,22 @@ int calc_score(int lines) {
   return res;
 }
 
+void game_mechanics(Game_Objects_t* params) {
+  int lines = scan_bro(params->gameInfo.field, MY_ROWS, MY_COLS);
+  int prev_level = params->gameInfo.level;
+  params->gameInfo.score += calc_score(lines);
+  params->gameInfo.level = calc_level(params->gameInfo.score);
+  if (prev_level < params->gameInfo.level) {
+    params->gameInfo.speed++;
+    params->timer -= 1000 * params->gameInfo.speed;
+  }
+}
+
+// int check_game_over(int** field) {
+//     int res = OK_BRO;
+//     for()
+// }
+
 int calc_level(int current_score) {
   int res = current_score / 600;
   return res > 10 ? 10 : res;
@@ -398,7 +414,7 @@ TetraMino_bro get_new_tetraMino(int type) {
   return tetraMinoBro;
 }
 
-void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key) {
+void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, UserAction_t key) {
   int dx = 0, dy = 0;
   // TODO уменьшить размер строк
   // int min_y =
@@ -429,16 +445,16 @@ void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, char key) {
     // case 'w':
     //   if ((min_y - 1) >= 0) dy -= 1;
     //   break;
-    case 'a':
+    case Left:
       if ((min_x - 1) >= 0) dx -= 1;
       break;
-    case 's':
+    case Down:
       if ((max_y + 1) < MY_ROWS) dy += 1;
       break;
-    case 'd':
+    case Right:
       if ((max_x + 1 < MY_COLS)) dx += 1;
       break;
-    case 'w':
+    case Action:
       rotate_TetraMino(tetraMinoBro);
       break;
     default:
@@ -609,11 +625,16 @@ GameInfo_t init_empty_gameInfo() {
 
 Game_Objects_t init_empty_game_objects() {
   Game_Objects_t gameObjects = {0};
+  gettimeofday(&gameObjects.before, NULL);
+  gettimeofday(&gameObjects.after, NULL);
+  gameObjects.timer = TIME;  // half second
   gameObjects.tetraMinoBro = init_empty_tetraMino();
   gameObjects.gameInfo = init_empty_gameInfo();
-  // gameObjects.userAction = -1;
+  gameObjects.userAction = NONE_ACTION;
   gameObjects.game_is_running = true;
-  gameObjects.state = MAIN_MENU;
+  gameObjects.time_to_shift = true;
+  // TODO заменить на main_menu
+  gameObjects.state = START;
   return gameObjects;
 }
 
@@ -624,3 +645,16 @@ Game_Objects_t* get_game_instance() {
 };
 
 // TODO сделать логирование игрового поля
+
+int is_time_to_shift(struct timeval before, struct timeval after,
+                     suseconds_t timer) {
+  int res = ((suseconds_t)(after.tv_sec * 1000000 + after.tv_usec) -
+             ((suseconds_t)before.tv_sec * 1000000 + before.tv_usec)) > timer;
+#if !curses_bro
+  if (res)
+    printf("time_to_shift\n");
+  else
+    printf("time_to_suck\n");
+#endif
+  return res;
+}

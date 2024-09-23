@@ -16,7 +16,8 @@ typedef enum {
   Right,
   Up,
   Down,
-  Action
+  Action,
+  NONE_ACTION
 } UserAction_t;
 
 typedef enum {
@@ -64,11 +65,16 @@ typedef struct {
 //} UserInfo_t;
 
 typedef struct {
+  struct timeval before;
+  struct timeval after;
+  suseconds_t timer;
   bool game_is_running;
+  bool time_to_shift;
   State_t state;
   UserAction_t userAction;
   TetraMino_bro tetraMinoBro;
   GameInfo_t gameInfo;
+
 } Game_Objects_t;
 
 #endif  // OBJECTS_H_

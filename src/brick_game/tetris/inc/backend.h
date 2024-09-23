@@ -20,6 +20,7 @@ int scan_bro(int **field, int rows, int cols);
 int to_be_destroyed(const int a[], int size);
 int calc_score(int lines);
 int calc_level(int current_score);
+void game_mechanics(Game_Objects_t *params);
 
 void destruction(int **field, int cols, int row_not_bro);
 int is_all_ok_bro(int **field, int **next);
@@ -44,7 +45,7 @@ int get_min(int a, int b);
 int get_max(int a, int b);
 int is_rotate_possible(TetraMino_bro tetraMinoBro, int rotate);
 
-void move_tetramino(TetraMino_bro *tetraMinoBro, int **next, char key);
+void move_tetramino(TetraMino_bro *tetraMinoBro, int **next, UserAction_t key);
 void rotate_TetraMino(TetraMino_bro *tetraMinoBro);
 
 int get_random();
@@ -57,6 +58,8 @@ Game_Objects_t *get_game_instance();
 void shift(GameInfo_t gameInfo, char *key);
 int is_down_possible(TetraMino_bro tetraMinoBro, int **field, int **next);
 
+int is_time_to_shift(struct timeval before, struct timeval after,
+                     suseconds_t timer);
 //
 
 #endif  // BACKEND_H_

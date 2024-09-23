@@ -1,7 +1,7 @@
 #ifndef BG_DEFINES_H_
 #define BG_DEFINES_H_
 
-#define curses_bro 0
+#define curses_bro 1
 
 #define deb 0
 #define MY_ROWS 20
@@ -10,10 +10,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 //#include <ncurses.h>
-#define TIME 50000
+#define TIME 500000
 
 #define ESCAPE 27
 #define ENTER_KEY 10
