@@ -23,15 +23,15 @@ void render_gui(int** field, int** next, int score, int level) {
     for (int j = 0; j < MY_COLS; j++) {
       int res = field[i][j] + next[i][j];
       if (res == 1) {
-        printw("[]");
+        printw("0 ");
         //   refresh();
 
       } else if (res > 1) {
-        printw("@@");
+        printw("# ");
         // refresh();
 
       } else {
-        printw("  ");
+        printw(". ");
         // refresh();
       }
     }

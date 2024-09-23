@@ -4,15 +4,7 @@
 #include "inc/backend.h"
 #include "inc/fsm.h"
 
-// void gay_loop();
-
 void game_loop();
-
-// int is_later(struct timeval after, struct timeval before, suseconds_t timer)
-// {
-//     return ((suseconds_t)(after.tv_sec * 1000000 + after.tv_usec) -
-//             ((suseconds_t)before.tv_sec * 1000000 + before.tv_usec)) > timer;
-//   }
 
 int main() {
   srand(time(0));
@@ -37,9 +29,11 @@ void game_loop() {
   Game_Objects_t* gameObjects = get_game_instance();
   *gameObjects = init_empty_game_objects();
   gettimeofday(&gameObjects->before, NULL);
-  char key = 'n';
+  char key = 's';
 
   while (gameObjects->game_is_running == true) {
+    //    render_simple(gameObjects);
+
     main_fsm(gameObjects);
     // gettimeofday(&gameObjects->before, NULL);
     render_simple(gameObjects);
@@ -50,7 +44,7 @@ void game_loop() {
       key = getch();
 #else
       printf("you can exit\n");
-      key = getchar();
+      key = 'n';  // getchar();
 #endif
       if (key != -1) gameObjects->userAction = getSignal(key);
     }
@@ -59,7 +53,7 @@ void game_loop() {
     if (is_time_to_shift(gameObjects->before, gameObjects->after,
                          gameObjects->timer)) {
       gameObjects->time_to_shift = true;
-      //      main_fsm(gameObjects);
+      //          main_fsm(gameObjects);
     }
 
 #if deb

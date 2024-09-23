@@ -34,22 +34,23 @@ void main_fsm(Game_Objects_t* game_params) {
       break;
     case MOVE:
       onMoving(game_params);
-      if (game_params->state == ATTACHING) {
-        main_fsm(game_params);
-      } else if (game_params->time_to_shift == true) {
+      if (game_params->time_to_shift == true) {
         game_params->state = SHIFT;
         game_params->userAction = Down;
         main_fsm(game_params);
+      } else if (game_params->state == ATTACHING) {
+        main_fsm(game_params);
       }
-      // game_params->state = SHIFT;
-      // main_fsm(game_params);
       break;
     case SHIFT:
       // if (game_params->time_to_shift == true) game_params->state = MOVE;
       onShifting(game_params);
+
+      main_fsm(game_params);
       break;
     case ATTACHING:
       onAttaching(game_params);
+      main_fsm(game_params);
       break;
     case CHECK_DESTROY:
       onCheck_destroy(game_params);
@@ -76,14 +77,6 @@ void main_fsm(Game_Objects_t* game_params) {
 }
 
 void main_menu(Game_Objects_t* params) {
-  //  int key;
-  //#if curses_bro
-  //  key = getch();
-  //#else
-  //  key = getchar();
-  //#endif
-  //  UserAction_t signal = getSignal(key);
-  //  char key = getchar();
   switch (params->userAction) {
     case Start:
       params->state = START;
@@ -92,7 +85,6 @@ void main_menu(Game_Objects_t* params) {
     case Terminate:
       if (params->state == MAIN_MENU) params->state = EXIT_BRO;
 
-      //      exit(EXIT_SUCCESS);
       break;
     default:
       break;
@@ -130,7 +122,6 @@ void onMoving(Game_Objects_t* params) {
   if (params->userAction != Start && params->userAction != Pause &&
       params->userAction != Terminate)
     main_move(params);
-  int c = 10;
 }
 void onShifting(Game_Objects_t* params) {
   if (params->time_to_shift == true) {
