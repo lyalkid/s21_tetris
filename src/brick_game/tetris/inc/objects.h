@@ -37,6 +37,7 @@ typedef enum {
 
 typedef struct {
   int type;
+  int next_type;
   int rotate;
   int center_x;
   int center_y;
@@ -44,8 +45,6 @@ typedef struct {
 } TetraMino_bro;
 
 typedef struct {
-  // TODO убрать эту фигуру из этой структуры
-  // TetraMino_bro tetraMinoBro;
   int score;
   int high_score;
   int level;
@@ -55,21 +54,13 @@ typedef struct {
   int **next;
 } GameInfo_t;
 
-// TODO сделать так чтобы после каждой игровой сессии данные сохранялись в csv
-// или в txt файл
-// TODO сделать реализацию с этой структурой, чтобы можно было участвовать в
-// рейтинге
-// typedef struct {
-//  int high_score;
-//  char *unique_name;
-//} UserInfo_t;
 
 typedef struct {
   struct timeval before;
   struct timeval after;
-  suseconds_t timer;
-  bool game_is_running;
-  bool time_to_shift;
+  suseconds_t timer; // через какое время делать shift
+  bool game_is_running; // флаг для game_loop()
+  bool time_to_shift; // показывает нужно ли делать shift
   State_t state;
   UserAction_t userAction;
   TetraMino_bro tetraMinoBro;

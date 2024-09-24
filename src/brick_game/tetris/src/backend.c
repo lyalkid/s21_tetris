@@ -407,6 +407,7 @@ void setCoordinates(int* coordinates, const int* values) {
 TetraMino_bro get_new_tetraMino(int type) {
   TetraMino_bro tetraMinoBro = {0};
   tetraMinoBro.type = type;
+  tetraMinoBro.next_type = get_random();
   tetraMinoBro.rotate = COMPLETE;
   tetraMinoBro.center_x = 4;
   tetraMinoBro.center_y = 1;
@@ -597,6 +598,7 @@ int is_down_possible(TetraMino_bro tetraMinoBro, int** field, int** next) {
 TetraMino_bro init_empty_tetraMino() {
   TetraMino_bro tetraMinoBro = (TetraMino_bro){0};
   tetraMinoBro.type = get_random();
+  tetraMinoBro.next_type = get_random();
   tetraMinoBro.rotate = 0;
   tetraMinoBro.center_x = 0;
   tetraMinoBro.center_y = 0;

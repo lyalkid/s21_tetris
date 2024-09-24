@@ -105,7 +105,7 @@ void onStart_state(Game_Objects_t* params) {
 void onSpawn(Game_Objects_t* params) {
   switch (params->state) {
     case SPAWN:
-      params->tetraMinoBro = get_new_tetraMino(get_random());
+      params->tetraMinoBro = get_new_tetraMino(params->tetraMinoBro.next_type);
       tetra_to_next(params->tetraMinoBro, params->gameInfo.next);
       int is_all_ok =
           is_all_ok_bro(params->gameInfo.field, params->gameInfo.next);
