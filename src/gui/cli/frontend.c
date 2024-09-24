@@ -2,11 +2,11 @@
 
 void init_bro_ncurses() {
   initscr();
-  echo();
+  noecho();
   nodelay(stdscr, TRUE);
   //  keypad(stdscr, TRUE);
   curs_set(0);
-  timeout(500);
+  timeout(1);
 }
 
 void terminate_ncurses_bro() { endwin(); }
@@ -47,7 +47,7 @@ void render_gui(int** field, int** next, int score, int level) {
   printw("\n");
   // refresh();
   printw("score: %d\n", score);
-  printw("score: %d\n", level);
+  printw("level: %d\n", level);
 
   refresh();
 }
@@ -105,11 +105,11 @@ void show_game_field(int** field, int** next, int score, int level) {
     for (int j = 0; j < MY_COLS; j++) {
       int res = field[i][j] + next[i][j];
       if (res == 1) {
-        printf("[]");
+        printf("0 ");
       } else if (res > 1) {
-        printf("@@");
+        printf("# ");
       } else {
-        printf("  ");
+        printf(". ");
       }
     }
     printf("| %d\n", i);

@@ -10,7 +10,7 @@
 // HEAD OF OLD BACKEND
 enum answer { YES, NO };
 void out(int **tmp_next);
-int can_i_move(TetraMino_bro tetraMino, int **field, char key);
+int can_i_move(TetraMino_bro tetraMino, int **field, UserAction_t key);
 int can_i_shift();
 int can_i_rotate(TetraMino_bro tetraMino, int **field);
 int **malloc_array(int rows, int cols);
@@ -28,6 +28,7 @@ int is_it_board(int **next);
 
 TetraMino_bro init_empty_tetraMino();
 GameInfo_t init_empty_gameInfo();
+void deleteGame(GameInfo_t *gameInfo);
 Game_Objects_t init_empty_game_objects();
 
 // END OF OLD BACKEND
@@ -39,13 +40,17 @@ void get_tetra_four(TetraMino_bro *tetraMinoBro);
 TetraMino_bro get_new_tetraMino(int type);
 void setCoordinates(int *coordinates, const int *values);
 
-void tetra_to_next(TetraMino_bro tetraMinoBro, int **next);
+void tetra_to_array(TetraMino_bro tetraMinoBro, int **next);
 
 int get_min(int a, int b);
 int get_max(int a, int b);
 int is_rotate_possible(TetraMino_bro tetraMinoBro, int rotate);
 
-void move_tetramino(TetraMino_bro *tetraMinoBro, int **next, UserAction_t key);
+void move_tetraMino(TetraMino_bro *tetraMinoBro, UserAction_t key);
+void move_down_tetraMino(TetraMino_bro *tetraMinoBro);
+void move_up_tetraMino(TetraMino_bro *tetraMinoBro);
+int check_collision(TetraMino_bro tetraMinoBro, int **field);
+
 void rotate_TetraMino(TetraMino_bro *tetraMinoBro);
 
 int get_random();
@@ -60,6 +65,8 @@ int is_down_possible(TetraMino_bro tetraMinoBro, int **field, int **next);
 
 int is_time_to_shift(struct timeval before, struct timeval after,
                      suseconds_t timer);
-//
+int is_it_legal_mv(UserAction_t userAction);
+
+int is_it_illegal_mv(UserAction_t userAction);
 
 #endif  // BACKEND_H_

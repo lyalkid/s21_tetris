@@ -34,14 +34,14 @@ void free_array(int** field, int rows) {
   free(field);
 }
 
-int can_i_move(TetraMino_bro tetraMino, int** field, char key) {
+int can_i_move(TetraMino_bro tetraMino, int** field, UserAction_t key) {
   int** tmp_next = malloc_array(MY_ROWS, MY_COLS);
-  tetra_to_next(tetraMino, tmp_next);
+  tetra_to_array(tetraMino, tmp_next);
 #if deb
   out(tmp_next);
 #endif
-  move_tetramino(&tetraMino, tmp_next, key);
-  tetra_to_next(tetraMino, tmp_next);
+  move_tetraMino(&tetraMino, key);
+  tetra_to_array(tetraMino, tmp_next);
 
 #if deb
   out(tmp_next);
@@ -63,12 +63,12 @@ int can_i_move(TetraMino_bro tetraMino, int** field, char key) {
 
 int can_i_rotate(TetraMino_bro tetraMino, int** field) {
   int** tmp_next = malloc_array(MY_ROWS, MY_COLS);
-  tetra_to_next(tetraMino, tmp_next);
+  tetra_to_array(tetraMino, tmp_next);
 #if deb
   out(tmp_next);
 #endif
   rotate_TetraMino(&tetraMino);
-  tetra_to_next(tetraMino, tmp_next);
+  tetra_to_array(tetraMino, tmp_next);
 
 #if deb
   out(tmp_next);
@@ -174,7 +174,7 @@ void game_mechanics(Game_Objects_t* params) {
   params->gameInfo.level = calc_level(params->gameInfo.score);
   if (prev_level < params->gameInfo.level) {
     params->gameInfo.speed++;
-    params->timer -= 1000 * params->gameInfo.speed;
+    params->timer = TIME / params->gameInfo.speed;
   }
 }
 
@@ -415,16 +415,14 @@ TetraMino_bro get_new_tetraMino(int type) {
   return tetraMinoBro;
 }
 
-void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, UserAction_t key) {
+void move_tetraMino(TetraMino_bro* tetraMinoBro, UserAction_t key) {
   int dx = 0, dy = 0;
   // TODO уменьшить размер строк
-  // int min_y =
-  //     get_min(
-  //         get_min(tetraMinoBro->coordinates[1],
-  //         tetraMinoBro->coordinates[3]),
-  //         get_min(tetraMinoBro->coordinates[5],
-  //         tetraMinoBro->coordinates[7])) +
-  //     tetraMinoBro->center_y;
+  int min_y =
+      get_min(
+          get_min(tetraMinoBro->coordinates[1], tetraMinoBro->coordinates[3]),
+          get_min(tetraMinoBro->coordinates[5], tetraMinoBro->coordinates[7])) +
+      tetraMinoBro->center_y;
 
   int min_x =
       get_min(
@@ -444,16 +442,14 @@ void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, UserAction_t key) {
       tetraMinoBro->center_x;
   switch (key) {
     // case 'w':
-    //   if ((min_y - 1) >= 0) dy -= 1;
+    //   if ((min_y - 1) >= 0) tetraMinoBro->center_y -= 1;
     //   break;
     case Left:
-      if ((min_x - 1) >= 0) dx -= 1;
+      if ((min_x - 1) >= 0) tetraMinoBro->center_x -= 1;
       break;
-    case Down:
-      if ((max_y + 1) < MY_ROWS) dy += 1;
-      break;
+
     case Right:
-      if ((max_x + 1 < MY_COLS)) dx += 1;
+      if ((max_x + 1 < MY_COLS)) tetraMinoBro->center_x += 1;
       break;
     case Action:
       rotate_TetraMino(tetraMinoBro);
@@ -461,14 +457,14 @@ void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, UserAction_t key) {
     default:
       break;
   }
-  for (int i = 0; i < 8; i += 2) {
-    int x = tetraMinoBro->coordinates[i];
-    int y = tetraMinoBro->coordinates[i + 1];
-    if (x >= 0 && x < MY_COLS && y >= 0 && y < MY_ROWS) next[y][x] = 0;
-  }
+  //  for (int i = 0; i < 8; i += 2) {
+  //    int x = tetraMinoBro->coordinates[i];
+  //    int y = tetraMinoBro->coordinates[i + 1];
+  //    if (x >= 0 && x < MY_COLS && y >= 0 && y < MY_ROWS) next[y][x] = 0;
+  //  }
 
-  tetraMinoBro->center_x += dx;
-  tetraMinoBro->center_y += dy;
+  //  tetraMinoBro->center_x += dx;
+  //  tetraMinoBro->center_y += dy;
   // if(dx == 0 && dy == 0) *can_i_move = ERROR;
   //   for (int i = 0; i < 8; i += 2) {
   //     int x = gameInfo->tetraMinoBro->coordinates[i];
@@ -476,6 +472,45 @@ void move_tetramino(TetraMino_bro* tetraMinoBro, int** next, UserAction_t key) {
   //     if (x >= 0 && x < MY_COLS && y >= 0 && y < MY_ROWS)
   //     gameInfo->next[y][x] = 1;
   //   }
+}
+
+void move_down_tetraMino(TetraMino_bro* tetraMinoBro) {
+  tetraMinoBro->center_y += 1;
+}
+
+void move_up_tetraMino(TetraMino_bro* tetraMinoBro) {
+  tetraMinoBro->center_y -= 1;
+}
+
+int check_collision(TetraMino_bro tetraMinoBro, int** field) {
+  int is_all_ok = OK_BRO;
+  for (int i = 0; i < 8; i += 2) {
+    int x = tetraMinoBro.coordinates[i] + tetraMinoBro.center_x;
+    int y = tetraMinoBro.coordinates[i + 1] + tetraMinoBro.center_y;
+    if (x < 0 || x >= MY_COLS || y < 0 || y >= MY_ROWS) {
+      is_all_ok = ERROR;
+      break;
+    }
+  }
+  if (is_all_ok == OK_BRO) {
+    int** tmp_next = malloc_array(MY_ROWS, MY_COLS);
+    tetra_to_array(tetraMinoBro, tmp_next);
+#if deb
+    printf("next\n");
+    out(tmp_next);
+    printf("field\n");
+    out(field);
+#endif
+    is_all_ok = is_all_ok_bro(field, tmp_next);
+#if deb
+    printf("next\n");
+    out(tmp_next);
+    printf("field\n");
+    out(field);
+#endif
+    free_array(tmp_next, MY_ROWS);
+  }
+  return is_all_ok;
 }
 
 void rotate_TetraMino(TetraMino_bro* tetraMinoBro) {
@@ -486,7 +521,7 @@ void rotate_TetraMino(TetraMino_bro* tetraMinoBro) {
     get_TetraMino(tetraMinoBro);
   }
 }
-void tetra_to_next(TetraMino_bro tetraMinoBro, int** next) {
+void tetra_to_array(TetraMino_bro tetraMinoBro, int** next) {
   for (int i = 0; i < MY_ROWS; i++) {
     for (int j = 0; j < MY_COLS; j++) {
       next[i][j] = 0;
@@ -582,7 +617,7 @@ int is_down_possible(TetraMino_bro tetraMinoBro, int** field, int** next) {
   for (int i = 1; i < 8; i += 2) {
     tetraMinoBro.coordinates[i] += 1;
   }
-  tetra_to_next(tetraMinoBro, next);
+  tetra_to_array(tetraMinoBro, next);
   possible = is_all_ok_bro(field, next);
   if (possible) {
     next_to_field(next, field);
@@ -590,7 +625,7 @@ int is_down_possible(TetraMino_bro tetraMinoBro, int** field, int** next) {
     for (int i = 1; i < 8; i += 2) {
       tetraMinoBro.coordinates[i] -= 1;
     }
-    tetra_to_next(tetraMinoBro, next);
+    tetra_to_array(tetraMinoBro, next);
   };
   return possible;
 }
@@ -624,6 +659,13 @@ GameInfo_t init_empty_gameInfo() {
 
   return gameInfo;
 }
+void deleteGame(GameInfo_t* gameInfo) {
+  gameInfo->level = 0;
+  gameInfo->speed = 0;
+  gameInfo->score = 0;
+  free_array(gameInfo->field, MY_ROWS);
+  free_array(gameInfo->next, MY_ROWS);
+}
 
 Game_Objects_t init_empty_game_objects() {
   Game_Objects_t gameObjects = {0};
@@ -636,13 +678,13 @@ Game_Objects_t init_empty_game_objects() {
   gameObjects.game_is_running = true;
   gameObjects.time_to_shift = true;
   // TODO заменить на main_menu
-  gameObjects.state = START;
+  gameObjects.state = MAIN_MENU;
   return gameObjects;
 }
 
 Game_Objects_t* get_game_instance() {
   static Game_Objects_t gameObjects;
-  //    gameObjects.game_is_running = true;
+  gameObjects.game_is_running = true;
   return &gameObjects;
 };
 
@@ -651,12 +693,25 @@ Game_Objects_t* get_game_instance() {
 int is_time_to_shift(struct timeval before, struct timeval after,
                      suseconds_t timer) {
   int res = ((suseconds_t)(after.tv_sec * 1000000 + after.tv_usec) -
-             ((suseconds_t)before.tv_sec * 1000000 + before.tv_usec)) > timer;
+             ((suseconds_t)before.tv_sec * 1000000 + before.tv_usec));
+  ;
 #if !curses_bro
-  if (res)
+  if (res < timer)
     printf("time_to_shift\n");
   else
     printf("time_to_suck\n");
 #endif
+  return res > timer;
+}
+
+int is_it_legal_mv(UserAction_t userAction) {
+  int res = OK_BRO;
+  if (!(userAction == Left || userAction == Right || userAction == Action))
+    res = ERROR;
+  return res;
+}
+int is_it_illegal_mv(UserAction_t userAction) {
+  int res = OK_BRO;
+  if (!(userAction == Up || userAction == Down)) res = ERROR;
   return res;
 }

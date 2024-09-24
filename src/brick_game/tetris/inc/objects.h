@@ -8,6 +8,8 @@ enum status { ERROR, OK_BRO };
 enum figures { T, J, L, I, S, Z, O };
 enum degrees { COMPLETE, RIGHT, STRAIGHT, REFLEX };
 
+#define NONE_ACTION 8
+
 typedef enum {
   Start,
   Pause,
@@ -17,7 +19,7 @@ typedef enum {
   Up,
   Down,
   Action,
-  NONE_ACTION
+
 } UserAction_t;
 
 typedef enum {
@@ -54,13 +56,12 @@ typedef struct {
   int **next;
 } GameInfo_t;
 
-
 typedef struct {
   struct timeval before;
   struct timeval after;
-  suseconds_t timer; // через какое время делать shift
-  bool game_is_running; // флаг для game_loop()
-  bool time_to_shift; // показывает нужно ли делать shift
+  suseconds_t timer;     // через какое время делать shift
+  bool game_is_running;  // флаг для game_loop()
+  bool time_to_shift;  // показывает нужно ли делать shift
   State_t state;
   UserAction_t userAction;
   TetraMino_bro tetraMinoBro;

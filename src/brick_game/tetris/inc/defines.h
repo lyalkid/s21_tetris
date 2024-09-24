@@ -1,8 +1,7 @@
-#ifndef BG_DEFINES_H_
-#define BG_DEFINES_H_
+#ifndef BRICK_GAME_DEFINES_H_
+#define BRICK_GAME_DEFINES_H_
 
 #define curses_bro 1
-
 #define deb 0
 #define MY_ROWS 20
 #define MY_COLS 10
@@ -14,7 +13,7 @@
 #include <time.h>
 #include <unistd.h>
 //#include <ncurses.h>
-#define TIME 500000
+#define TIME 1000000
 
 #define ESCAPE 27
 #define ENTER_KEY 10
