@@ -287,7 +287,7 @@ void get_tetra_four(TetraMino_bro* tetraMinoBro) {
 
   // TODO ПРОВЕРИТЬ на коректность в соответвии со специф tetris rotate system
   if (tetraMinoBro->type == T && tetraMinoBro->rotate == COMPLETE) {
-    int coord[] = {0, 0, 1, 0, -1, 0, 0, 1};
+    int coord[] = {0, -1, 1, -1, -1, -1, 0, 0};
     setCoordinates(tetraMinoBro->coordinates, coord);
 
     /* ...
@@ -296,7 +296,7 @@ void get_tetra_four(TetraMino_bro* tetraMinoBro) {
      *
      * */
   } else if (tetraMinoBro->type == T && tetraMinoBro->rotate == RIGHT) {
-    int coord[] = {0, 0, 0, -1, 0, 1, -1, 0};
+    int coord[] = {0, -1, 0, -2, 0, 0, -1, -1};
     setCoordinates(tetraMinoBro->coordinates, coord);
 
     /* .#.
@@ -305,7 +305,7 @@ void get_tetra_four(TetraMino_bro* tetraMinoBro) {
      *
      * */
   } else if (tetraMinoBro->type == T && tetraMinoBro->rotate == STRAIGHT) {
-    int coord[] = {0, 0, 1, 0, -1, 0, 0, -1};
+    int coord[] = {0, -1, 1, -1, -1, -1, 0, -2};
     setCoordinates(tetraMinoBro->coordinates, coord);
 
     /* .#.
@@ -314,7 +314,7 @@ void get_tetra_four(TetraMino_bro* tetraMinoBro) {
      *
      * */
   } else if (tetraMinoBro->type == T && tetraMinoBro->rotate == REFLEX) {
-    int coord[] = {0, 0, 0, -1, 0, 1, 1, 0};
+    int coord[] = {0, -1, 0, -2, 0, 0, 1, -1};
     setCoordinates(tetraMinoBro->coordinates, coord);
 
     /* .#.

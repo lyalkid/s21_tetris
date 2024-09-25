@@ -13,7 +13,7 @@
 #include <time.h>
 #include <unistd.h>
 //#include <ncurses.h>
-#define TIME 1000000
+#define TIME 2000000
 
 #define ESCAPE 27
 #define ENTER_KEY 10

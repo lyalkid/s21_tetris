@@ -8,7 +8,7 @@ UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Linux)
   	OPEN_CMD = xdg-open
-	ADD_LIB = -lcheck -lsubunit -lm -lrt -lpthread -D_GNU_SOURCE -lncurses
+	ADD_LIB =  -lm -lrt -lpthread -D_GNU_SOURCE -lncurses #-lcheck -lsubunit
 endif
 ifeq ($(UNAME_S),Darwin)
 	OPEN_CMD = open

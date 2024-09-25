@@ -195,11 +195,13 @@ void onPause_state(Game_Objects_t* params) {
   while (params->userAction != Start && params->userAction != Terminate) {
 #if curses_bro
     params->userAction = getSignal(getch());
+    timeout(100000000);
 #else
     params->userAction = getSignal(getchar());
 
 #endif
   }
+  timeout(1);
 }
 void pause_bro(Game_Objects_t* params, State_t prev) {
   params->state = PAUSE;
