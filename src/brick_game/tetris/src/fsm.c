@@ -2,35 +2,30 @@
 
 #include "../../../gui/cli/frontend.h"
 #include "../inc/backend.h"
-/*typedef enum {
-  MAIN_MENU,  // getch
-  START,      // getch
-  SPAWN,
-  MOVE,  // getch
-  SHIFT,
-  ATTACHING,
-  CHECK_DESTROY,
-  CHECK_GAME_OVER,
-  PAUSE,      // getch
-  GAME_OVER,  // getch
-  EXIT_BRO
-} State_t;
- * */
 
-void main_fsm(Game_Objects_t* game_params) {
+void main_fsm(Game_Objects_t* game_params, WINDOW* game_field,
+              WINDOW* info_field, WINDOW* next_field) {
   switch (game_params->state) {
     case MAIN_MENU:
+      // printw("MENU\n");
+      // getch();
+      draw_main(game_params, game_field, info_field, next_field);
       main_menu(game_params);
-      // main_fsm(game_params); !!! нельзя делать здесь, так как будет
+
+      // main_fsm(game_params, win); !!! нельзя делать здесь, так как будет
       // бесконечный цикл
       break;
     case START:
+      // nodelay(stdscr, true);
+
+      draw_main(game_params, game_field, info_field, next_field);
       onStart_state(game_params);
-      main_fsm(game_params);
+      main_fsm(game_params, game_field, info_field, next_field);
       break;
     case SPAWN:
+
       onSpawn(game_params);
-      main_fsm(game_params);
+      main_fsm(game_params, game_field, info_field, next_field);
       break;
     case MOVE:
       if (is_it_legal_mv(game_params->userAction) == OK_BRO)
@@ -40,8 +35,9 @@ void main_fsm(Game_Objects_t* game_params) {
       }
       if (game_params->time_to_shift == true) {
         game_params->state = SHIFT;
-        main_fsm(game_params);
+        main_fsm(game_params, game_field, info_field, next_field);
       }
+      draw_main(game_params, game_field, info_field, next_field);
 
       break;
     case SHIFT:
@@ -51,18 +47,11 @@ void main_fsm(Game_Objects_t* game_params) {
     case ATTACHING:
       onAttaching(game_params);
       break;
-    case CHECK_DESTROY:
-      onCheck_destroy(game_params);
-      break;
-    case DESTROY:
-      onDestroy_state(game_params);
-      break;
-    case CHECK_GAME_OVER:
-      onCheck_game_over(game_params);
-      break;
     case GAME_OVER:
       onGame_over(game_params);
-      if (game_params->userAction == Start) main_fsm(game_params);
+      draw_main(game_params, game_field, info_field, next_field);
+      if (game_params->userAction == Start)
+        main_fsm(game_params, game_field, info_field, next_field);
       break;
     case PAUSE:
       onPause_state(game_params);
@@ -81,6 +70,7 @@ void main_menu(Game_Objects_t* params) {
     case Start:
       params->state = START;
       params->gameInfo = init_empty_gameInfo();
+
       break;
     case Terminate:
       if (params->state == MAIN_MENU) params->state = EXIT_BRO;
@@ -106,10 +96,15 @@ void onStart_state(Game_Objects_t* params) {
 void onSpawn(Game_Objects_t* params) {
   switch (params->state) {
     case SPAWN:
+      printw("SPAWN STATE\n");
+      getch();
       params->tetraMinoBro = get_new_tetraMino(params->tetraMinoBro.next_type);
-      tetra_to_array(params->tetraMinoBro, params->gameInfo.next);
+      tetra_to_array(params->tetraMinoBro,
+                     params->tetraMinoBro.tmp_current_figure_on_field);
+
       int is_all_ok =
-          is_all_ok_bro(params->gameInfo.field, params->gameInfo.next);
+          is_all_ok_bro(params->gameInfo.field,
+                        params->tetraMinoBro.tmp_current_figure_on_field);
       if (is_all_ok == OK_BRO)
         params->state = MOVE;
       else
@@ -126,7 +121,8 @@ void onMoving_legal(Game_Objects_t* params) {
        params->userAction == Action) &&
       is_mv_possible == OK_BRO) {
     move_tetraMino(&params->tetraMinoBro, params->userAction);
-    tetra_to_array(params->tetraMinoBro, params->gameInfo.next);
+    tetra_to_array(params->tetraMinoBro,
+                   params->tetraMinoBro.tmp_current_figure_on_field);
   }
   if (is_it_legal_mv(params->userAction) == OK_BRO)
     params->userAction = NONE_ACTION;
@@ -135,10 +131,10 @@ void onMoving_legal(Game_Objects_t* params) {
 void onMoving_down(Game_Objects_t* params) {
   move_down_tetraMino(&params->tetraMinoBro);
   if (check_collision(params->tetraMinoBro, params->gameInfo.field) == ERROR) {
-    //    int c = check_collision(params->tetraMinoBro, params->gameInfo.field);
     params->state = ATTACHING;
   } else {
-    tetra_to_array(params->tetraMinoBro, params->gameInfo.next);
+    tetra_to_array(params->tetraMinoBro,
+                   params->tetraMinoBro.tmp_current_figure_on_field);
   };
   if (is_it_illegal_mv(params->userAction) == OK_BRO)
     params->userAction = NONE_ACTION;
@@ -156,8 +152,10 @@ void onAttaching(Game_Objects_t* params) {
   switch (params->state) {
     case ATTACHING:
       move_up_tetraMino(&params->tetraMinoBro);
-      tetra_to_array(params->tetraMinoBro, params->gameInfo.next);
-      next_to_field(params->gameInfo.next, params->gameInfo.field);
+      tetra_to_array(params->tetraMinoBro,
+                     params->tetraMinoBro.tmp_current_figure_on_field);
+      next_to_field(params->tetraMinoBro.tmp_current_figure_on_field,
+                    params->gameInfo.field);
 
       // TODO не забыть менять скорость
       game_mechanics(params);
@@ -171,47 +169,33 @@ void onAttaching(Game_Objects_t* params) {
 }
 
 void onGame_over(Game_Objects_t* params) {
-  render_simple(params);
-
   if (params->userAction == Start) {
     params->state = START;
-    deleteGame(&params->gameInfo);
+    deleteGame(&params->gameInfo, &params->tetraMinoBro);
   }
 }
 
 void onExit_state(Game_Objects_t* params) {
   switch (params->state) {}
 }
-void onCheck_destroy(Game_Objects_t* params) {
-  switch (params->state) {}
-}
-void onDestroy_state(Game_Objects_t* params) {
-  switch (params->state) {}
-}
-void onCheck_game_over(Game_Objects_t* params) {
-  switch (params->state) {}
-}
+
 void onPause_state(Game_Objects_t* params) {
   while (params->userAction != Start && params->userAction != Terminate) {
-#if curses_bro
     params->userAction = getSignal(getch());
     timeout(100000000);
-#else
-    params->userAction = getSignal(getchar());
-
-#endif
   }
   timeout(1);
 }
-void pause_bro(Game_Objects_t* params, State_t prev) {
+void pause_bro(Game_Objects_t* params, State_t prev, WINDOW* game_field,
+               WINDOW* info_field, WINDOW* next_field) {
   params->state = PAUSE;
-  main_fsm(params);
+  main_fsm(params, game_field, info_field, next_field);
   if (params->userAction != Terminate) {
     params->state = prev;
   } else {
     params->state = MAIN_MENU;
     params->userAction = NONE_ACTION;
-    deleteGame(&params->gameInfo);
+    deleteGame(&params->gameInfo, &params->tetraMinoBro);
   }
 }
 
@@ -237,39 +221,6 @@ UserAction_t getSignal(int user_input) {
   }
   return sig;
 }
-// void main_move(Game_Objects_t* params) {
-//   if (params->userAction == Up) {
-//     params->userAction = Down;
-//     while (params->state != ATTACHING) {
-//       move_brother(params);
-//     }
-//     params->state = MOVE;
-//   } else {
-//     move_brother(params);
-//   }
-//
-//   if (params->userAction != Start || params->userAction != Pause ||
-//       params->userAction != Terminate)
-//     params->userAction = NONE_ACTION;
-// }
-// void move_brother(Game_Objects_t* params) {
-//   int is_move_possible = can_i_move(params->tetraMinoBro,
-//                                     params->gameInfo.field,
-//                                     params->userAction);
-//
-//   if (is_it_board(params->gameInfo.next) == ERROR ||
-//       (params->userAction == Down && is_move_possible == ERROR)) {
-//     params->state = ATTACHING;
-//   } else if ((params->state == MOVE || params->state == SHIFT) &&
-//              is_move_possible == OK_BRO) {
-//     move_tetraMino(&params->tetraMinoBro, params->userAction);
-//     tetra_to_next(params->tetraMinoBro, params->gameInfo.next);
-//   }
-// }
-
-// void userInput(UserAction_t action) {
-//
-// }
 
 GameInfo_t updateCurrentState() {
   Game_Objects_t* current_params = get_game_instance();

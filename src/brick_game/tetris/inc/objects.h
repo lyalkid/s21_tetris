@@ -29,9 +29,6 @@ typedef enum {
   MOVE,  // getch
   SHIFT,
   ATTACHING,
-  CHECK_DESTROY,
-  CHECK_GAME_OVER,
-  DESTROY,
   PAUSE,      // getch
   GAME_OVER,  // getch
   EXIT_BRO
@@ -44,6 +41,7 @@ typedef struct {
   int center_x;
   int center_y;
   int coordinates[8];
+  int** tmp_current_figure_on_field;
 } TetraMino_bro;
 
 typedef struct {
@@ -52,8 +50,8 @@ typedef struct {
   int level;
   int speed;
   int pause;
-  int **field;
-  int **next;
+  int** field;
+  int** next;
 } GameInfo_t;
 
 typedef struct {
