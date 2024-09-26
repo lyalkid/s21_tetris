@@ -54,16 +54,16 @@ void render_game_win(WINDOW* win, int** field, int** next) {
     for (int j = 0; j < MY_COLS; j++) {
       int res = field[i][j] + next[i][j];
       if (res == 1) {
-        mvwprintw(win, i + 1, j + 1, "0 ");
+        mvwprintw(win, i + 1, j * 2 + 1, "0 ");
         //   refresh();
 
       } else if (res > 1) {
-        mvwprintw(win, i + 1, j + 1, "# ");
+        mvwprintw(win, i + 1, j * 2 + 1, "# ");
 
         // refresh();
 
       } else {
-        mvwprintw(win, i + 1, j + 1, ". ");
+        mvwprintw(win, i + 1, j * 2 + 1, ". ");
 
         // refresh();
       }
