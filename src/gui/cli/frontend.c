@@ -157,7 +157,7 @@ void render_next_win(WINDOW* next_win, TetraMino_bro tetraMinoBro) {
     }
   }
   box(next_win, 0, 0);
-//  mvprintw(NEXT_X, NEXT_Y, "%d, %d", NEXT_Y, NEXT_X);
+  //  mvprintw(NEXT_X, NEXT_Y, "%d, %d", NEXT_Y, NEXT_X);
 
   wrefresh(next_win);
   refresh();
