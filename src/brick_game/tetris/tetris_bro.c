@@ -12,16 +12,14 @@ int main() {
   get_random();
   init_bro_ncurses();
 
-  game_field = newwin(MY_ROWS + 2, MY_COLS * 2 + 2, 0, 0);
-  info_game = newwin(INFO_FIELD + 2, INFO_FIELD + 2, 0, MY_COLS * 2 + 2);
-  next_tetraMino =
-      newwin(NEXT_FIELD + 2, NEXT_FIELD + 2, INFO_FIELD + 2, MY_COLS * 2 + 2);
+  game_field = newwin(FIELD_Y, FIELD_X, 0, 0);
+  info_game = newwin(INFO_Y, INFO_X, 0, FIELD_X);
+  next_tetraMino = newwin(NEXT_Y, NEXT_X, INFO_Y, FIELD_X);
   refresh();
   box(game_field, 0, 0);
   box(info_game, 0, 0);
   box(next_tetraMino, 0, 0);
 
-  mvwprintw(game_field, MY_ROWS / 2, MY_COLS / 2, "PAUSE BRO");
   // wgetch(game_field);
   wrefresh(game_field);
   wrefresh(info_game);

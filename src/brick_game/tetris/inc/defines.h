@@ -4,8 +4,17 @@
 #define MY_ROWS 20
 #define MY_COLS 10
 
-#define NEXT_FIELD 5
+#define FIELD_Y MY_ROWS + 2
+#define FIELD_X MY_COLS * 2 + 2
+
+#define NEXT_FIELD 10
 #define INFO_FIELD 5
+
+#define INFO_X INFO_FIELD * 2 + 2
+#define INFO_Y INFO_FIELD + 2
+
+#define NEXT_X NEXT_FIELD * 2 + 2
+#define NEXT_Y NEXT_FIELD + 2
 
 #include <ncurses.h>
 #include <stdio.h>

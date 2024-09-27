@@ -7,8 +7,6 @@ void main_fsm(Game_Objects_t* game_params, WINDOW* game_field,
               WINDOW* info_field, WINDOW* next_field) {
   switch (game_params->state) {
     case MAIN_MENU:
-      // printw("MENU\n");
-      // getch();
       draw_main(game_params, game_field, info_field, next_field);
       main_menu(game_params);
 
@@ -96,8 +94,6 @@ void onStart_state(Game_Objects_t* params) {
 void onSpawn(Game_Objects_t* params) {
   switch (params->state) {
     case SPAWN:
-      printw("SPAWN STATE\n");
-      getch();
       params->tetraMinoBro = get_new_tetraMino(params->tetraMinoBro.next_type);
       tetra_to_array(params->tetraMinoBro,
                      params->tetraMinoBro.tmp_current_figure_on_field);
@@ -189,6 +185,7 @@ void onPause_state(Game_Objects_t* params) {
 void pause_bro(Game_Objects_t* params, State_t prev, WINDOW* game_field,
                WINDOW* info_field, WINDOW* next_field) {
   params->state = PAUSE;
+  draw_main(params, game_field, info_field, next_field);
   main_fsm(params, game_field, info_field, next_field);
   if (params->userAction != Terminate) {
     params->state = prev;
