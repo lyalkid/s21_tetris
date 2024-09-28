@@ -162,6 +162,10 @@ void render_next_win(WINDOW* next_win, TetraMino_bro tetraMinoBro) {
 }
 void render_info_win(WINDOW* info_win, int h_score, int score, int level,
                      int speed) {
+  werase(info_win);
+  mvwprintw(info_win, 1, 1, "high_score:%d", h_score);
+  mvwprintw(info_win, 2, 1, "score:%d", score);
+
   box(info_win, 0, 0);
   wrefresh(info_win);
   refresh();

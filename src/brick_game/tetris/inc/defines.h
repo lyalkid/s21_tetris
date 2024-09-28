@@ -8,7 +8,7 @@
 #define FIELD_X MY_COLS * 2 + 2
 
 #define NEXT_FIELD 10
-#define INFO_FIELD 5
+#define INFO_FIELD 10
 
 #define INFO_X INFO_FIELD * 2 + 2
 #define INFO_Y INFO_FIELD + 2
