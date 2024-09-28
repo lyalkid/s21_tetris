@@ -1,18 +1,17 @@
 #include "frontend.h"
-void draw_main(Game_Objects_t* gameObjects, WINDOW* game_field,
-               WINDOW* info_field, WINDOW* next_field) {
-  // printw_state(gameObjects->state);
-  switch (gameObjects->state) {
+void draw_main(Game_Objects_t* params, WINDOW* game_field, WINDOW* info_field,
+               WINDOW* next_field) {
+  switch (params->state) {
     case MAIN_MENU:
 
-      print_main_menu(gameObjects, game_field);
+      print_main_menu(game_field);
       wrefresh(info_field);
       wrefresh(next_field);
 
       break;
     case GAME_OVER:
       clear();
-      game_over(gameObjects->gameInfo.score, gameObjects->gameInfo.level);
+      game_over(params->gameInfo.score, params->gameInfo.level);
       break;
 
     case PAUSE:
@@ -21,17 +20,15 @@ void draw_main(Game_Objects_t* gameObjects, WINDOW* game_field,
       break;
     case SPAWN:
 
-      render_next_win(next_field,
-                      get_new_tetraMino(gameObjects->tetraMinoBro.next_type));
+      render_next_win(next_field, params->tetraMinoBro.next_type);
 
       break;
     default:
-      render_game_win(game_field, gameObjects->gameInfo.field,
-                      gameObjects->tetraMinoBro.tmp_current_figure_on_field);
+      render_game_win(game_field, params->gameInfo.field,
+                      params->tetraMinoBro.tmp_current_figure_on_field);
 
-      render_info_win(info_field, gameObjects->gameInfo.high_score,
-                      gameObjects->gameInfo.score, gameObjects->gameInfo.level,
-                      gameObjects->gameInfo.speed);
+      render_info_win(info_field, params->gameInfo.high_score,
+                      params->gameInfo.score);
 
       break;
   }
@@ -139,16 +136,17 @@ void render_game_win(WINDOW* win, int** field, int** next) {
   refresh();
 }
 
-void render_next_win(WINDOW* next_win, TetraMino_bro tetraMinoBro) {
+void render_next_win(WINDOW* next_win, int type) {
   werase(next_win);
-
+  int coordinates[8] = {};
+  get_TetraMino(coordinates, COMPLETE, type);
   for (int i = 0; i < 8; i += 2) {
-    int x = tetraMinoBro.coordinates[i] + tetraMinoBro.center_x + 4;
-    int y = tetraMinoBro.coordinates[i + 1] + tetraMinoBro.center_y + 4;
+    int x = coordinates[i] + 1 + 4;
+    int y = coordinates[i + 1] + 4 + 4;
     if (x < 1 || x > NEXT_X || y > NEXT_Y || y < 1) {
       mvwprintw(next_win, 1, 1,
                 "smth wrong\n x:%d\n y:%d\n center_x:%d\n center_y:%d\n", x, y,
-                tetraMinoBro.center_x, tetraMinoBro.center_y);
+                1, 4);
       //      break;
     } else {
       mvwprintw(next_win, y, x, "0 ");
@@ -160,8 +158,7 @@ void render_next_win(WINDOW* next_win, TetraMino_bro tetraMinoBro) {
   wrefresh(next_win);
   refresh();
 }
-void render_info_win(WINDOW* info_win, int h_score, int score, int level,
-                     int speed) {
+void render_info_win(WINDOW* info_win, int h_score, int score) {
   werase(info_win);
   mvwprintw(info_win, 1, 1, "high_score:%d", h_score);
   mvwprintw(info_win, 2, 1, "score:%d", score);
@@ -220,7 +217,7 @@ void render_pause(WINDOW* game_win) {
 //   //  refresh();
 // }
 
-void print_main_menu(Game_Objects_t* gameObjects, WINDOW* game_field) {
+void print_main_menu(WINDOW* game_field) {
   werase(game_field);
   mvwprintw(game_field, 1, 1, "HELLO BRO");
   box(game_field, 0, 0);
@@ -235,8 +232,6 @@ void game_over(int score, int level) {
   printw("\n");
   for (int i = 0; i < MY_ROWS; i++) {
     for (int j = 0; j < MY_COLS; j++) {
-      int res = 0;
-
       if (i == MY_ROWS / 2 && j == MY_COLS / 2) {
         printw("Game Over");
         i += 9;

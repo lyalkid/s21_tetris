@@ -25,6 +25,8 @@
 #include <unistd.h>
 #define TIME 2000000
 
+#define TETR_L "###\n  #"d
+
 #define ESCAPE 27
 #define ENTER_KEY 10
 #define SPACE 32

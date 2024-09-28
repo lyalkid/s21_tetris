@@ -43,7 +43,7 @@ void game_loop(WINDOW* game_field, WINDOW* info_game, WINDOW* next_tetraMino) {
     if (gameObjects->state == MOVE || gameObjects->state == MAIN_MENU ||
         gameObjects->state == GAME_OVER) {
       key = getch();
-      nodelay(stdscr, true);
+
       if (key != -1) gameObjects->userAction = getSignal(key);
       if (gameObjects->userAction == Pause) {
         pause_bro(gameObjects, gameObjects->state, game_field, info_game,
@@ -56,10 +56,6 @@ void game_loop(WINDOW* game_field, WINDOW* info_game, WINDOW* next_tetraMino) {
     if (is_time_to_shift(gameObjects->before, gameObjects->after,
                          gameObjects->timer)) {
       gameObjects->time_to_shift = true;
-    }
-
-    if (gameObjects->state == EXIT_BRO || key == 'q') {
-      gameObjects->game_is_running = false;
     }
   }
 }

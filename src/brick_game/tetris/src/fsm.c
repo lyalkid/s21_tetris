@@ -100,7 +100,7 @@ int onSpawn(Game_Objects_t* params) {
   int is_all_ok = OK_BRO;
   switch (params->state) {
     case SPAWN:
-      params->tetraMinoBro = get_new_tetraMino(params->tetraMinoBro.next_type);
+      get_new_tetraMino(&params->tetraMinoBro);
       tetra_to_array(params->tetraMinoBro,
                      params->tetraMinoBro.tmp_current_figure_on_field);
 
@@ -179,7 +179,8 @@ void onGame_over(Game_Objects_t* params) {
 }
 
 void onExit_state(Game_Objects_t* params) {
-  switch (params->state) {}
+  params->game_is_running = false;
+  deleteGame(&params->gameInfo, &params->tetraMinoBro);
 }
 
 void onPause_state(Game_Objects_t* params) {
