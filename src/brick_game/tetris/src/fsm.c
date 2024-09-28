@@ -22,7 +22,12 @@ void main_fsm(Game_Objects_t* game_params, WINDOW* game_field,
       break;
     case SPAWN:
 
-      onSpawn(game_params);
+      int is_all_ok = onSpawn(game_params);
+      draw_main(game_params, game_field, info_field, next_field);
+      if (is_all_ok == OK_BRO)
+        game_params->state = MOVE;
+      else
+        game_params->state = GAME_OVER;
       main_fsm(game_params, game_field, info_field, next_field);
       break;
     case MOVE:
@@ -91,24 +96,23 @@ void onStart_state(Game_Objects_t* params) {
   }
 }
 
-void onSpawn(Game_Objects_t* params) {
+int onSpawn(Game_Objects_t* params) {
+  int is_all_ok = OK_BRO;
   switch (params->state) {
     case SPAWN:
       params->tetraMinoBro = get_new_tetraMino(params->tetraMinoBro.next_type);
       tetra_to_array(params->tetraMinoBro,
                      params->tetraMinoBro.tmp_current_figure_on_field);
 
-      int is_all_ok =
+      is_all_ok =
           is_all_ok_bro(params->gameInfo.field,
                         params->tetraMinoBro.tmp_current_figure_on_field);
-      if (is_all_ok == OK_BRO)
-        params->state = MOVE;
-      else
-        params->state = GAME_OVER;
+
       break;
     default:
       break;
   }
+  return is_all_ok;
 }
 void onMoving_legal(Game_Objects_t* params) {
   int is_mv_possible = can_i_move(params->tetraMinoBro, params->gameInfo.field,

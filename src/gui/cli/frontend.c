@@ -20,17 +20,15 @@ void draw_main(Game_Objects_t* gameObjects, WINDOW* game_field,
       render_pause(game_field);
       break;
     case SPAWN:
+
       render_next_win(next_field,
                       get_new_tetraMino(gameObjects->tetraMinoBro.next_type));
 
       break;
     default:
-      // nodelay(stdscr, TRUE);
-      // clear();
       render_game_win(game_field, gameObjects->gameInfo.field,
                       gameObjects->tetraMinoBro.tmp_current_figure_on_field);
-      render_next_win(next_field,
-                      get_new_tetraMino(gameObjects->tetraMinoBro.next_type));
+
       render_info_win(info_field, gameObjects->gameInfo.high_score,
                       gameObjects->gameInfo.score, gameObjects->gameInfo.level,
                       gameObjects->gameInfo.speed);
@@ -145,15 +143,15 @@ void render_next_win(WINDOW* next_win, TetraMino_bro tetraMinoBro) {
   werase(next_win);
 
   for (int i = 0; i < 8; i += 2) {
-    int x = tetraMinoBro.coordinates[i] + tetraMinoBro.center_x;
-    int y = tetraMinoBro.coordinates[i + 1] + tetraMinoBro.center_y;
+    int x = tetraMinoBro.coordinates[i] + tetraMinoBro.center_x + 4;
+    int y = tetraMinoBro.coordinates[i + 1] + tetraMinoBro.center_y + 4;
     if (x < 1 || x > NEXT_X || y > NEXT_Y || y < 1) {
       mvwprintw(next_win, 1, 1,
                 "smth wrong\n x:%d\n y:%d\n center_x:%d\n center_y:%d\n", x, y,
                 tetraMinoBro.center_x, tetraMinoBro.center_y);
       //      break;
     } else {
-      mvwprintw(next_win, 1, 1, "0 ");
+      mvwprintw(next_win, y, x, "0 ");
     }
   }
   box(next_win, 0, 0);

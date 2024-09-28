@@ -8,7 +8,7 @@ void main_fsm(Game_Objects_t* game_params, WINDOW* game_field,
 
 void main_menu(Game_Objects_t* params);
 void onStart_state(Game_Objects_t* params);
-void onSpawn(Game_Objects_t* params);
+int onSpawn(Game_Objects_t* params);
 void onMoving_legal(Game_Objects_t* params);
 void onMoving_down(Game_Objects_t* params);
 
