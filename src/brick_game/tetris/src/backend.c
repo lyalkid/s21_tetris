@@ -466,7 +466,7 @@ void write_high_score(int h_score) {
   int size = 1000;
   char buffer[size];
 
-  FILE* fp = fopen(filename, "r");
+  FILE* fp = fopen(filename, "w");
   if (fp) {
     sprintf(buffer, "%d", h_score);
     fputs(buffer, fp);
