@@ -1,12 +1,13 @@
-TETRIS_LIB = brick_game/tetris/lib/tetris.a
 CC = gcc
-CFLAGS = -c  #-Wall -Werror -Wextra -std=c11
-LDFLAGS = #-Wall -Werror -Wextra -std=c11
-SOURCE=$(wildcard brick_game/tetris/*.c brick_game/tetris/src/*.c gui/cli/*.c)
+CFLAGS = -c  -Wall -Werror -Wextra -std=c11
+LDFLAGS = -Wall -Werror -Wextra -std=c11
+
 HEADERS=$(wildcard brick_game/tetris/inc/*.h gui/cli/*.h)
 UNAME_S := $(shell uname -s)
 BIN = brick_game/tetris/bin
-
+BACK = $(wildcard brick_game/tetris/*.c brick_game/tetris/src/*.c)
+FRONT = $(wildcard gui/cli/*.c)
+OBJ = brick_game/tetris/obj
 
 ifeq ($(UNAME_S),Linux)
   	OPEN_CMD = xdg-open
@@ -17,32 +18,35 @@ ifeq ($(UNAME_S),Darwin)
 	ADD_LIB = -lncurses
 endif
 
-all: s21_tetris.a
+all: intstall
 
-run: style s21_tetris.a
-	gcc  $(TETRIS_LIB) -o $(BIN)/tetris $(ADD_LIB) && $(BIN)/tetris 
+intstall: style tetris
+	mkdir $(BIN)
+	$(CC) $(OBJ)/*.o -o $(BIN)/tetris -lncurses
+
+tetris:
+	mkdir $(OBJ)
+	$(CC) $(CFLAGS)  $(BACK) $(FRONT) $(ADD_LIB)
+	mv *.o $(OBJ)
+
+run: clean intstall
+	$(BIN)/tetris 
 
 sanitize:
-	gcc  $(SOURCE) -g -fsanitize=address -o $(BIN)/tetris $(ADD_LIB) && $(BIN)/tetris 
-
-s21_tetris.a: $(SOURCE)
-	$(CC) $(CFLAGS)  $(SOURCE) $(ADD_LIB)
-	ar rc $(TETRIS_LIB) *.o 
-	ranlib $(TETRIS_LIB)
-	-rm -rf *.o
+	gcc  $(BACK) $(FRONT) -g -fsanitize=address -o $(BIN)/tetris $(ADD_LIB) && $(BIN)/tetris 
 
 
 clean:
 	clear
-	rm -rf *.o $(BIN)/tetris $(TETRIS_LIB) *.out
+	rm -rf *.o $(BIN) $(TETRIS_LIB) $(OBJ) *.out *.o
 
 
-rebuild: clean run
+rebuild: clean all
 
 style_test:
-	clang-format --style=Google -n $(SOURCE) $(HEADERS)
+	clang-format --style=Google -n $(BACK) $(FRONT) $(HEADERS)
 style:
-	clang-format --style=Google -i $(SOURCE) $(HEADERS)
+	clang-format --style=Google -i $(BACK) $(FRONT) $(HEADERS)
 
 valgrind:
 	valgrind --tool=memcheck --leak-check=yes ./$(BIN)/tetris	
