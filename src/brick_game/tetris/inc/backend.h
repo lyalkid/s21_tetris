@@ -25,10 +25,10 @@ TetraMino_bro init_empty_tetraMino();
 GameInfo_t init_empty_gameInfo();
 void deleteGame(GameInfo_t *gameInfo, TetraMino_bro *tetraMino);
 Game_Objects_t init_empty_game_objects();
-void get_TetraMino(TetraMino_bro *tetraMinoBro);
-void get_tetra_two(TetraMino_bro *tetraminoBro);
-void get_tetra_four(TetraMino_bro *tetraMinoBro);
-TetraMino_bro get_new_tetraMino(int type);
+void get_TetraMino(int coordinates[], int rotate, int type);
+void get_tetra_two(int coordinates[], int rotate, int type);
+void get_tetra_four(int coordinates[], int rotate, int type);
+void get_new_tetraMino(TetraMino_bro *tetraMinoBro);
 void setCoordinates(int *coordinates, const int *values);
 
 void tetra_to_array(TetraMino_bro tetraMinoBro, int **next);
