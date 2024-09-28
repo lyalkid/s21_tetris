@@ -46,6 +46,7 @@ void rotate_TetraMino(TetraMino_bro *tetraMinoBro);
 
 int get_random();
 int get_highScore();
+void write_high_score(int h_score);
 int next_to_field(int **next, int **field);
 
 Game_Objects_t *get_game_instance();

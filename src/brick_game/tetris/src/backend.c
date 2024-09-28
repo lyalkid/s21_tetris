@@ -443,21 +443,36 @@ int is_rotate_possible(TetraMino_bro tetraMinoBro, int rotate) {
 int get_random() { return ((rand() % 7)); }
 
 int get_highScore() {
-  return 100;
-  //    char* filename = "highscore.txt";
-  //    char c;
-  //    FILE* fp = fopen(filename, "r");
-  //
-  //    if(fp)
-  //    {
-  //        // считываем посимвольно из файла
-  //        while((c=getc(fp))!= EOF)
-  //        {
-  //            printf("%c", c);
-  //        }
-  //        fclose(fp);
-  //    }
+  int h_score = 0;
+  // return 100;
+  char* filename = "highscore.txt";
+  int size = 1000;
+  // буфер для считавания данных из файла
+  char buffer[size];
+  // чтение из файла
+  FILE* fp = fopen(filename, "r");
+  if (fp) {
+    // пока не дойдем до конца, считываем по 256 байт
+    fgets(buffer, size, fp);
+    h_score = atoi(buffer);
+    fclose(fp);
+  }
+  return h_score;
 };
+
+void write_high_score(int h_score) {
+  char* filename = "highscore.txt";
+
+  int size = 1000;
+  char buffer[size];
+
+  FILE* fp = fopen(filename, "r");
+  if (fp) {
+    sprintf(buffer, "%d", h_score);
+    fputs(buffer, fp);
+    fclose(fp);
+  }
+}
 
 int next_to_field(int** next, int** field) {
   int is_all_ok = is_all_ok_bro(field, next);

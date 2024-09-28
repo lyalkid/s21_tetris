@@ -169,6 +169,9 @@ void onAttaching(Game_Objects_t* params) {
 }
 
 void onGame_over(Game_Objects_t* params) {
+  int current_score = params->gameInfo.score;
+  int h_score_in_file = get_highScore();
+  if (current_score > h_score_in_file) write_high_score(current_score);
   if (params->userAction == Start) {
     params->state = START;
     deleteGame(&params->gameInfo, &params->tetraMinoBro);
