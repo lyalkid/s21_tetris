@@ -34,7 +34,7 @@ s21_tetris.a: $(SOURCE)
 
 clean:
 	clear
-	rm -rf *.o $(BIN)/tetris $(TETRIS_LIB)/tetris.a  *.out
+	rm -rf *.o $(BIN)/tetris $(TETRIS_LIB) *.out
 
 
 rebuild: clean run
