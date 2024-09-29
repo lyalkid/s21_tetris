@@ -4,67 +4,60 @@
 #include "../inc/backend.h"
 
 #ifndef debug_bro
-void main_fsm(Game_Objects_t* game_params, WINDOW* game_field,
-              WINDOW* info_field, WINDOW* next_field) {
+void main_fsm(Game_Objects_t* params, WINDOW* game_field, WINDOW* info_field,
+              WINDOW* next_field) {
   int is_all_ok = OK_BRO;
-  switch (game_params->state) {
+  switch (params->state) {
     case MAIN_MENU:
-      draw_main(game_params, game_field, info_field, next_field);
-      main_menu(game_params);
+      draw_main(params, game_field, info_field, next_field);
+      main_menu(params);
 
-      // main_fsm(game_params, win); !!! нельзя делать здесь, так как будет
+      // main_fsm(params, win); !!! нельзя делать здесь, так как будет
       // бесконечный цикл
       break;
     case START:
       // nodelay(stdscr, true);
 
-      draw_main(game_params, game_field, info_field, next_field);
-      onStart_state(game_params);
-      main_fsm(game_params, game_field, info_field, next_field);
+      draw_main(params, game_field, info_field, next_field);
+      onStart_state(params);
+      main_fsm(params, game_field, info_field, next_field);
       break;
     case SPAWN:
-      is_all_ok = onSpawn(game_params);
-      draw_main(game_params, game_field, info_field, next_field);
-      if (is_all_ok == OK_BRO)
-        game_params->state = MOVE;
-      else
-        game_params->state = GAME_OVER;
-      main_fsm(game_params, game_field, info_field, next_field);
+      is_all_ok = onSpawn(params);
+      if (is_all_ok == OK_BRO) {
+        params->state = MOVE;
+        draw_main(params, game_field, info_field, next_field);
+      } else {
+        params->state = GAME_OVER;
+      }
+      // main_fsm(params, game_field, info_field, next_field);
       break;
     case MOVE:
-      if (is_it_legal_mv(game_params->userAction) == OK_BRO)
-        onMoving_legal(game_params);
-      if (is_it_illegal_mv(game_params->userAction) == OK_BRO) {
-        onMoving_down(game_params);
-      }
-      if (game_params->time_to_shift == true) {
-        game_params->state = SHIFT;
-        main_fsm(game_params, game_field, info_field, next_field);
-      }
-      draw_main(game_params, game_field, info_field, next_field);
+      onMoving(params, game_field, info_field, next_field);
+      if (params->state == MOVE)
+        draw_main(params, game_field, info_field, next_field);
 
       break;
     case SHIFT:
-      onShifting(game_params);
-      if (game_params->state != ATTACHING) game_params->state = MOVE;
+      if (onShifting(params) != ATTACHING) params->state = MOVE;
       break;
     case ATTACHING:
-      onAttaching(game_params);
+      onAttaching(params);
       break;
     case GAME_OVER:
-      onGame_over(game_params);
-      draw_main(game_params, game_field, info_field, next_field);
-      if (game_params->userAction == Start)
-        main_fsm(game_params, game_field, info_field, next_field);
+      onGame_over(params);
+      draw_main(params, game_field, info_field, next_field);
+      if (params->userAction == Start)
+        main_fsm(params, game_field, info_field, next_field);
       break;
     case PAUSE:
-      onPause_state(game_params);
+      onPause_state(params);
       break;
     case EXIT_BRO:
-      onExit_state(game_params);
+      onExit_state(params);
       break;
     default:
-      onStart_state(game_params);
+      onStart_state(params);
       break;
   }
 }
@@ -115,6 +108,24 @@ int onSpawn(Game_Objects_t* params) {
   }
   return is_all_ok;
 }
+
+void onMoving(Game_Objects_t* params, WINDOW* game_field, WINDOW* info_field,
+              WINDOW* next_field) {
+  if (params->userAction == Terminate) {
+    params->state = MAIN_MENU;
+    reset_game(&params->gameInfo, &params->tetraMinoBro);
+  } else {
+    if (is_it_legal_mv(params->userAction) == OK_BRO) onMoving_legal(params);
+    if (is_it_illegal_mv(params->userAction) == OK_BRO) {
+      onMoving_down(params);
+    }
+    if (params->time_to_shift == true) {
+      params->state = SHIFT;
+      main_fsm(params, game_field, info_field, next_field);
+    }
+  }
+}
+
 void onMoving_legal(Game_Objects_t* params) {
   int is_mv_possible = can_i_move(params->tetraMinoBro, params->gameInfo.field,
                                   params->userAction);
@@ -141,13 +152,14 @@ void onMoving_down(Game_Objects_t* params) {
     params->userAction = NONE_ACTION;
 }
 
-void onShifting(Game_Objects_t* params) {
+State_t onShifting(Game_Objects_t* params) {
   if (params->time_to_shift == true) {
     params->userAction = Down;
     onMoving_down(params);
     params->time_to_shift = false;
     gettimeofday(&params->before, NULL);
   }
+  return params->state;
 }
 void onAttaching(Game_Objects_t* params) {
   switch (params->state) {

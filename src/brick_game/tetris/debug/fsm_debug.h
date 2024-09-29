@@ -10,8 +10,9 @@ void onStart_state(Game_Objects_t* params);
 int onSpawn(Game_Objects_t* params);
 void onMoving_legal(Game_Objects_t* params);
 void onMoving_down(Game_Objects_t* params);
+void onMoving(Game_Objects_t* params);
 
-void onShifting(Game_Objects_t* params);
+State_t onShifting(Game_Objects_t* params);
 void onAttaching(Game_Objects_t* params);
 void onGame_over(Game_Objects_t* params);
 void onExit_state(Game_Objects_t* params);

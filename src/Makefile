@@ -60,9 +60,9 @@ redebug: clean debug
 
 
 style_test:
-	clang-format --style=Google -n $(BACK) $(FRONT) $(HEADERS)
+	clang-format --style=Google -n $(BACK) $(FRONT) $(DEB) $(HEADERS)
 style:
-	clang-format --style=Google -i $(BACK) $(FRONT) $(HEADERS)
+	clang-format --style=Google -i $(BACK) $(FRONT) $(DEB) $(HEADERS)
 
 valgrind:
 	valgrind --tool=memcheck --leak-check=yes ./$(BIN)/tetris	
