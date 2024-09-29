@@ -175,7 +175,7 @@ void onGame_over(Game_Objects_t* params) {
   if (current_score > h_score_in_file) write_high_score(current_score);
   if (params->userAction == Start) {
     params->state = START;
-    deleteGame(&params->gameInfo, &params->tetraMinoBro);
+    reset_game(&params->gameInfo, &params->tetraMinoBro);
   }
 }
 
@@ -201,7 +201,7 @@ void pause_bro(Game_Objects_t* params, State_t prev, WINDOW* game_field,
   } else {
     params->state = MAIN_MENU;
     params->userAction = NONE_ACTION;
-    deleteGame(&params->gameInfo, &params->tetraMinoBro);
+    reset_game(&params->gameInfo, &params->tetraMinoBro);
   }
 }
 

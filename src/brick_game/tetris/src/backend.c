@@ -10,9 +10,17 @@ int** malloc_array(int rows, int cols) {
 
 void free_array(int** field, int rows) {
   for (int i = 0; i < rows; i++) {
-    free(field[i]);
+    if (field[i] != NULL) free(field[i]);
   }
-  free(field);
+  if (field != NULL) free(field);
+}
+
+void null_array(int** field, int rows, int cols) {
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      field[i][j] = 0;
+    }
+  }
 }
 
 int can_i_move(TetraMino_bro tetraMino, int** field, UserAction_t key) {
@@ -532,7 +540,14 @@ void deleteGame(GameInfo_t* gameInfo, TetraMino_bro* tetraMino) {
   free_array(gameInfo->next, NEXT_FIELD);
   free_array(tetraMino->tmp_current_figure_on_field, MY_ROWS);
 }
-
+void reset_game(GameInfo_t* gameInfo, TetraMino_bro* tetraMino) {
+  gameInfo->level = 0;
+  gameInfo->speed = 0;
+  gameInfo->score = 0;
+  null_array(gameInfo->field, MY_ROWS, MY_COLS);
+  null_array(gameInfo->next, NEXT_FIELD, NEXT_FIELD);
+  null_array(tetraMino->tmp_current_figure_on_field, MY_ROWS, MY_COLS);
+}
 Game_Objects_t init_empty_game_objects() {
   Game_Objects_t gameObjects = {0};
   gettimeofday(&gameObjects.before, NULL);
