@@ -26,11 +26,13 @@ intstall: style tetris
 	$(CC) $(OBJ)/*.o -o $(BIN)/tetris -lncurses
 
 deb_tetris:
+	test -f highscore.txt || touch highscore.txt
 	mkdir $(OBJ)
 	$(CC) $(CFLAGS) -Ddebug_bro  $(BACK) $(DEB) $(ADD_LIB)
 	mv *.o $(OBJ)
 
 tetris:
+	test -f highscore.txt || touch highscore.txt
 	mkdir $(OBJ)
 	$(CC) $(CFLAGS)  $(BACK) $(FRONT) $(ADD_LIB)
 	mv *.o $(OBJ)
