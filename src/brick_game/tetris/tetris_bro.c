@@ -1,15 +1,23 @@
 
 
-#include "../../gui/cli/frontend.h"
 #include "inc/backend.h"
-#include "inc/fsm.h"
 
+#ifndef debug_bro
+#include "../../gui/cli/frontend.h"
+#include "inc/fsm.h"
 void game_loop(WINDOW* game_field, WINDOW* info_game, WINDOW* next_tetraMino);
+#else
+#include "debug/fsm_debug.h"
+#endif
+
+void game_loop();
 
 int main() {
-  WINDOW *game_field, *info_game, *next_tetraMino;
   srand(time(0));
   get_random();
+#ifndef debug_bro
+  WINDOW *game_field, *info_game, *next_tetraMino;
+
   init_bro_ncurses();
 
   game_field = newwin(FIELD_Y, FIELD_X, 0, 0);
@@ -28,9 +36,12 @@ int main() {
 
   game_loop(game_field, info_game, next_tetraMino);
   terminate_ncurses_bro(game_field, info_game, next_tetraMino);
+#else
+  game_loop();
+#endif
   return 0;
 }
-
+#ifndef debug_bro
 void game_loop(WINDOW* game_field, WINDOW* info_game, WINDOW* next_tetraMino) {
   Game_Objects_t* gameObjects = get_game_instance();
   *gameObjects = init_empty_game_objects();
@@ -59,3 +70,33 @@ void game_loop(WINDOW* game_field, WINDOW* info_game, WINDOW* next_tetraMino) {
     }
   }
 }
+
+#else
+void game_loop() {
+  Game_Objects_t* gameObjects = get_game_instance();
+  *gameObjects = init_empty_game_objects();
+  gettimeofday(&gameObjects->before, NULL);
+  char key = 'n';
+
+  while (gameObjects->game_is_running == true) {
+    main_fsm(gameObjects);
+
+    if (gameObjects->state == MOVE || gameObjects->state == MAIN_MENU ||
+        gameObjects->state == GAME_OVER) {
+      key = getchar();
+
+      if (key != -1) gameObjects->userAction = getSignal(key);
+      if (gameObjects->userAction == Pause) {
+        pause_bro(gameObjects, gameObjects->state);
+      }
+    }
+
+    gettimeofday(&gameObjects->after, NULL);
+
+    if (is_time_to_shift(gameObjects->before, gameObjects->after,
+                         gameObjects->timer)) {
+      gameObjects->time_to_shift = true;
+    }
+  }
+}
+#endif

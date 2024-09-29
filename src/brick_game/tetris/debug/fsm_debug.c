@@ -1,70 +1,73 @@
-#include "../inc/fsm.h"
+#include "fsm_debug.h"
 
-#include "../../../gui/cli/frontend.h"
 #include "../inc/backend.h"
+#include "front_debug.h"
 
-#ifndef debug_bro
-void main_fsm(Game_Objects_t* game_params, WINDOW* game_field,
-              WINDOW* info_field, WINDOW* next_field) {
+#ifdef debug_bro
+void main_fsm(Game_Objects_t* params) {
   int is_all_ok = OK_BRO;
-  switch (game_params->state) {
+  switch (params->state) {
     case MAIN_MENU:
-      draw_main(game_params, game_field, info_field, next_field);
-      main_menu(game_params);
 
-      // main_fsm(game_params, win); !!! нельзя делать здесь, так как будет
+      draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
+
+      main_menu(params);
+
+      // main_fsm(params, win); !!! нельзя делать здесь, так как будет
       // бесконечный цикл
       break;
     case START:
       // nodelay(stdscr, true);
 
-      draw_main(game_params, game_field, info_field, next_field);
-      onStart_state(game_params);
-      main_fsm(game_params, game_field, info_field, next_field);
+      draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
+
+      onStart_state(params);
+      main_fsm(params);
       break;
     case SPAWN:
-      is_all_ok = onSpawn(game_params);
-      draw_main(game_params, game_field, info_field, next_field);
+
+      is_all_ok = onSpawn(params);
+      draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
+
       if (is_all_ok == OK_BRO)
-        game_params->state = MOVE;
+        params->state = MOVE;
       else
-        game_params->state = GAME_OVER;
-      main_fsm(game_params, game_field, info_field, next_field);
+        params->state = GAME_OVER;
+      main_fsm(params);
       break;
     case MOVE:
-      if (is_it_legal_mv(game_params->userAction) == OK_BRO)
-        onMoving_legal(game_params);
-      if (is_it_illegal_mv(game_params->userAction) == OK_BRO) {
-        onMoving_down(game_params);
+      if (is_it_legal_mv(params->userAction) == OK_BRO) onMoving_legal(params);
+      if (is_it_illegal_mv(params->userAction) == OK_BRO) {
+        onMoving_down(params);
       }
-      if (game_params->time_to_shift == true) {
-        game_params->state = SHIFT;
-        main_fsm(game_params, game_field, info_field, next_field);
+      if (params->time_to_shift == true) {
+        params->state = SHIFT;
+        main_fsm(params);
       }
-      draw_main(game_params, game_field, info_field, next_field);
+      draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
 
       break;
     case SHIFT:
-      onShifting(game_params);
-      if (game_params->state != ATTACHING) game_params->state = MOVE;
+      onShifting(params);
+      if (params->state != ATTACHING) params->state = MOVE;
       break;
     case ATTACHING:
-      onAttaching(game_params);
+      onAttaching(params);
       break;
     case GAME_OVER:
-      onGame_over(game_params);
-      draw_main(game_params, game_field, info_field, next_field);
-      if (game_params->userAction == Start)
-        main_fsm(game_params, game_field, info_field, next_field);
+      onGame_over(params);
+      draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
+
+      if (params->userAction == Start) main_fsm(params);
       break;
     case PAUSE:
-      onPause_state(game_params);
+      onPause_state(params);
       break;
     case EXIT_BRO:
-      onExit_state(game_params);
+      onExit_state(params);
       break;
     default:
-      onStart_state(game_params);
+      onStart_state(params);
       break;
   }
 }
@@ -186,16 +189,14 @@ void onExit_state(Game_Objects_t* params) {
 
 void onPause_state(Game_Objects_t* params) {
   while (params->userAction != Start && params->userAction != Terminate) {
-    params->userAction = getSignal(getch());
-    timeout(100000000);
+    params->userAction = getSignal(getchar());
   }
-  timeout(1);
 }
-void pause_bro(Game_Objects_t* params, State_t prev, WINDOW* game_field,
-               WINDOW* info_field, WINDOW* next_field) {
+void pause_bro(Game_Objects_t* params, State_t prev) {
   params->state = PAUSE;
-  draw_main(params, game_field, info_field, next_field);
-  main_fsm(params, game_field, info_field, next_field);
+  draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
+
+  main_fsm(params);
   if (params->userAction != Terminate) {
     params->state = prev;
   } else {
@@ -209,13 +210,13 @@ UserAction_t getSignal(int user_input) {
   UserAction_t sig = NONE_ACTION;
   if (user_input == 'f') {
     sig = Up;
-  } else if (user_input == KEY_UP || user_input == 119) {
+  } else if (user_input == 119) {
     sig = Action;
-  } else if (user_input == KEY_DOWN || user_input == 115) {
+  } else if (user_input == 115) {
     sig = Down;
-  } else if (user_input == KEY_LEFT || user_input == 97) {
+  } else if (user_input == 97) {
     sig = Left;
-  } else if (user_input == KEY_RIGHT || user_input == 100) {
+  } else if (user_input == 100) {
     sig = Right;
   } else if (user_input == ESCAPE || user_input == 'q') {
     sig = Terminate;

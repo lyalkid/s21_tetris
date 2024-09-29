@@ -2,10 +2,11 @@ CC = gcc
 CFLAGS = -c  -Wall -Werror -Wextra -std=c11
 LDFLAGS = -Wall -Werror -Wextra -std=c11
 
-HEADERS=$(wildcard brick_game/tetris/inc/*.h gui/cli/*.h)
+HEADERS=$(wildcard brick_game/tetris/*/*.h gui/cli/*.h)
 UNAME_S := $(shell uname -s)
 BIN = brick_game/tetris/bin
-BACK = $(wildcard brick_game/tetris/*.c brick_game/tetris/src/*.c)
+BACK = $(wildcard brick_game/tetris/*.c brick_game/tetris/src/*.c )
+DEB = $(wildcard brick_game/tetris/debug/*.c )
 FRONT = $(wildcard gui/cli/*.c)
 OBJ = brick_game/tetris/obj
 
@@ -24,10 +25,21 @@ intstall: style tetris
 	mkdir $(BIN)
 	$(CC) $(OBJ)/*.o -o $(BIN)/tetris -lncurses
 
+deb_tetris:
+	mkdir $(OBJ)
+	$(CC) $(CFLAGS) -Ddebug_bro  $(BACK) $(DEB) $(ADD_LIB)
+	mv *.o $(OBJ)
+
 tetris:
 	mkdir $(OBJ)
 	$(CC) $(CFLAGS)  $(BACK) $(FRONT) $(ADD_LIB)
 	mv *.o $(OBJ)
+
+
+debug: style deb_tetris
+	mkdir $(BIN)
+	$(CC) -Ddebug_bro $(OBJ)/*.o -o $(BIN)/tetris 
+	$(BIN)/tetris
 
 run: clean intstall
 	$(BIN)/tetris 
@@ -42,6 +54,8 @@ clean:
 
 
 rebuild: clean all
+redebug: clean debug
+
 
 style_test:
 	clang-format --style=Google -n $(BACK) $(FRONT) $(HEADERS)
