@@ -1,7 +1,11 @@
 #include "front_debug.h"
 
 void show_game_field(int** field, int** next, int score, int level) {
-  for (int j = 0; j < MY_COLS; j++) {
+    for (int j = 0; j < MY_COLS; j++) {
+        printf("%d ", j );
+    }
+    printf("\n");
+    for (int j = 0; j < MY_COLS; j++) {
     printf("##");
   }
   printf("\n");
