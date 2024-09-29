@@ -147,14 +147,14 @@ void get_TetraMino(int coordinates[], int rotate, int type) {
   } else if (type >= I && type <= Z) {
     get_tetra_two(coordinates, rotate, type);
   } else if (type == O) {
-    int coord[] = {0, 0, 1, 0, 0, -1, 1, -1};
+    int coord[] = {4, 0, 5, 0, 4, 1, 5, 1};
     setCoordinates(coordinates, coord);
   }
 }
 
 void get_tetra_two(int coordinates[], int rotate, int type) {
   if (rotate % 2 == 1 && type == Z) {
-    int coord[] = {0, 0, 1, 0, 1, -1, 0, 1};
+    int coord[] = {4, 2, 4, 1, 5, 1, 5, 0};
     setCoordinates(coordinates, coord);
 
     /* ..#
@@ -163,7 +163,7 @@ void get_tetra_two(int coordinates[], int rotate, int type) {
      *
      * */
   } else if (type == Z) {
-    int coord[] = {0, 0, 1, 0, 0, -1, -1, -1};
+    int coord[] = {3, 1, 4, 1, 4, 2, 5, 2};
     setCoordinates(coordinates, coord);
 
     /* ...
@@ -172,7 +172,7 @@ void get_tetra_two(int coordinates[], int rotate, int type) {
      *
      * */
   } else if (rotate % 2 == 1 && type == S) {
-    int coord[] = {0, 0, 1, 0, 1, 1, 0, -1};
+    int coord[] = {4, 0, 4, 1, 5, 1, 5, 2};
     setCoordinates(coordinates, coord);
 
     /* .#.
@@ -182,7 +182,7 @@ void get_tetra_two(int coordinates[], int rotate, int type) {
      * */
 
   } else if (type == S) {
-    int coord[] = {0, 0, -1, 0, 0, -1, 1, -1};
+    int coord[] = {4, 1, 5, 1, 3, 2, 4, 2};
     setCoordinates(coordinates, coord);
 
     /* ...
@@ -192,7 +192,7 @@ void get_tetra_two(int coordinates[], int rotate, int type) {
      * */
 
   } else if (rotate % 2 == 1 && type == I) {
-    int coord[] = {1, -1, 1, 0, 1, 1, 1, 2};
+    int coord[] = {5, 0, 5, -1, 5, -2, 5, 1};
     setCoordinates(coordinates, coord);
 
     /* ..#.
@@ -202,7 +202,7 @@ void get_tetra_two(int coordinates[], int rotate, int type) {
      *
      * */
   } else if (type == I) {
-    int coord[] = {-1, -1, 0, -1, 1, -1, 2, -1};
+    int coord[] = {3, 0, 4, 0, 5, 0, 6, 0};
     setCoordinates(coordinates, coord);
 
     /* ....
@@ -217,8 +217,8 @@ void get_tetra_four(int coordinates[], int rotate, int type) {
   // TODO если это Т то поднять наверх
 
   // TODO ПРОВЕРИТЬ на коректность в соответвии со специф tetris rotate system
-  if (type == T && rotate == COMPLETE) {
-    int coord[] = {0, -1, 1, -1, -1, -1, 0, 0};
+  if (type == T && rotate == STRAIGHT) {
+    int coord[] = {3, 1, 4, 1, 5, 1, 4, 2};
     setCoordinates(coordinates, coord);
 
     /* ...
@@ -227,7 +227,7 @@ void get_tetra_four(int coordinates[], int rotate, int type) {
      *
      * */
   } else if (type == T && rotate == RIGHT) {
-    int coord[] = {0, -1, 0, -2, 0, 0, -1, -1};
+    int coord[] = {3, 1, 4, 1, 4, 0, 4, 2};
     setCoordinates(coordinates, coord);
 
     /* .#.
@@ -235,8 +235,10 @@ void get_tetra_four(int coordinates[], int rotate, int type) {
      * .#.
      *
      * */
-  } else if (type == T && rotate == STRAIGHT) {
-    int coord[] = {0, -1, 1, -1, -1, -1, 0, -2};
+
+  } else if (type == T && rotate == COMPLETE) {
+    int coord[] = {3, 1, 4, 1, 5, 1, 4, 0};
+
     setCoordinates(coordinates, coord);
 
     /* .#.
@@ -245,7 +247,7 @@ void get_tetra_four(int coordinates[], int rotate, int type) {
      *
      * */
   } else if (type == T && rotate == REFLEX) {
-    int coord[] = {0, -1, 0, -2, 0, 0, 1, -1};
+    int coord[] = {5, 1, 4, 1, 4, 0, 4, 2};
     setCoordinates(coordinates, coord);
 
     /* .#.
@@ -256,75 +258,78 @@ void get_tetra_four(int coordinates[], int rotate, int type) {
   }
 
   else if (type == L && rotate == COMPLETE) {
-    int coord[] = {0, -1, -1, -1, 1, -1, -1, 0};
+    int coord[] = {3, 1, 4, 1, 5, 1, 5, 0};
     setCoordinates(coordinates, coord);
-
-    /* ###
-     * #..
-     * ...
-     *
-     * */
-  } else if (type == L && rotate == RIGHT) {
-    int coord[] = {0, 0, 0, -1, 0, 1, -1, -1};
-    setCoordinates(coordinates, coord);
-
-    /* ##.
-     * .#.
-     * .#.
-     *
-     * */
-  } else if (type == L && rotate == STRAIGHT) {
-    int coord[] = {0, 0, -1, 0, 1, 0, 1, -1};
-    setCoordinates(coordinates, coord);
-
     /* ..#
      * ###
      * ...
      *
      * */
-  } else if (type == L && rotate == REFLEX) {
-    int coord[] = {0, 0, 0, -1, 0, 1, 1, 1};
-    setCoordinates(coordinates, coord);
 
+  } else if (type == L && rotate == RIGHT) {
+    int coord[] = {4, 0, 4, 1, 4, 2, 5, 2};
+    setCoordinates(coordinates, coord);
     /* .#.
      * .#.
      * .##
      *
      * */
-  } else if (type == J && rotate == COMPLETE) {
-    int coord[] = {0, -1, -1, -1, 1, -1, 1, 0};
-    setCoordinates(coordinates, coord);
 
-    /* ###
-     * ..#
+  } else if (type == L && rotate == STRAIGHT) {
+    int coord[] = {3, 1, 4, 1, 5, 1, 3, 2};
+    setCoordinates(coordinates, coord);
+    /*
      * ...
+     * ###
+     * #..
      *
      * */
-  } else if (type == J && rotate == RIGHT) {
-    int coord[] = {0, 0, 0, -1, 0, 1, -1, 1};
-    setCoordinates(coordinates, coord);
 
-    /* .#.
+  } else if (type == L && rotate == REFLEX) {
+    int coord[] = {4, 0, 4, 1, 4, 2, 3, 0};
+    setCoordinates(coordinates, coord);
+    /* ##.
      * .#.
-     * ##.
+     * .#.
      *
      * */
-  } else if (type == J && rotate == STRAIGHT) {
-    int coord[] = {0, 0, -1, 0, 1, 0, -1, -1};
-    setCoordinates(coordinates, coord);
 
-    /* #..
+  } else if (type == J && rotate == COMPLETE) {
+    int coord[] = {3, 1, 4, 1, 5, 1, 3, 0};
+    setCoordinates(coordinates, coord);
+    /*
+     * #..
      * ###
      * ...
      *
      * */
-  } else if (type == J && rotate == REFLEX) {
-    int coord[] = {0, 0, 0, -1, 0, 1, 1, -1};
+
+  } else if (type == J && rotate == RIGHT) {
+    int coord[] = {4, 0, 4, 1, 4, 2, 5, 0};
     setCoordinates(coordinates, coord);
 
     /* .##
      * .#.
      * .#.
+     *
+     * */
+  } else if (type == J && rotate == STRAIGHT) {
+    int coord[] = {3, 1, 4, 1, 5, 1, 5, 2};
+    setCoordinates(coordinates, coord);
+    /*
+     * ...
+     * ###
+     * ..#
+     *
+     * */
+
+  } else if (type == J && rotate == REFLEX) {
+    int coord[] = {4, 0, 4, 1, 4, 2, 3, 2};
+    setCoordinates(coordinates, coord);
+
+    /* .#.
+     * .#.
+     * ##.
      *
      * */
   }
@@ -339,8 +344,8 @@ void get_new_tetraMino(TetraMino_bro* tetraMinoBro) {
   tetraMinoBro->type = tetraMinoBro->next_type;
   tetraMinoBro->next_type = get_random();
   tetraMinoBro->rotate = COMPLETE;
-  tetraMinoBro->center_x = 4;
-  tetraMinoBro->center_y = 1;
+  tetraMinoBro->center_x = 0;
+  tetraMinoBro->center_y = 0;
   for (int i = 0; i < MY_ROWS; i++) {
     for (int j = 0; j < MY_COLS; j++) {
       tetraMinoBro->tmp_current_figure_on_field[i][j] = 0;
