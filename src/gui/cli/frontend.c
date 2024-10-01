@@ -1,40 +1,97 @@
 #include "frontend.h"
-void draw_main(Game_Objects_t* params, WINDOW* game_field, WINDOW* info_field,
-               WINDOW* next_field) {
+
+void show_game_field(int** field, int** next, int score, int level) {
+  for (int j = 0; j < MY_COLS; j++) {
+    printf("%d ", j);
+  }
+  printf("\n");
+  for (int j = 0; j < MY_COLS; j++) {
+    printf("##");
+  }
+  printf("\n");
+  for (int i = 0; i < MY_ROWS; i++) {
+    for (int j = 0; j < MY_COLS; j++) {
+      int res = field[i][j] + next[i][j];
+      if (res == 1) {
+        printf("[]");
+      } else if (res > 1) {
+        printf("@@");
+      } else {
+        printf("  ");
+      }
+    }
+    printf("| %d\n", i);
+  }
+  for (int j = 0; j < MY_COLS; j++) {
+    printf("##");
+  }
+  printf("\n");
+  printf("score: %d\n", score);
+  printf("level: %d\n", level);
+};
+
+void draw_simple(State state, GameInfo_t gameInfo, TetraMino_bro tetraMinoBro) {
+  // system("clear");
+  switch (state) {
+    case MAIN_MENU:
+      printf(
+          "HELLO\n press ENTER or N to start a new game\n press ESCAPE or Q to "
+          "exit\n");
+      break;
+    case GAME_OVER:
+      printf(
+          "GAME IS OVER :(\n press ENTER or N to start a new game\n press "
+          "ESCAPE or Q to exit\n");
+      break;
+    case PAUSE:
+      printf(
+          "PAUSE\n press ENTER or N to continue\n press ESCAPE or Q to exit "
+          "into main menu\n");
+      break;
+    default:
+      show_game_field(gameInfo.field, tetraMinoBro.tmp_current_figure_on_field,
+                      gameInfo.score, gameInfo.level);
+      break;
+  }
+}
+
+#ifndef debug_bro
+void draw_main(Game_Objects_t* params) {
   switch (params->state) {
     case MAIN_MENU:
 
-      print_main_menu(game_field);
-      wrefresh(info_field);
-      wrefresh(next_field);
+      print_main_menu(params->views.game_win);
+      wrefresh(params->views.info_win);
+      wrefresh(params->views.next_win);
 
       break;
     case GAME_OVER:
-      clear();
-      game_over(params->gameInfo.score, params->gameInfo.level);
+      game_over(params->views.game_win);
+      werase(params->views.next_win);
+      wrefresh(params->views.next_win);
       break;
 
     case PAUSE:
 
-      render_pause(game_field);
+      render_pause(params->views.game_win);
       break;
     case SPAWN:
 
-      render_next_win(next_field, params->tetraMinoBro.next_type);
+      render_next_win(params->views.next_win, params->tetraMinoBro.next_type);
 
       break;
     default:
-      render_game_win(game_field, params->gameInfo.field,
+      render_game_win(params->views.game_win, params->gameInfo.field,
                       params->tetraMinoBro.tmp_current_figure_on_field);
 
-      render_info_win(info_field, params->gameInfo.high_score,
-                      params->gameInfo.score);
+      render_info_win(params->views.info_win, params->gameInfo.high_score,
+                      params->gameInfo.score, params->gameInfo.level);
 
       break;
   }
 }
 
-void printw_state(State_t state) {
+void printw_state(State state) {
   switch (state) {
     case MAIN_MENU:
       mvprintw(FIELD_Y + 1, 0, "MAIN_MENU\n");
@@ -83,7 +140,7 @@ void printw_state(State_t state) {
   }
 }
 
-void init_bro_ncurses() {
+void init_bro_ncurses(View_bro* views) {
   initscr();
   cbreak();
   noecho();
@@ -91,14 +148,35 @@ void init_bro_ncurses() {
   // keypad(stdscr, TRUE);
   curs_set(0);
   // timeout(12);
+
+  // views->main_menu_win = newwin(MAIN_W_SIZE, MAIN_W_SIZE, 2, 0);
+  views->game_win = newwin(FIELD_Y, FIELD_X, 0, 0);
+  views->info_win = newwin(INFO_Y, INFO_X, 0, FIELD_X);
+  views->next_win = newwin(NEXT_Y, NEXT_X, INFO_Y, FIELD_X);
+  // views->pause_win =  newwin();
+
+  refresh();
+  // box(views->game_win, 0, 0);
+  // box(views->info_win, 0, 0);
+  // box(views->next_win, 0, 0);
+  // box(views->main_menu_win, 0, 0);
+
+  // wgetch(game_field);
+  // wrefresh(views->game_win);
+  // wrefresh(views->info_win);
+  // wrefresh(views->next_win);
+  // wrefresh(views->main_menu_win);
+
+  refresh();
 }
 
-void terminate_ncurses_bro(WINDOW* game_field, WINDOW* info_game,
-                           WINDOW* next_tetraMino) {
-  delwin(game_field);
-  delwin(info_game);
-  delwin(next_tetraMino);
-
+void terminate_ncurses_bro(View_bro* views) {
+  delwin(views->game_win);
+  delwin(views->info_win);
+  delwin(views->next_win);
+  // delwin(views->game_over_win);
+  // delwin(views->main_menu_win);
+  // delwin(views->pause_win);
   endwin();
 }
 
@@ -158,10 +236,11 @@ void render_next_win(WINDOW* next_win, int type) {
   wrefresh(next_win);
   refresh();
 }
-void render_info_win(WINDOW* info_win, int h_score, int score) {
+void render_info_win(WINDOW* info_win, int h_score, int score, int level) {
   werase(info_win);
-  mvwprintw(info_win, 1, 1, "high_score:%d", h_score);
+  mvwprintw(info_win, 1, 1, "high_score:%d", h_score > score ? h_score : score);
   mvwprintw(info_win, 2, 1, "score:%d", score);
+  mvwprintw(info_win, 3, 1, "level:%d", level);
 
   box(info_win, 0, 0);
   wrefresh(info_win);
@@ -206,6 +285,7 @@ void render_pause(WINDOW* game_win) {
 //   // refresh();
 
 //   for (int j = 0; j < MY_COLS; j++) {
+  
 //     printw("##");
 //     // refresh();
 //   }
@@ -217,36 +297,26 @@ void render_pause(WINDOW* game_win) {
 //   //  refresh();
 // }
 
-void print_main_menu(WINDOW* game_field) {
-  werase(game_field);
-  mvwprintw(game_field, 1, 1, "HELLO BRO");
-  box(game_field, 0, 0);
-  wrefresh(game_field);
+void print_main_menu(WINDOW* main_menu_win) {
+  werase(main_menu_win);
+  mvwprintw(main_menu_win, 1, MY_COLS / 2, "HELLO BRO");
+  mvwprintw(main_menu_win, MY_ROWS / 2 + 1, 1, "W,A,S,D - to move");
+  mvwprintw(main_menu_win, MY_ROWS / 2 + 2, 1, "G - PAUSE");
+  mvwprintw(main_menu_win, MY_ROWS / 2 + 3, 1,
+            "Q or ESCAPE -\n exit session/game ");
+  mvwprintw(main_menu_win, MY_ROWS / 2 + 4, 1,
+            "N or ENTER - \n start/resume game ");
+
+  box(main_menu_win, 0, 0);
+  wrefresh(main_menu_win);
   refresh();
 }
 
-void game_over(int score, int level) {
-  for (int j = 0; j < MY_COLS; j++) {
-    printw("##");
-  }
-  printw("\n");
-  for (int i = 0; i < MY_ROWS; i++) {
-    for (int j = 0; j < MY_COLS; j++) {
-      if (i == MY_ROWS / 2 && j == MY_COLS / 2) {
-        printw("Game Over");
-        i += 9;
-      } else {
-        printw("  ");
-      }
-    }
-    printw("| %d\n", i);
-  }
-  for (int j = 0; j < MY_COLS; j++) {
-    printw("##");
-  }
-  printw("\n");
-  printw("score: %d\n", score);
-  printw("level: %d\n", level);
+void game_over(WINDOW* game_win) {
+  werase(game_win);
+  mvwprintw(game_win, MY_ROWS / 2, MY_COLS / 2, "IT's GAME OVER BRO");
+  box(game_win, 0, 0);
+  wrefresh(game_win);
   refresh();
 }
 
@@ -260,3 +330,5 @@ void game_over(int score, int level) {
 //   wgetch(game_field);
 //   // terminate_ncurses_bro(game_field, info_game, next_tetraMino);
 // }
+
+#endif

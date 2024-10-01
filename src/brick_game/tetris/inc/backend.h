@@ -28,6 +28,14 @@ void reset_game(GameInfo_t *gameInfo, TetraMino_bro *tetraMino);
 
 void null_array(int **field, int rows, int cols);
 Game_Objects_t init_empty_game_objects();
+Shift_timer init_shift_timer();
+
+#ifndef debug_bro
+
+View_bro init_view();
+
+#endif
+
 void get_TetraMino(int coordinates[], int rotate, int type);
 void get_tetra_two(int coordinates[], int rotate, int type);
 void get_tetra_four(int coordinates[], int rotate, int type);
@@ -52,7 +60,7 @@ int get_highScore();
 void write_high_score(int h_score);
 int next_to_field(int **next, int **field);
 
-Game_Objects_t *get_game_instance();
+// Game_Objects_t *get_game_instance();
 
 int is_time_to_shift(struct timeval before, struct timeval after,
                      suseconds_t timer);

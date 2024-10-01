@@ -110,7 +110,7 @@ void game_mechanics(Game_Objects_t* params) {
   params->gameInfo.level = calc_level(params->gameInfo.score);
   if (prev_level < params->gameInfo.level) {
     params->gameInfo.speed++;
-    params->timer = TIME / params->gameInfo.speed;
+    params->timer.delay_to_shift = TIME / params->gameInfo.speed;
   }
 }
 
@@ -555,23 +555,61 @@ void reset_game(GameInfo_t* gameInfo, TetraMino_bro* tetraMino) {
 }
 Game_Objects_t init_empty_game_objects() {
   Game_Objects_t gameObjects = {0};
-  gettimeofday(&gameObjects.before, NULL);
-  gettimeofday(&gameObjects.after, NULL);
-  gameObjects.timer = TIME;  // half second
+  /*
+   Shift_timer timer;
+   bool game_is_running;  // флаг для game_loop()
+   State state;
+   UserAction_t userAction;
+   TetraMino_bro tetraMinoBro;
+   GameInfo_t gameInfo;
+ #ifndef debug_bro
+   View_bro views;
+ #endif
+  */
+
+  gameObjects.timer = init_shift_timer();
+  gameObjects.game_is_running = true;
+  gameObjects.state = MAIN_MENU;
+  gameObjects.userAction = NONE_ACTION;
   gameObjects.tetraMinoBro = init_empty_tetraMino();
   gameObjects.gameInfo = init_empty_gameInfo();
-  gameObjects.userAction = NONE_ACTION;
-  gameObjects.game_is_running = true;
-  gameObjects.time_to_shift = false;
-  gameObjects.state = MAIN_MENU;
+
+#ifndef debug_bro
+  gameObjects.views = init_view();
+#endif
   return gameObjects;
 }
 
-Game_Objects_t* get_game_instance() {
-  static Game_Objects_t gameObjects;
-  gameObjects.game_is_running = true;
-  return &gameObjects;
-};
+#ifndef debug_bro
+
+View_bro init_view() {
+  View_bro views = {0};
+  getmaxyx(stdscr, views.yMax, views.xMax);
+  delwin(views.game_win);
+  delwin(views.info_win);
+  delwin(views.next_win);
+  // delwin(views.game_over_win);
+  // delwin(views.main_menu_win);
+  // delwin(views.pause_win);
+  return views;
+}
+
+#endif
+
+Shift_timer init_shift_timer() {
+  Shift_timer sh_timer = {0};
+  gettimeofday(&sh_timer.before, NULL);
+  gettimeofday(&sh_timer.after, NULL);
+  sh_timer.delay_to_shift = TIME;
+  sh_timer.time_to_shift = false;
+  return sh_timer;
+}
+
+// Game_Objects_t* get_game_instance() {
+//   static Game_Objects_t gameObjects;
+//   gameObjects.game_is_running = true;
+//   return &gameObjects;
+// };
 
 int is_time_to_shift(struct timeval before, struct timeval after,
                      suseconds_t timer) {

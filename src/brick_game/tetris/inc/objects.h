@@ -32,7 +32,7 @@ typedef enum {
   PAUSE,      // getch
   GAME_OVER,  // getch
   EXIT_BRO
-} State_t;
+} State;
 
 typedef struct {
   int type;
@@ -57,13 +57,33 @@ typedef struct {
 typedef struct {
   struct timeval before;
   struct timeval after;
-  suseconds_t timer;     // через какое время делать shift
-  bool game_is_running;  // флаг для game_loop()
+  suseconds_t delay_to_shift;  // через какое время делать shift
   bool time_to_shift;  // показывает нужно ли делать shift
-  State_t state;
+} Shift_timer;
+
+typedef struct {
+  int yMax;
+  int xMax;
+#ifndef debug_bro
+  // WINDOW* main_menu_win;
+  WINDOW* game_win;
+  WINDOW* info_win;
+  WINDOW* next_win;
+  // WINDOW* pause_win;
+  // WINDOW* game_over_win;
+#endif
+} View_bro;
+
+typedef struct {
+  Shift_timer timer;
+  bool game_is_running;  // флаг для game_loop()
+  State state;
   UserAction_t userAction;
   TetraMino_bro tetraMinoBro;
   GameInfo_t gameInfo;
+#ifndef debug_bro
+  View_bro views;
+#endif
 
 } Game_Objects_t;
 

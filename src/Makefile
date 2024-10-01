@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -c  -Wall -Werror -Wextra -std=c11
-LDFLAGS = -Wall -Werror -Wextra -std=c11
+CFLAGS = -c #	 -Wall -Werror -Wextra -std=c11
+LDFLAGS = #-Wall -Werror -Wextra -std=c11
 
 HEADERS=$(wildcard brick_game/tetris/*/*.h gui/cli/*.h)
 UNAME_S := $(shell uname -s)
@@ -25,14 +25,16 @@ intstall: style tetris
 	mkdir $(BIN)
 	$(CC) $(OBJ)/*.o -o $(BIN)/tetris -lncurses
 
-deb_tetris:
-	test -f highscore.txt || touch highscore.txt
+
+create_file:
+	test -f highscore.txt || ( touch highscore.txt && echo 0 >> highscore.txt )
+
+deb_tetris: create_file
 	mkdir $(OBJ)
 	$(CC) $(CFLAGS) -Ddebug_bro  $(BACK) $(DEB) $(ADD_LIB)
 	mv *.o $(OBJ)
 
-tetris:
-	test -f highscore.txt || touch highscore.txt
+tetris: create_file
 	mkdir $(OBJ)
 	$(CC) $(CFLAGS)  $(BACK) $(FRONT) $(ADD_LIB)
 	mv *.o $(OBJ)
@@ -41,9 +43,9 @@ tetris:
 debug: style deb_tetris
 	mkdir $(BIN)
 	$(CC) -Ddebug_bro $(OBJ)/*.o -o $(BIN)/tetris 
-	$(BIN)/tetris
+	
 
-run: clean intstall
+run: 
 	$(BIN)/tetris 
 
 sanitize:
@@ -58,14 +60,18 @@ clean:
 rebuild: clean all
 redebug: clean debug
 
-
 style_test:
 	clang-format --style=Google -n $(BACK) $(FRONT) $(DEB) $(HEADERS)
 style:
 	clang-format --style=Google -i $(BACK) $(FRONT) $(DEB) $(HEADERS)
 
-valgrind:
+valg: rebuild
 	valgrind --tool=memcheck --leak-check=yes ./$(BIN)/tetris	
+
+
+stvalg: redebug
+	valgrind --tool=memcheck --leak-check=yes ./$(BIN)/tetris
+
 
 # Собираем docker image с тегом 'v1' на основании dockerfile и создаем контейнер
 docker_build:
