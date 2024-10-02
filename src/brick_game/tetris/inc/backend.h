@@ -58,6 +58,7 @@ void rotate_TetraMino(TetraMino_bro *tetraMinoBro);
 int get_random();
 int get_highScore();
 void write_high_score(int h_score);
+
 int next_to_field(int **next, int **field);
 
 // Game_Objects_t *get_game_instance();
@@ -66,6 +67,8 @@ int is_time_to_shift(struct timeval before, struct timeval after,
                      suseconds_t timer);
 int is_it_legal_mv(UserAction_t userAction);
 
-int is_it_illegal_mv(UserAction_t userAction);
+int is_it_down_mv(UserAction_t userAction);
+
+void out(int **field, int rows, int cols);
 
 #endif  // BACKEND_H_

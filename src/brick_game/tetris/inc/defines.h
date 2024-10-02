@@ -23,7 +23,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#define TIME 2000000
+#define TIME 500000
 
 #define TETR_L "###\n  #"d
 

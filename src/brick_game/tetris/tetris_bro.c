@@ -15,6 +15,7 @@ int main() {
   init_bro_ncurses(&params->views);
 
   game_loop(params);
+
   terminate_ncurses_bro(&params->views);
 #else
   game_loop(params);
@@ -24,7 +25,7 @@ int main() {
 void game_loop(Game_Objects_t* params) {
   // gettimeofday(&params->timer.before, NULL);
   char key = 'n';
-
+  int c = 0;
   while (params->game_is_running == true) {
     main_fsm(params);
 
@@ -33,7 +34,17 @@ void game_loop(Game_Objects_t* params) {
 #ifndef debug_bro
       key = getch();
 #else
-      key = getchar();
+      if (c < 5) {
+        key = getchar();
+        c++;
+      }else if(params->state = GAME_OVER){
+          key =getchar();
+      }
+
+      else {
+        key = 'f';
+      }
+
 #endif
 
       if (key != -1) params->userAction = getSignal(key);

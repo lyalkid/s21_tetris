@@ -11,6 +11,7 @@ int onSpawn(Game_Objects_t* params);
 void onMoving(Game_Objects_t* params);
 void onMoving_legal(Game_Objects_t* params);
 void onMoving_down(Game_Objects_t* params);
+void onMoving_pro_down(Game_Objects_t* params);
 
 State onShifting(Game_Objects_t* params);
 void onAttaching(Game_Objects_t* params);

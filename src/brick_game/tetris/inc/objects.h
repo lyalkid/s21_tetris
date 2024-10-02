@@ -77,10 +77,12 @@ typedef struct {
 typedef struct {
   Shift_timer timer;
   bool game_is_running;  // флаг для game_loop()
+  bool was_move;
   State state;
   UserAction_t userAction;
   TetraMino_bro tetraMinoBro;
   GameInfo_t gameInfo;
+
 #ifndef debug_bro
   View_bro views;
 #endif

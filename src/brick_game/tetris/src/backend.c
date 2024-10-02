@@ -1,5 +1,18 @@
 #include "../inc/backend.h"
 
+void out(int** field, int rows, int cols) {
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      if (field[i][j] != 1) {
+        printf(".");
+      } else {
+        printf("0");
+      }
+    }
+    printf("%d\n", i);
+  }
+}
+
 int** malloc_array(int rows, int cols) {
   int** field = malloc(sizeof(int*) * rows);
   for (int i = 0; i < rows; i++) {
@@ -163,7 +176,7 @@ void get_tetra_two(int coordinates[], int rotate, int type) {
      *
      * */
   } else if (type == Z) {
-    int coord[] = {3, 1, 4, 1, 4, 2, 5, 2};
+    int coord[] = {3, 0, 4, 0, 4, 1, 5, 1};
     setCoordinates(coordinates, coord);
 
     /* ...
@@ -182,7 +195,7 @@ void get_tetra_two(int coordinates[], int rotate, int type) {
      * */
 
   } else if (type == S) {
-    int coord[] = {4, 1, 5, 1, 3, 2, 4, 2};
+    int coord[] = {4, 0, 5, 0, 3, 1, 4, 1};
     setCoordinates(coordinates, coord);
 
     /* ...
@@ -390,7 +403,7 @@ void move_down_tetraMino(TetraMino_bro* tetraMinoBro) {
 }
 
 void move_up_tetraMino(TetraMino_bro* tetraMinoBro) {
-  tetraMinoBro->center_y -= 1;
+  if (tetraMinoBro->center_y >= MY_ROWS - 1) tetraMinoBro->center_y -= 1;
 }
 
 int check_collision(TetraMino_bro tetraMinoBro, int** field) {
@@ -408,6 +421,10 @@ int check_collision(TetraMino_bro tetraMinoBro, int** field) {
     tetra_to_array(tetraMinoBro, tmp_next);
     is_all_ok = is_all_ok_bro(field, tmp_next);
     free_array(tmp_next, MY_ROWS);
+  }
+
+  if (is_all_ok == ERROR) {
+    int c = 10;
   }
   return is_all_ok;
 }
@@ -569,6 +586,7 @@ Game_Objects_t init_empty_game_objects() {
 
   gameObjects.timer = init_shift_timer();
   gameObjects.game_is_running = true;
+  gameObjects.was_move = true;
   gameObjects.state = MAIN_MENU;
   gameObjects.userAction = NONE_ACTION;
   gameObjects.tetraMinoBro = init_empty_tetraMino();
@@ -625,8 +643,10 @@ int is_it_legal_mv(UserAction_t userAction) {
     res = ERROR;
   return res;
 }
-int is_it_illegal_mv(UserAction_t userAction) {
+int is_it_down_mv(UserAction_t userAction) {
   int res = OK_BRO;
-  if (!(userAction == Up || userAction == Down)) res = ERROR;
+  if (userAction == Down) {
+    res = ERROR;
+  }
   return res;
 }
