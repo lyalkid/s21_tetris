@@ -17,11 +17,12 @@ void terminate_ncurses_bro(View_bro* views);
 
 void render_game_win(WINDOW* win, int** field, int** next);
 
-void render_next_win(WINDOW* next_win, int type, Game_Objects_t* params);
+void render_next_win(WINDOW* next_win, int type);
 void render_info_win(WINDOW* info_win, int h_score, int score, int level);
 
 void render_pause(WINDOW* game_field);
 
+void draw_static(Game_Objects_t* params);
 void draw_main(Game_Objects_t* params);
 void game_over(WINDOW* game_win);
 void print_main_menu(WINDOW* game_field);

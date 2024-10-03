@@ -31,7 +31,8 @@ typedef enum {
   ATTACHING,
   PAUSE,      // getch
   GAME_OVER,  // getch
-  EXIT_BRO
+  EXIT_BRO,
+  STATIC
 } State;
 
 typedef struct {
@@ -77,7 +78,7 @@ typedef struct {
 typedef struct {
   Shift_timer timer;
   bool game_is_running;  // флаг для game_loop()
-  bool was_move;
+  // bool was_move;
   State state;
   UserAction_t userAction;
   TetraMino_bro tetraMinoBro;

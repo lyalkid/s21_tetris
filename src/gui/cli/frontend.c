@@ -28,12 +28,12 @@ void show_game_field(int** field, int** next, int score, int level) {
   printf("\n");
   printf("score: %d\n", score);
   printf("level: %d\n", level);
-#ifdef debug_bro
-  printf("field\n");
-  out(field, MY_ROWS, MY_COLS);
-  printf("next\n");
-  out(next, MY_ROWS, MY_COLS);
-#endif
+  //#ifdef debug_bro
+  //  printf("field\n");
+  //  out(field, MY_ROWS, MY_COLS);
+  //  printf("next\n");
+  //  out(next, MY_ROWS, MY_COLS);
+  //#endif
 };
 
 void draw_simple(State state, GameInfo_t gameInfo, TetraMino_bro tetraMinoBro) {
@@ -50,6 +50,7 @@ void draw_simple(State state, GameInfo_t gameInfo, TetraMino_bro tetraMinoBro) {
           "ESCAPE or Q to exit\n");
       break;
     case PAUSE:
+      system("clear");
       printf(
           "PAUSE\n press ENTER or N to continue\n press ESCAPE or Q to exit "
           "into main menu\n");
@@ -63,47 +64,12 @@ void draw_simple(State state, GameInfo_t gameInfo, TetraMino_bro tetraMinoBro) {
 
 #ifndef debug_bro
 #define curses_macro 1
-void init_bro_ncurses(View_bro* views) {
-  initscr();
-  cbreak();
-  noecho();
-  nodelay(stdscr, TRUE);
-  keypad(stdscr, TRUE);
-  curs_set(0);
-  // timeout(12);
 
-  // views->main_menu_win = newwin(MAIN_W_SIZE, MAIN_W_SIZE, 2, 0);
-  views->game_win = newwin(FIELD_Y, FIELD_X, 0, 0);
-  views->info_win = newwin(INFO_Y, INFO_X, 0, FIELD_X);
-  views->next_win = newwin(NEXT_Y, NEXT_X, INFO_Y, FIELD_X);
-  // views->pause_win =  newwin();
-
-  refresh();
-  // box(views->game_win, 0, 0);
-  // box(views->info_win, 0, 0);
-  // box(views->next_win, 0, 0);
-
-  // wrefresh(views->game_win);
-  // wrefresh(views->info_win);
-  // wrefresh(views->next_win);
-  // wrefresh(views->main_menu_win);
-
-  refresh();
-}
-
-void terminate_ncurses_bro(View_bro* views) {
-  delwin(views->game_win);
-  delwin(views->info_win);
-  delwin(views->next_win);
-  // delwin(views->game_over_win);
-  // delwin(views->main_menu_win);
-  // delwin(views->pause_win);
-  endwin();
-}
-void draw_main(Game_Objects_t* params) {
+void draw_static(Game_Objects_t* params) {
   switch (params->state) {
     case MAIN_MENU:
-
+      // clear();
+      // printw("main menu\n");
       print_main_menu(params->views.game_win);
       wrefresh(params->views.info_win);
       wrefresh(params->views.next_win);
@@ -119,9 +85,15 @@ void draw_main(Game_Objects_t* params) {
 
       render_pause(params->views.game_win);
       break;
+    default:
+      break;
+  }
+}
+void draw_main(Game_Objects_t* params) {
+  // printw_state(params->state);
+  switch (params->state) {
     case SPAWN:
-      render_next_win(params->views.next_win, params->tetraMinoBro.next_type,
-                      params);
+      render_next_win(params->views.next_win, params->tetraMinoBro.next_type);
 
       break;
     default:
@@ -133,6 +105,34 @@ void draw_main(Game_Objects_t* params) {
 
       break;
   }
+}
+void init_bro_ncurses(View_bro* views) {
+  initscr();
+  cbreak();
+  noecho();
+  nodelay(stdscr, TRUE);
+  keypad(stdscr, TRUE);
+  curs_set(0);
+
+  views->game_win = newwin(FIELD_Y, FIELD_X, 0, 0);
+  views->info_win = newwin(INFO_Y, INFO_X, 0, FIELD_X);
+  views->next_win = newwin(NEXT_Y, NEXT_X, INFO_Y, FIELD_X);
+
+  refresh();
+  box(views->game_win, 0, 0);
+  box(views->info_win, 0, 0);
+  box(views->next_win, 0, 0);
+
+  wrefresh(views->game_win);
+  wrefresh(views->info_win);
+  wrefresh(views->next_win);
+
+  refresh();
+}
+
+void terminate_ncurses_bro(View_bro* views) {
+  delwin(views->game_win);
+  endwin();
 }
 
 void render_game_win(WINDOW* win, int** field, int** next) {
@@ -165,7 +165,7 @@ void render_game_win(WINDOW* win, int** field, int** next) {
   refresh();
 }
 
-void render_next_win(WINDOW* next_win, int type, Game_Objects_t* params) {
+void render_next_win(WINDOW* next_win, int type) {
   werase(next_win);
   int coordinates[8] = {};
   get_TetraMino(coordinates, COMPLETE, type);
@@ -183,7 +183,7 @@ void render_next_win(WINDOW* next_win, int type, Game_Objects_t* params) {
   }
 
   //  mvprintw(NEXT_X, NEXT_Y, "%d, %d", NEXT_Y, NEXT_X);
-
+  box(next_win, 0, 0);
   wrefresh(next_win);
   refresh();
 }
@@ -231,53 +231,62 @@ void game_over(WINDOW* game_win) {
   wrefresh(game_win);
   refresh();
 }
-
+static int c = 0;
+static int v = 0;
+static int n = 0;
 void printw_state(State state) {
+  c++;
   switch (state) {
     case MAIN_MENU:
-      mvprintw(FIELD_Y + 1, 0, "MAIN_MENU\n");
+      mvprintw(FIELD_Y + 1 + c, 0 + v, "%d MAIN_M\n", n++);
       refresh();
       break;
 
     case START:
-      mvprintw(FIELD_Y + 1, 0, "START\n");
+      mvprintw(FIELD_Y + 1 + c, 0 + v, "%d START\n", n++);
       refresh();
 
       break;
     case SPAWN:
-      mvprintw(FIELD_Y + 1, 0, "SPAWN\n");
+      mvprintw(FIELD_Y + 1 + c, 0 + v, "%d SPAWN\n", n++);
       refresh();
 
       break;
     case MOVE:
 
-      mvprintw(FIELD_Y + 1, 0, "MOVE\n");
+      mvprintw(FIELD_Y + 1 + c, 0 + v, "%d MOVE\n", n++);
       refresh();
 
       break;
     case SHIFT:
-      mvprintw(FIELD_Y + 1, 0, "SHIFT\n");
+      mvprintw(FIELD_Y + 1 + c, 0 + v, "%d SHIFT\n", n++);
       refresh();
 
       break;
     case ATTACHING:
-      mvprintw(FIELD_Y + 1, 0, "ATTACHING\n");
+      mvprintw(FIELD_Y + 1 + c, 0 + v, "%d ATTACH\n", n++);
       refresh();
 
       break;
     case PAUSE:
-      mvprintw(FIELD_Y + 1, 0, "PAUSE\n");
+      mvprintw(FIELD_Y + 1 + c, 0 + v, "%d PAUSE\n", n++);
       refresh();
 
       break;
     case GAME_OVER:
-      mvprintw(FIELD_Y + 1, 0, "GAME_OVER\n");
+      mvprintw(FIELD_Y + 1 + c, 0 + v, "%d GAME_O\n", n++);
       refresh();
 
       break;
 
     default:
       break;
+  }
+  if (c == 30 && v != 100) {
+    c = 0;
+    v += 10;
+  } else if (v == 100) {
+    v += 10 - 100;
   }
 }
 #else

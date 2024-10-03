@@ -65,7 +65,7 @@ int next_to_field(int **next, int **field);
 
 int is_time_to_shift(struct timeval before, struct timeval after,
                      suseconds_t timer);
-int is_it_legal_mv(UserAction_t userAction);
+int is_it_movement(UserAction_t userAction);
 
 int is_it_down_mv(UserAction_t userAction);
 

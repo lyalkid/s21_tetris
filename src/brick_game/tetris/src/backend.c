@@ -23,9 +23,13 @@ int** malloc_array(int rows, int cols) {
 
 void free_array(int** field, int rows) {
   for (int i = 0; i < rows; i++) {
-    if (field[i] != NULL) free(field[i]);
+    if (field[i] != NULL) {
+      free(field[i]);
+      field[i] = NULL;
+    }
   }
   if (field != NULL) free(field);
+  field = NULL;
 }
 
 void null_array(int** field, int rows, int cols) {
@@ -354,16 +358,13 @@ void setCoordinates(int* coordinates, const int* values) {
   }
 }
 void get_new_tetraMino(TetraMino_bro* tetraMinoBro) {
-  tetraMinoBro->type = tetraMinoBro->next_type;
+  int n = tetraMinoBro->next_type;
+  tetraMinoBro->type = n;
   tetraMinoBro->next_type = get_random();
   tetraMinoBro->rotate = COMPLETE;
   tetraMinoBro->center_x = 0;
   tetraMinoBro->center_y = 0;
-  for (int i = 0; i < MY_ROWS; i++) {
-    for (int j = 0; j < MY_COLS; j++) {
-      tetraMinoBro->tmp_current_figure_on_field[i][j] = 0;
-    }
-  }
+  null_array(tetraMinoBro->tmp_current_figure_on_field, MY_ROWS, MY_COLS);
   get_TetraMino(tetraMinoBro->coordinates, tetraMinoBro->rotate,
                 tetraMinoBro->type);
 }
@@ -423,9 +424,9 @@ int check_collision(TetraMino_bro tetraMinoBro, int** field) {
     free_array(tmp_next, MY_ROWS);
   }
 
-  if (is_all_ok == ERROR) {
-    int c = 10;
-  }
+  // if (is_all_ok == ERROR) {
+  //   int c = 10;
+  // }
   return is_all_ok;
 }
 
@@ -530,10 +531,12 @@ TetraMino_bro init_empty_tetraMino() {
   for (int i = 0; i < 8; i++) {
     tetraMinoBro.coordinates[i] = 0;
   }
-  tetraMinoBro.tmp_current_figure_on_field = malloc(sizeof(int*) * (MY_ROWS));
-  for (int i = 0; i < MY_ROWS; i++) {
-    tetraMinoBro.tmp_current_figure_on_field[i] = calloc(MY_COLS, sizeof(int));
-  }
+  tetraMinoBro.tmp_current_figure_on_field = malloc_array(MY_ROWS, MY_COLS);
+  //          malloc(sizeof(int*) * (MY_ROWS));
+  //  for (int i = 0; i < MY_ROWS; i++) {
+  //    tetraMinoBro.tmp_current_figure_on_field[i] = calloc(MY_COLS,
+  //    sizeof(int));
+  //  }
   return tetraMinoBro;
 }
 
@@ -544,14 +547,17 @@ GameInfo_t init_empty_gameInfo() {
   gameInfo.level = 0;
   gameInfo.pause = 0;
   gameInfo.speed = 0;
-  gameInfo.field = malloc(sizeof(int*) * (MY_ROWS));
-  gameInfo.next = malloc(sizeof(int*) * (NEXT_FIELD));
-  for (int i = 0; i < MY_ROWS; i++) {
-    gameInfo.field[i] = calloc(MY_COLS, sizeof(int));
-  }
-  for (int i = 0; i < NEXT_FIELD; i++) {
-    gameInfo.next[i] = calloc(NEXT_FIELD, sizeof(int));
-  }
+  gameInfo.field = malloc_array(MY_ROWS, MY_COLS);
+  gameInfo.next = malloc_array(NEXT_FIELD, NEXT_FIELD);
+  //    malloc(sizeof(int*) * (MY_ROWS));
+  //
+  //          malloc(sizeof(int*) * (NEXT_FIELD));
+  //  for (int i = 0; i < MY_ROWS; i++) {
+  //    gameInfo.field[i] = calloc(MY_COLS, sizeof(int));
+  //  }
+  //  for (int i = 0; i < NEXT_FIELD; i++) {
+  //    gameInfo.next[i] = calloc(NEXT_FIELD, sizeof(int));
+  //  }
   return gameInfo;
 }
 void deleteGame(GameInfo_t* gameInfo, TetraMino_bro* tetraMino) {
@@ -586,7 +592,6 @@ Game_Objects_t init_empty_game_objects() {
 
   gameObjects.timer = init_shift_timer();
   gameObjects.game_is_running = true;
-  gameObjects.was_move = true;
   gameObjects.state = MAIN_MENU;
   gameObjects.userAction = NONE_ACTION;
   gameObjects.tetraMinoBro = init_empty_tetraMino();
@@ -604,11 +609,6 @@ View_bro init_view() {
   View_bro views = {0};
   getmaxyx(stdscr, views.yMax, views.xMax);
   delwin(views.game_win);
-  delwin(views.info_win);
-  delwin(views.next_win);
-  // delwin(views.game_over_win);
-  // delwin(views.main_menu_win);
-  // delwin(views.pause_win);
   return views;
 }
 
@@ -637,7 +637,7 @@ int is_time_to_shift(struct timeval before, struct timeval after,
   return res > timer;
 }
 
-int is_it_legal_mv(UserAction_t userAction) {
+int is_it_movement(UserAction_t userAction) {
   int res = OK_BRO;
   if (!(userAction == Left || userAction == Right || userAction == Action))
     res = ERROR;
