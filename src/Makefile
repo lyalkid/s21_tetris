@@ -1,22 +1,27 @@
 CC = gcc
-CFLAGS = -c #	 -Wall -Werror -Wextra -std=c11
-LDFLAGS = #-Wall -Werror -Wextra -std=c11
+CFLAGS = -c 	 -Wall -Werror -Wextra -std=c11
+LDFLAGS = -Wall -Werror -Wextra -std=c11
 
 HEADERS=$(wildcard brick_game/tetris/*/*.h gui/cli/*.h)
 UNAME_S := $(shell uname -s)
 BIN = brick_game/tetris/bin
 MAIN = $(wildcard brick_game/tetris/*.c)
+TEST = $(wildcard tests/*.c)
 BACK = $(wildcard brick_game/tetris/src/*.c )
 FRONT = $(wildcard gui/cli/*.c)
+GCOV_FOLDER = gcov_report
+
 OBJ = brick_game/tetris/obj
 
 ifeq ($(UNAME_S),Linux)
-  	OPEN_CMD = xdg-open
-	ADD_LIB =  -lm -lrt -lpthread -D_GNU_SOURCE -lncurses #-lcheck -lsubunit
+  	OPEN_CMD = firefox
+	ADD_LIB =  -lm -lrt -lpthread -D_GNU_SOURCE -lncurses 
+	TEST_LIB = -lcheck -lsubunit
 endif
 ifeq ($(UNAME_S),Darwin)
 	OPEN_CMD = open
 	ADD_LIB = -lncurses
+	TEST_LIB = -lcheck 
 endif
 
 all: intstall
@@ -54,16 +59,30 @@ sanitize:
 
 clean:
 	clear
-	rm -rf *.o $(BIN) $(TETRIS_LIB) $(OBJ) *.out *.o
+	rm -rf *.o $(BIN) $(TETRIS_LIB) $(OBJ) *.out *.o tests/test $(GCOV_FOLDER) report
+
+
+test: style clean
+	gcc $(LDFLAGS) -Ddebug_bro -DTEST_BRO $(BACK) $(FRONT) $(TEST) $(TEST_LIB) -o tests/test  && ./tests/test 
+
+gcov_report: style clean
+	mkdir $(GCOV_FOLDER)
+	gcc --coverage $(LDFLAGS) -Ddebug_bro -DTEST_BRO  $(BACK) $(FRONT) $(TEST) $(TEST_LIB) -o $(GCOV_FOLDER)/gcov_test
+	chmod +x $(GCOV_FOLDER)/gcov_test
+	$(GCOV_FOLDER)/gcov_test
+	lcov -t "gcov_test" -o gcov_test.info --no-external -c -d .
+	genhtml -o report/ gcov_test.info
+	$(OPEN_CMD) ./report/index.html
+	rm -rf gcov*
 
 
 rebuild: clean all
 redebug: clean debug
 
 style_test:
-	clang-format --style=Google -n $(MAIN) $(BACK) $(FRONT)  $(HEADERS)
+	clang-format --style=Google -n $(MAIN) $(BACK) $(FRONT) $(TEST) $(HEADERS)
 style:
-	clang-format --style=Google -i $(MAIN) $(BACK) $(FRONT)  $(HEADERS)
+	clang-format --style=Google -i $(MAIN) $(BACK) $(FRONT) $(TEST) $(HEADERS)
 
 valg: rebuild
 	valgrind --tool=memcheck --leak-check=yes ./$(BIN)/tetris	
