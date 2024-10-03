@@ -61,6 +61,72 @@ START_TEST(s21_tetris_test_3) {
 }
 END_TEST
 
+START_TEST(s21_tetris_test_4) {
+  write_high_score(0);
+  Game_Objects_t *params = get_instanse();
+  // UserAction_t actions[5] = {Left, Right, Up, Down, Action};
+  params->gameInfo.level = 0;
+  int count = 0;
+  int border = 15;
+  while (count != 4) {
+    bool hold = false;
+    count++;
+    *params = init_empty_game_objects();
+    params->state = START;
+    fsm_game_session(params);
+    for (int i = 0; i < MY_ROWS; i++) {
+      for (int j = 0; j < MY_COLS; j++) {
+        if (i <= 19 && i > border && j != 9) {
+          params->gameInfo.field[i][j] = 1;
+        }
+      }
+    }
+    border--;
+    // out(params->gameInfo.field, MY_ROWS, MY_COLS);
+    while (params->tetraMinoBro.next_type != I) {
+      get_new_tetraMino(&params->tetraMinoBro);
+    }
+    fsm_game_session(params);
+    for (int i = 0; i < 3; i++) {
+      userInput(getSignal('s'), hold);
+      params->timer.time_to_shift = true;
+
+      fsm_game_session(params);
+    }
+    userInput(getSignal('w'), hold);
+    params->state = MOVE;
+    fsm_game_session(params);
+    for (int i = 0; i < 5; i++) {
+      userInput(getSignal('d'), hold);
+      params->state = MOVE;
+      // params->timer.time_to_shift = true;
+
+      fsm_game_session(params);
+    }
+    move_up_tetraMino(&params->tetraMinoBro);
+    tetra_to_array(params->tetraMinoBro,
+                   params->tetraMinoBro.tmp_current_figure_on_field);
+    while (params->state != ATTACHING) {
+      params->timer.time_to_shift = true;
+
+      fsm_game_session(params);
+      userInput(getSignal('f'), hold);
+    }
+    // out(params->tetraMinoBro.tmp_current_figure_on_field, MY_ROWS, MY_COLS);
+    fsm_game_session(params);
+    // write_high_score(params->gameInfo.score);
+    ck_assert_int_eq(params->gameInfo.score, 1500);
+    ck_assert_int_eq(params->gameInfo.level, 2);
+    while (params->state != GAME_OVER) {
+      params->timer.time_to_shift = true;
+
+      fsm_game_session(params);
+    }
+    ck_assert_int_eq(params->state, GAME_OVER);
+  }
+}
+END_TEST
+
 Suite *s21_tetris_suite_create() {
   Suite *suite = suite_create("s21_tetris_test");
   TCase *tc_core = tcase_create("tcase_core_s21_tetris_test");
@@ -68,6 +134,7 @@ Suite *s21_tetris_suite_create() {
   tcase_add_test(tc_core, s21_tetris_test_1);
   tcase_add_test(tc_core, s21_tetris_test_2);
   tcase_add_test(tc_core, s21_tetris_test_3);
+  tcase_add_test(tc_core, s21_tetris_test_4);
 
   suite_add_tcase(suite, tc_core);
 
