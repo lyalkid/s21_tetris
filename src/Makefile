@@ -5,8 +5,8 @@ LDFLAGS = #-Wall -Werror -Wextra -std=c11
 HEADERS=$(wildcard brick_game/tetris/*/*.h gui/cli/*.h)
 UNAME_S := $(shell uname -s)
 BIN = brick_game/tetris/bin
-BACK = $(wildcard brick_game/tetris/*.c brick_game/tetris/src/*.c )
-DEB = $(wildcard brick_game/tetris/debug/*.c )
+MAIN = $(wildcard brick_game/tetris/*.c)
+BACK = $(wildcard brick_game/tetris/src/*.c )
 FRONT = $(wildcard gui/cli/*.c)
 OBJ = brick_game/tetris/obj
 
@@ -31,12 +31,12 @@ create_file:
 
 deb_tetris: create_file
 	mkdir $(OBJ)
-	$(CC) $(CFLAGS) -Ddebug_bro  $(BACK) $(DEB) $(ADD_LIB)
+	$(CC) $(CFLAGS) -Ddebug_bro $(MAIN) $(BACK) $(FRONT) $(ADD_LIB)
 	mv *.o $(OBJ)
 
 tetris: create_file
 	mkdir $(OBJ)
-	$(CC) $(CFLAGS)  $(BACK) $(FRONT) $(ADD_LIB)
+	$(CC) $(CFLAGS)  $(MAIN) $(BACK) $(FRONT) $(ADD_LIB)
 	mv *.o $(OBJ)
 
 
@@ -61,9 +61,9 @@ rebuild: clean all
 redebug: clean debug
 
 style_test:
-	clang-format --style=Google -n $(BACK) $(FRONT) $(DEB) $(HEADERS)
+	clang-format --style=Google -n $(MAIN) $(BACK) $(FRONT)  $(HEADERS)
 style:
-	clang-format --style=Google -i $(BACK) $(FRONT) $(DEB) $(HEADERS)
+	clang-format --style=Google -i $(MAIN) $(BACK) $(FRONT)  $(HEADERS)
 
 valg: rebuild
 	valgrind --tool=memcheck --leak-check=yes ./$(BIN)/tetris	
