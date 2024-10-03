@@ -70,5 +70,6 @@ int is_it_movement(UserAction_t userAction);
 int is_it_down_mv(UserAction_t userAction);
 
 void out(int **field, int rows, int cols);
+void countTime(Game_Objects_t *params);
 
 #endif  // BACKEND_H_

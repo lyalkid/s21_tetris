@@ -1,140 +1,25 @@
 #include "../inc/fsm_main.h"
 
 #include "../../../gui/cli/frontend.h"
-void game_loop() {
-  Game_Objects_t* params = get_instanse();
-  // *params = init_empty_game_objects();
 
-  State prev = START;
-
-  while (params->game_is_running) {
-    /*
-    здесь статические состояния, получаем userAction, если start, то начинаем
-    играть
-    */
-    main_game_fsm(params);
-
-    /*
-    здесь можем выйти в паузу или из игры (заверщить сессию), чтобы вернуться из
-    паузы, мы должны знать предыдущее состояние до паузы
-    */
-    if (params->game_is_running == false) {
-      break;
-    }
-    game_session(params, &prev);
-  }
-  free(params);
-}
 void main_game_fsm(Game_Objects_t* params) {
-#ifndef debug_bro
-  // printw_state(params->state);
-#endif
-  switch (params->state) {
-    case MAIN_MENU:
-#ifndef debug_bro
-      draw_static(params);
-#else
-      draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
-#endif
-      params->state = STATIC;
-      main_game_fsm(params);  // get_user_input;
-
-      if (params->userAction == Start) {
-        params->state = START;
-      } else if (params->userAction == Terminate) {
-        //        params->state = EXIT_BRO;
-        params->game_is_running = false;
-      }
-      break;
-
-    case STATIC:
-      onStatic(params);
-      break;
-
-    default:
-      break;
-  }
-  if (params->state == PAUSE || params->state == GAME_OVER) {
-#ifndef debug_bro
-    draw_static(params);
-#else
-    draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
-#endif
-    params->state = STATIC;
-
-    main_game_fsm(params);
+  if (params->state == MAIN_MENU) {
     if (params->userAction == Start) {
       params->state = START;
-    } else {
+
+    } else if (params->userAction == Terminate) {
+      //        params->state = EXIT_BRO;
+      params->game_is_running = false;
+    }
+  }
+  if (params->state == GAME_OVER) {
+  }
+  if (params->state == PAUSE || params->state == GAME_OVER) {
+    if (params->userAction == Start) {
+      params->state = START;
+    } else if (params->userAction == Terminate) {
       params->state = MAIN_MENU;
     }
-  }
-}
-void game_session(Game_Objects_t* params, State* prev) {
-#ifndef debug_bro
-  // printw_state(params->state);
-#endif
-  bool session_is_running = false;
-
-  /* продолжили ли мы игру с паузы или с главного меню, или с game over, неважно
-   * - всегда после этих состояний будет start
-   */
-  if (params->state == START) {
-    session_is_running = true;
-    params->state = *prev;
-  }
-  char key = -1;
-  while (params->state != PAUSE && params->state != GAME_OVER &&
-         params->state != MAIN_MENU) {
-#ifndef debug_bro
-    // printw_state(params->state);
-#endif
-
-    fsm_game_session(params);
-    if (params->state == MOVE) {
-#ifndef debug_bro
-      key = getch();
-#else
-      key = getchar();
-#endif
-      if (key != -1) userInput(getSignal(key), session_is_running);
-      if (params->userAction == Pause) {
-        *prev = params->state;
-        params->state = PAUSE;
-        session_is_running = false;
-      }
-      if (params->userAction == Terminate) params->state = MAIN_MENU;
-    }
-    gettimeofday(&params->timer.after, NULL);
-
-    if (is_time_to_shift(params->timer.before, params->timer.after,
-                         params->timer.delay_to_shift)) {
-      params->timer.time_to_shift = true;
-    }
-
-#ifndef debug_bro
-    draw_main(params);
-#else
-    draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
-#endif
-  }
-  if (params->state == GAME_OVER || params->state == MAIN_MENU) {
-    reset_game(&params->gameInfo, &params->tetraMinoBro);
-    params->userAction = NONE_ACTION;
-  }
-}
-
-void onStatic(Game_Objects_t* params) {
-  while (params->userAction != Start && params->userAction != Terminate) {
-#ifndef debug_bro
-    params->userAction = getSignal(getch());
-    timeout(100000000);
-
-    timeout(1);
-#else
-    params->userAction = getSignal(getchar());
-
-#endif
   }
 }
 
@@ -148,11 +33,7 @@ void fsm_game_session(Game_Objects_t* params) {
     case SPAWN:
       /* code */
       is_all_ok = onSpawn(params);
-#ifndef debug_bro
-      draw_main(params);
-#else
-      draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
-#endif
+
       is_game_over(params, is_all_ok);
       break;
     case MOVE:

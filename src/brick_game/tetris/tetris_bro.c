@@ -4,6 +4,8 @@
 #include "inc/backend.h"
 #include "inc/fsm_main.h"
 
+void game_loop();
+void game_session(Game_Objects_t* params, State* prev);
 // void game_loop(Game_Objects_t* params);
 int main() {
   srand(time(0));
@@ -21,41 +23,90 @@ int main() {
 #endif
   return 0;
 }
-// void game_loop(Game_Objects_t* params) {
-//   char key = 'n';
-//   int c = 0;
-//   while (params->game_is_running == true) {
-//     main_fsm(params);
 
-//     if (params->state == MOVE || params->state == MAIN_MENU ||
-//         params->state == GAME_OVER) {
-// #ifndef debug_bro
-//       key = getch();
-// #else
-//       if (c < 5) {
-//         key = getchar();
-//         c++;
-//       } else if (params->state = GAME_OVER) {
-//         key = getchar();
-//       }
+void game_loop() {
+  Game_Objects_t* params = get_instanse();
+  // *params = init_empty_game_objects();
 
-//       else {
-//         key = 'f';
-//       }
+  State prev = START;
 
-// #endif
+  while (params->game_is_running) {
+    /*
+    здесь статические состояния, получаем userAction, если start, то начинаем
+    играть
+    */
+#ifndef debug_bro
+    draw_static(params);
+#else
+    draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
+#endif
 
-//       if (key != -1) params->userAction = getSignal(key);
-//       if (params->userAction == Pause) {
-//         pause_bro(params, params->state);
-//       }
-//     }
-//
-//     gettimeofday(&params->timer.after, NULL);
+    while (params->userAction != Start && params->userAction != Terminate) {
+#ifndef debug_bro
+      params->userAction = getSignal(getch());
+      timeout(100000000);
 
-//     if (is_time_to_shift(params->timer.before, params->timer.after,
-//                          params->timer.delay_to_shift)) {
-//       params->timer.time_to_shift = true;
-//     }
-//   }
-// }
+      timeout(1);
+#else
+      params->userAction = getSignal(getchar());
+
+#endif
+    }
+    main_game_fsm(params);
+    /*
+    здесь можем выйти в паузу или из игры (заверщить сессию), чтобы вернуться из
+    паузы, мы должны знать предыдущее состояние до паузы
+    */
+    if (params->game_is_running == false) {
+      break;
+    }
+    game_session(params, &prev);
+  }
+  free(params);
+}
+
+void game_session(Game_Objects_t* params, State* prev) {
+  bool session_is_running = false;
+
+  /* продолжили ли мы игру с паузы или с главного меню, или с game over, неважно
+   * - всегда после этих состояний будет start
+   */
+  if (params->state == START) {
+    session_is_running = true;
+    params->state = *prev;
+  }
+  char key = -1;
+  while (params->state != PAUSE && params->state != GAME_OVER &&
+         params->state != MAIN_MENU) {
+    fsm_game_session(params);
+    if (params->state == MOVE) {
+#ifndef debug_bro
+      key = getch();
+#else
+      key = getchar();
+#endif
+      if (key != -1) userInput(getSignal(key), session_is_running);
+      if (params->userAction == Pause) {
+        *prev = params->state;
+        params->state = PAUSE;
+        session_is_running = false;
+      }
+      if (params->userAction == Terminate) params->state = MAIN_MENU;
+    }
+    countTime(params);
+
+#ifndef debug_bro
+    draw_main(params);
+#else
+    draw_simple(params->state, params->gameInfo, params->tetraMinoBro);
+#endif
+  }
+  if (params->state == GAME_OVER) {
+    if (params->gameInfo.score > params->gameInfo.high_score)
+      write_high_score(params->gameInfo.high_score);
+  }
+  //  if (params->state == GAME_OVER || params->state == MAIN_MENU) {
+  //    reset_game(&params->gameInfo, &params->tetraMinoBro);
+  //    params->userAction = NONE_ACTION;
+  //  }
+}

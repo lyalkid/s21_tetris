@@ -650,3 +650,12 @@ int is_it_down_mv(UserAction_t userAction) {
   }
   return res;
 }
+
+void countTime(Game_Objects_t* params) {
+  gettimeofday(&params->timer.after, NULL);
+
+  if (is_time_to_shift(params->timer.before, params->timer.after,
+                       params->timer.delay_to_shift)) {
+    params->timer.time_to_shift = true;
+  }
+}

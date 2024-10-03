@@ -2,7 +2,7 @@
 #define FSM_MAIN_H_
 
 #include "backend.h"
-void game_loop();
+
 void main_game_fsm(Game_Objects_t* params);
 void onStatic(Game_Objects_t* params);
 
@@ -16,8 +16,6 @@ void onMoving_down(Game_Objects_t* params);
 void onMoving_pro_down(Game_Objects_t* params);
 State onShifting(Game_Objects_t* params);
 void onAttaching(Game_Objects_t* params);
-
-void game_session(Game_Objects_t* params, State* prev);
 
 void userInput(UserAction_t action, bool hold);
 
