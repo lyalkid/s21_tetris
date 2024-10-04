@@ -103,7 +103,7 @@ void game_session(Game_Objects_t* params, State* prev) {
   }
   if (params->state == GAME_OVER) {
     if (params->gameInfo.score > params->gameInfo.high_score)
-      write_high_score(params->gameInfo.high_score);
+      write_high_score(params->gameInfo.score);
   }
   //  if (params->state == GAME_OVER || params->state == MAIN_MENU) {
   //    reset_game(&params->gameInfo, &params->tetraMinoBro);

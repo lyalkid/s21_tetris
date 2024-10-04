@@ -88,7 +88,7 @@ void is_game_over(Game_Objects_t* params, int status) {
   } else {
     params->state = GAME_OVER;
     if (params->gameInfo.score > params->gameInfo.high_score)
-      write_high_score(params->gameInfo.high_score);
+      write_high_score(params->gameInfo.score);
   }
 }
 
