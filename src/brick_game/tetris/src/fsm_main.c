@@ -5,6 +5,14 @@ void main_game_fsm(Game_Objects_t* params) {
     if (params->userAction == Start) {
       params->state = START;
       reset_game(&params->gameInfo, &params->tetraMinoBro);
+      clear();
+      for (int i = 0; i < MY_ROWS; i++) {
+        for (int j = 0; j < MY_COLS; j++) {
+          printw("%d ", params->gameInfo.field[i][j]);
+        }
+        printw("\n");
+      }
+      refresh();
 
     } else if (params->userAction == Terminate) {
       params->game_is_running = false;
@@ -12,10 +20,23 @@ void main_game_fsm(Game_Objects_t* params) {
     }
   }
 
-  if (params->state == PAUSE || params->state == GAME_OVER) {
+  else if (params->state == PAUSE || params->state == GAME_OVER) {
     if (params->userAction == Start) {
       params->state = START;
     } else if (params->userAction == Terminate) {
+      if (params->state == PAUSE) {
+        clear();
+        reset_game(&params->gameInfo, &params->tetraMinoBro);
+        for (int i = 0; i < MY_ROWS; i++) {
+          for (int j = 0; j < MY_COLS; j++) {
+            printw("%d ", params->gameInfo.field[i][j]);
+          }
+          printw("\n");
+        }
+        refresh();
+      } else {
+        deleteGame(&params->gameInfo, &params->tetraMinoBro);
+      }
       params->state = MAIN_MENU;
       params->userAction = NONE_ACTION;
     }

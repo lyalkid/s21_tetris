@@ -50,8 +50,9 @@ dvi: misc/doc.tex misc/doc_eng.tex
 
 dist: all
 	mkdir $(DIST_DIR)
-	cp -r brick_game gui Makefile $(DIST_DIR)
+	cp -r brick_game gui Makefile misc $(DIST_DIR)
 	tar -czf tetris-1.0.tar.gz $(DIST_DIR)	
+	mv tetris-1.0.tar.gz misc/dist
 
 test: style clean
 	gcc $(LDFLAGS) -Ddebug_bro -DTEST_BRO $(BACK) $(FRONT) $(TEST) $(TEST_LIB) -o tests/test  && ./tests/test 
