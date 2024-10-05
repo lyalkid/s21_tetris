@@ -1,7 +1,5 @@
 #include "../inc/fsm_main.h"
 
-#include "../../../gui/cli/frontend.h"
-
 void main_game_fsm(Game_Objects_t* params) {
   if (params->state == MAIN_MENU) {
     if (params->userAction == Start) {
@@ -9,7 +7,6 @@ void main_game_fsm(Game_Objects_t* params) {
       reset_game(&params->gameInfo, &params->tetraMinoBro);
 
     } else if (params->userAction == Terminate) {
-      //        params->state = EXIT_BRO;
       params->game_is_running = false;
       deleteGame(&params->gameInfo, &params->tetraMinoBro);
     }
@@ -75,20 +72,10 @@ int onSpawn(Game_Objects_t* params) {
   int is_all_ok = OK_BRO;
 
   get_new_tetraMino(&params->tetraMinoBro);
-#ifdef debug_bro
-  printf("field\n");
-  out(params->gameInfo.field, MY_ROWS, MY_COLS);
-  printf("\nnext\n");
-  out(params->tetraMinoBro.tmp_current_figure_on_field, MY_ROWS, MY_COLS);
-#endif
+
   tetra_to_array(params->tetraMinoBro,
                  params->tetraMinoBro.tmp_current_figure_on_field);
-#ifdef debug_bro
-  printf("field\n");
-  out(params->gameInfo.field, MY_ROWS, MY_COLS);
-  printf("\nnext\n");
-  out(params->tetraMinoBro.tmp_current_figure_on_field, MY_ROWS, MY_COLS);
-#endif
+
   is_all_ok = is_all_ok_bro(params->gameInfo.field,
                             params->tetraMinoBro.tmp_current_figure_on_field);
 
@@ -139,12 +126,7 @@ void onMoving_down(Game_Objects_t* params) {
   }
   tetra_to_array(params->tetraMinoBro,
                  params->tetraMinoBro.tmp_current_figure_on_field);
-#ifdef debug_bro
-  printf("field\n");
-  out(params->gameInfo.field, MY_ROWS, MY_COLS);
-  printf("\nnext\n");
-  out(params->tetraMinoBro.tmp_current_figure_on_field, MY_ROWS, MY_COLS);
-#endif
+
   if (params->userAction == Down) {
     params->userAction = NONE_ACTION;
   }
@@ -155,12 +137,7 @@ void onMoving_pro_down(Game_Objects_t* params) {
     params->userAction = Down;
     onMoving_down(params);
   }
-#ifdef debug_bro
-  printf("field\n");
-  out(params->gameInfo.field, MY_ROWS, MY_COLS);
-  printf("\nnext\n");
-  out(params->tetraMinoBro.tmp_current_figure_on_field, MY_ROWS, MY_COLS);
-#endif
+
   params->userAction = NONE_ACTION;
 }
 
@@ -175,17 +152,9 @@ State onShifting(Game_Objects_t* params) {
 }
 
 void onAttaching(Game_Objects_t* params) {
-#ifdef debug_bro
-  printf("field\n");
-  out(params->gameInfo.field, MY_ROWS, MY_COLS);
-#endif
   next_to_field(params->tetraMinoBro.tmp_current_figure_on_field,
                 params->gameInfo.field);
-#ifdef debug_bro
-  printf("field\n");
-  out(params->gameInfo.field, MY_ROWS, MY_COLS);
-#endif
-  // TODO не забыть менять скорость
+
   game_mechanics(params);
 
   params->state = SPAWN;
@@ -227,11 +196,12 @@ UserAction_t getSignal(int user_input) {
     sig = Left;
   } else if (user_input == 100) {
     sig = Right;
-  } else if (user_input == ESCAPE || user_input == 'q') {
+  } else if (user_input == ESCAPE || user_input == 'q' || user_input == 'Q') {
     sig = Terminate;
-  } else if (user_input == 'n') {
+  } else if (user_input == 'n' || user_input == ENTER_KEY ||
+             user_input == 'N') {
     sig = Start;
-  } else if (user_input == SPACE || user_input == 'g') {
+  } else if (user_input == SPACE || user_input == 'p' || user_input == 'P') {
     sig = Pause;
   }
   return sig;

@@ -28,5 +28,4 @@ void draw_main(Game_Objects_t* params);
 void game_over(WINDOW* game_win);
 void print_main_menu(WINDOW* game_field);
 
-void printw_state(State state);
 #endif  // FRONTEND_H

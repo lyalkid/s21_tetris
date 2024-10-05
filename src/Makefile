@@ -1,3 +1,4 @@
+DIST_DIR = misc/dist
 CC = gcc
 CFLAGS = -c 	 -Wall -Werror -Wextra -std=c11
 LDFLAGS = -Wall -Werror -Wextra -std=c11
@@ -25,16 +26,45 @@ ifeq ($(UNAME_S),Darwin)
 	TEST_LIB = -lcheck 
 endif
 
-all: intstall
+# all, install, uninstall, clean, dvi, dist, test, gcov_report
+
+all: clean intstall #dvi
 
 intstall: style tetris
 	mkdir $(BIN)
 	$(CC) $(OBJ)/*.o -o $(BIN)/tetris -lncurses
 
-dvi: clean
-	mkdir doxygen
-	doxygen Doxyfile
-	$(OPEN_CMD) doxygen/html/index.html
+uninstall:
+	rm $(BIN)/tetris
+
+clean: style
+	clear
+	rm -rf *.o $(BIN) $(TETRIS_LIB) $(OBJ) *.out *.o tests/test $(GCOV_FOLDER) report $(DIST_DIR)
+
+
+dvi: misc/doc.tex misc/doc_eng.tex
+	test -f misc/doc.pdf || ( latex misc/docs/doc.tex && mv doc.pdf misc/ ) 
+	test -f misc/doc_eng.pdf || ( latex misc/docs/doc_eng.tex && mv doc_eng.pdf misc/)
+
+	$(OPEN_CMD) misc/doc.pdf misc/doc_eng.pdf
+
+dist: all
+	mkdir $(DIST_DIR)
+	cp -r brick_game gui Makefile $(DIST_DIR)
+	tar -czf tetris-1.0.tar.gz $(DIST_DIR)	
+
+test: style clean
+	gcc $(LDFLAGS) -Ddebug_bro -DTEST_BRO $(BACK) $(FRONT) $(TEST) $(TEST_LIB) -o tests/test  && ./tests/test 
+
+gcov_report: style clean
+	mkdir $(GCOV_FOLDER)
+	gcc --coverage $(LDFLAGS) -Ddebug_bro -DTEST_BRO  $(BACK) $(TEST) $(TEST_LIB) -o $(GCOV_FOLDER)/gcov_test
+	chmod +x $(GCOV_FOLDER)/gcov_test
+	$(GCOV_FOLDER)/gcov_test
+	lcov -t "gcov_test" -o gcov_test.info --no-external -c -d .
+	genhtml -o report/ gcov_test.info
+	$(OPEN_CMD) ./report/index.html
+	rm -rf gcov*
 
 create_file:
 	test -f highscore.txt || ( touch highscore.txt && echo 0 >> highscore.txt )
@@ -61,24 +91,6 @@ run:
 sanitize:
 	gcc  $(BACK) $(FRONT) -g -fsanitize=address -o $(BIN)/tetris $(ADD_LIB) && $(BIN)/tetris 
 
-
-clean: style
-	clear
-	rm -rf *.o $(BIN) $(TETRIS_LIB) $(OBJ) *.out *.o tests/test $(GCOV_FOLDER) report doxygen
-
-
-test: style clean
-	gcc $(LDFLAGS) -Ddebug_bro -DTEST_BRO $(BACK) $(FRONT) $(TEST) $(TEST_LIB) -o tests/test  && ./tests/test 
-
-gcov_report: style clean
-	mkdir $(GCOV_FOLDER)
-	gcc --coverage $(LDFLAGS) -Ddebug_bro -DTEST_BRO  $(BACK) $(TEST) $(TEST_LIB) -o $(GCOV_FOLDER)/gcov_test
-	chmod +x $(GCOV_FOLDER)/gcov_test
-	$(GCOV_FOLDER)/gcov_test
-	lcov -t "gcov_test" -o gcov_test.info --no-external -c -d .
-	genhtml -o report/ gcov_test.info
-	$(OPEN_CMD) ./report/index.html
-	rm -rf gcov*
 
 
 rebuild: clean all

@@ -1,19 +1,5 @@
 #include "../inc/backend.h"
 
-void out(int** field, int rows, int cols) {
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      int res = field[i][j];
-      if (res != 0) {
-        printf("%d ", field[i][j]);
-      } else {
-        printf("  ");
-      }
-    }
-    printf("%d\n", i);
-  }
-}
-
 int** malloc_array(int rows, int cols) {
   int** field = malloc(sizeof(int*) * rows);
   for (int i = 0; i < rows; i++) {
@@ -54,13 +40,6 @@ int can_i_move(TetraMino_bro tetraMino, int** field, UserAction_t key) {
 
   bin_array_bro(field, tmp_field, MY_ROWS, MY_COLS);
   int is_all_ok = is_all_ok_bro(tmp_field, tmp_next);
-
-  // tetra_to_next(tetraMino, tmp_next);
-
-  /*
-   * нужно подвинуть tetramino , перевести в tmp_next, чекнуть нет ли коллизий.
-   * если все ок, то вернуть OK_BRO, если не ок, то вернуть ERROR
-   * */
   free_array(tmp_next, MY_ROWS);
   free_array(tmp_field, MY_ROWS);
   free_array(next, MY_ROWS);
@@ -80,24 +59,12 @@ void bin_array_bro(int** src, int** dist, int rows, int cols) {
 }
 
 int is_all_ok_bro(int** field, int** next) {
-#ifdef debug_bro
-  printf("field\n");
-  out(field, MY_ROWS, MY_COLS);
-  printf("\nnext\n");
-  out(next, MY_ROWS, MY_COLS);
-#endif
   int** tmp_next = malloc_array(MY_ROWS, MY_COLS);
 
   int** tmp_field = malloc_array(MY_ROWS, MY_COLS);
   bin_array_bro(next, tmp_next, MY_ROWS, MY_COLS);
 
   bin_array_bro(field, tmp_field, MY_ROWS, MY_COLS);
-#ifdef debug_bro
-  printf("field\n");
-  out(tmp_field, MY_ROWS, MY_COLS);
-  printf("\nnext\n");
-  out(tmp_next, MY_ROWS, MY_COLS);
-#endif
   int is_all_ok = OK_BRO;
 
   for (int i = 0; i < MY_ROWS; i++) {
@@ -492,10 +459,6 @@ void tetra_to_array(TetraMino_bro tetraMinoBro, int** next) {
     int y = tetraMinoBro.coordinates[i + 1] + tetraMinoBro.center_y;
     next[y][x] = tetraMinoBro.type;
   }
-#ifdef debug_bro
-  printf("\nnext\n");
-  out(tetraMinoBro.tmp_current_figure_on_field, MY_ROWS, MY_COLS);
-#endif
 }
 
 int get_min(int a, int b) { return a > b ? b : a; }

@@ -38,8 +38,9 @@ END_TEST
 
 START_TEST(s21_tetris_test_3) {
   TetraMino_bro tetraMinoBro = init_empty_tetraMino();
-  int count = 0;
-  while (count != 7) {
+  int count = 1;
+  while (count != 8) {
+    // printf("cool\n");
     get_new_tetraMino(&tetraMinoBro);
     if (tetraMinoBro.type == count) count++;
   }
@@ -82,7 +83,7 @@ START_TEST(s21_tetris_test_4) {
       }
     }
     border--;
-    out(params->gameInfo.field, MY_ROWS, MY_COLS);
+
     while (params->tetraMinoBro.next_type != I) {
       get_new_tetraMino(&params->tetraMinoBro);
     }
@@ -126,6 +127,60 @@ START_TEST(s21_tetris_test_4) {
 }
 END_TEST
 
+START_TEST(s21_tetris_test_5) {
+  Game_Objects_t *params = get_instanse();
+  *params = init_empty_game_objects();
+  bool hold = false;
+  int count = 0;
+  int ckk = 0;
+
+  State prev = START;
+  params->game_is_running = true;
+  while (params->game_is_running) {
+    main_game_fsm(params);
+    while (params->userAction != Start && params->userAction != Terminate) {
+      if (ckk <= 1) {
+        userInput(getSignal('n'), hold);
+
+        ckk++;
+      } else {
+        userInput(getSignal('q'), hold);
+      }
+    }
+    main_game_fsm(params);
+
+    if (params->game_is_running == false) {
+      break;
+    }
+    if (params->state == START) {
+      hold = true;
+      params->state = prev;
+    }
+
+    while (params->state != PAUSE && params->state != GAME_OVER &&
+           params->state != MAIN_MENU) {
+      fsm_game_session(params);
+      if (params->state == MOVE) {
+        if (ckk <= 1) {
+          params->userAction = Pause;
+          prev = params->state;
+          params->state = PAUSE;
+          params->userAction = NONE_ACTION;
+        }
+        params->userAction = Terminate;
+        if (params->userAction == Terminate) {
+          params->state = MAIN_MENU;
+          params->userAction = NONE_ACTION;
+          ckk++;
+        }
+      }
+      count++;
+    }
+  }
+  ck_assert_int_eq(params->game_is_running, false);
+  free(params);
+}
+END_TEST
 Suite *s21_tetris_suite_create() {
   Suite *suite = suite_create("s21_tetris_test");
   TCase *tc_core = tcase_create("tcase_core_s21_tetris_test");
@@ -134,6 +189,7 @@ Suite *s21_tetris_suite_create() {
   tcase_add_test(tc_core, s21_tetris_test_2);
   tcase_add_test(tc_core, s21_tetris_test_3);
   tcase_add_test(tc_core, s21_tetris_test_4);
+  tcase_add_test(tc_core, s21_tetris_test_5);
 
   suite_add_tcase(suite, tc_core);
 
