@@ -20,6 +20,7 @@ void game_mechanics(Game_Objects_t *params);
 
 void destruction(int **field, int cols, int row_not_bro);
 int is_all_ok_bro(int **field, int **next);
+void bin_array_bro(int **src, int **dist, int rows, int cols);
 
 TetraMino_bro init_empty_tetraMino();
 GameInfo_t init_empty_gameInfo();

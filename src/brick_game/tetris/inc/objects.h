@@ -5,7 +5,7 @@
 
 enum status { ERROR, OK_BRO };
 
-enum figures { T, J, L, I, S, Z, O };
+enum figures { T = 1, J, L, I, S, Z, O };
 enum degrees { COMPLETE, RIGHT, STRAIGHT, REFLEX };
 
 #define NONE_ACTION 8

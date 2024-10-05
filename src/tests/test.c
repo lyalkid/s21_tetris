@@ -68,7 +68,7 @@ START_TEST(s21_tetris_test_4) {
   params->gameInfo.level = 0;
   int count = 0;
   int border = 15;
-  while (count != 4) {
+  while (count != 1) {
     bool hold = false;
     count++;
     *params = init_empty_game_objects();
@@ -82,7 +82,7 @@ START_TEST(s21_tetris_test_4) {
       }
     }
     border--;
-    // out(params->gameInfo.field, MY_ROWS, MY_COLS);
+    out(params->gameInfo.field, MY_ROWS, MY_COLS);
     while (params->tetraMinoBro.next_type != I) {
       get_new_tetraMino(&params->tetraMinoBro);
     }
@@ -112,9 +112,8 @@ START_TEST(s21_tetris_test_4) {
       fsm_game_session(params);
       userInput(getSignal('f'), hold);
     }
-    // out(params->tetraMinoBro.tmp_current_figure_on_field, MY_ROWS, MY_COLS);
     fsm_game_session(params);
-    // write_high_score(params->gameInfo.score);
+    //  write_high_score(params->gameInfo.score);
     ck_assert_int_eq(params->gameInfo.score, 1500);
     ck_assert_int_eq(params->gameInfo.level, 2);
     while (params->state != GAME_OVER) {

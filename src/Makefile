@@ -11,6 +11,7 @@ BACK = $(wildcard brick_game/tetris/src/*.c )
 FRONT = $(wildcard gui/cli/*.c)
 GCOV_FOLDER = gcov_report
 
+
 OBJ = brick_game/tetris/obj
 
 ifeq ($(UNAME_S),Linux)
@@ -30,6 +31,10 @@ intstall: style tetris
 	mkdir $(BIN)
 	$(CC) $(OBJ)/*.o -o $(BIN)/tetris -lncurses
 
+dvi: clean
+	mkdir doxygen
+	doxygen Doxyfile
+	$(OPEN_CMD) doxygen/html/index.html
 
 create_file:
 	test -f highscore.txt || ( touch highscore.txt && echo 0 >> highscore.txt )
@@ -57,9 +62,9 @@ sanitize:
 	gcc  $(BACK) $(FRONT) -g -fsanitize=address -o $(BIN)/tetris $(ADD_LIB) && $(BIN)/tetris 
 
 
-clean:
+clean: style
 	clear
-	rm -rf *.o $(BIN) $(TETRIS_LIB) $(OBJ) *.out *.o tests/test $(GCOV_FOLDER) report
+	rm -rf *.o $(BIN) $(TETRIS_LIB) $(OBJ) *.out *.o tests/test $(GCOV_FOLDER) report doxygen
 
 
 test: style clean
@@ -67,7 +72,7 @@ test: style clean
 
 gcov_report: style clean
 	mkdir $(GCOV_FOLDER)
-	gcc --coverage $(LDFLAGS) -Ddebug_bro -DTEST_BRO  $(BACK) $(FRONT) $(TEST) $(TEST_LIB) -o $(GCOV_FOLDER)/gcov_test
+	gcc --coverage $(LDFLAGS) -Ddebug_bro -DTEST_BRO  $(BACK) $(TEST) $(TEST_LIB) -o $(GCOV_FOLDER)/gcov_test
 	chmod +x $(GCOV_FOLDER)/gcov_test
 	$(GCOV_FOLDER)/gcov_test
 	lcov -t "gcov_test" -o gcov_test.info --no-external -c -d .
@@ -82,7 +87,7 @@ redebug: clean debug
 style_test:
 	clang-format --style=Google -n $(MAIN) $(BACK) $(FRONT) $(TEST) $(HEADERS)
 style:
-	clang-format --style=Google -i $(MAIN) $(BACK) $(FRONT) $(TEST) $(HEADERS)
+	@ clang-format --style=Google -i $(MAIN) $(BACK) $(FRONT) $(TEST) $(HEADERS)
 
 valg: rebuild
 	valgrind --tool=memcheck --leak-check=yes ./$(BIN)/tetris	

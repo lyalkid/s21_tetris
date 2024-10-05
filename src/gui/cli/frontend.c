@@ -12,13 +12,17 @@ void show_game_field(int** field, int** next, int score, int level) {
   for (int i = 0; i < MY_ROWS; i++) {
     for (int j = 0; j < MY_COLS; j++) {
       int res = field[i][j] + next[i][j];
-      if (res == 1) {
-        printf("[]");
-      } else if (res > 1) {
-        printf("@@");
-      } else {
+      // if (res == 1) {
+      //   printf("[]");
+      // } else if (res > 1) {
+      //   printf("@@");
+      // } else {
+      //   printf("  ");
+      // }
+      if (res != 0)
+        printf("%d ", res);
+      else
         printf("  ");
-      }
     }
     printf("| %d\n", i);
   }
@@ -71,6 +75,8 @@ void draw_static(Game_Objects_t* params) {
       // clear();
       // printw("main menu\n");
       print_main_menu(params->views.game_win);
+      werase(params->views.info_win);
+      werase(params->views.next_win);
       wrefresh(params->views.info_win);
       wrefresh(params->views.next_win);
 
@@ -91,32 +97,27 @@ void draw_static(Game_Objects_t* params) {
 }
 void draw_main(Game_Objects_t* params) {
   // printw_state(params->state);
-  switch (params->state) {
-    case SPAWN:
-      render_next_win(params->views.next_win, params->tetraMinoBro.next_type);
+  render_game_win(params->views.game_win, params->gameInfo.field,
+                  params->tetraMinoBro.tmp_current_figure_on_field);
+  render_next_win(params->views.next_win, params->tetraMinoBro.next_type);
 
-      break;
-    default:
-      render_game_win(params->views.game_win, params->gameInfo.field,
-                      params->tetraMinoBro.tmp_current_figure_on_field);
-
-      render_info_win(params->views.info_win, params->gameInfo.high_score,
-                      params->gameInfo.score, params->gameInfo.level);
-
-      break;
-  }
+  render_info_win(params->views.info_win, params->gameInfo.high_score,
+                  params->gameInfo.score, params->gameInfo.level);
 }
 void init_bro_ncurses(View_bro* views) {
   initscr();
   cbreak();
   noecho();
+
+  init_bro_colors();
+
   nodelay(stdscr, TRUE);
   keypad(stdscr, TRUE);
   curs_set(0);
 
   views->game_win = newwin(FIELD_Y, FIELD_X, 0, 0);
-  views->info_win = newwin(INFO_Y, INFO_X, 0, FIELD_X);
-  views->next_win = newwin(NEXT_Y, NEXT_X, INFO_Y, FIELD_X);
+  views->info_win = newwin(INFO_Y - 2, INFO_X, 0, FIELD_X);
+  views->next_win = newwin(NEXT_Y + 2, NEXT_X, INFO_Y - 2, FIELD_X);
 
   refresh();
   box(views->game_win, 0, 0);
@@ -130,6 +131,18 @@ void init_bro_ncurses(View_bro* views) {
   refresh();
 }
 
+void init_bro_colors() {
+  start_color();
+  init_pair(9, COLOR_BLACK, COLOR_BLACK);
+  init_pair(1, COLOR_BLACK, COLOR_RED);
+  init_pair(2, COLOR_BLACK, COLOR_CYAN);
+  init_pair(3, COLOR_BLACK, COLOR_BLUE);
+  init_pair(4, COLOR_BLACK, COLOR_YELLOW);
+  init_pair(5, COLOR_BLACK, COLOR_WHITE);
+  init_pair(6, COLOR_BLACK, COLOR_GREEN);
+  init_pair(7, COLOR_BLACK, COLOR_MAGENTA);
+}
+
 void terminate_ncurses_bro(View_bro* views) {
   delwin(views->game_win);
   endwin();
@@ -141,18 +154,26 @@ void render_game_win(WINDOW* win, int** field, int** next) {
   for (int i = 0; i < MY_ROWS; i++) {
     for (int j = 0; j < MY_COLS; j++) {
       int res = field[i][j] + next[i][j];
-      if (res == 1) {
-        mvwprintw(win, i + 1, j * 2 + 1, "0 ");
+      if ((res != 0 && field[i][j] == 0) || field[i][j] != 0) {
+        wattron(win, COLOR_PAIR(res));
+        // wrefresh(win);
+
+        mvwprintw(win, i + 1, j * 2 + 1, "  ");
         //   refresh();
+        wattroff(win, COLOR_PAIR(res));
+        // wrefresh(win);
 
-      } else if (res > 1) {
-        mvwprintw(win, i + 1, j * 2 + 1, "# ");
+      }
+      // else if (res > 1) {
+      //   mvwprintw(win, i + 1, j * 2 + 1, "# ");
 
-        // refresh();
+      //   // refresh();
 
-      } else {
-        mvwprintw(win, i + 1, j * 2 + 1, ". ");
-
+      // }
+      else {
+        // wattron(win, COLOR_PAIR(9));
+        mvwprintw(win, i + 1, j * 2 + 1, "+  ");
+        // wattroff(win, COLOR_PAIR(9));
         // refresh();
       }
     }
@@ -167,18 +188,25 @@ void render_game_win(WINDOW* win, int** field, int** next) {
 
 void render_next_win(WINDOW* next_win, int type) {
   werase(next_win);
+
+  mvwprintw(next_win, 1, 4 * 2, "NEXT");
+  mvwprintw(next_win, 2, 3 * 2, "TETRAMINO:");
+
+  //  wrefresh(next_win);
+
   int coordinates[8] = {};
   get_TetraMino(coordinates, COMPLETE, type);
+
   for (int i = 0; i < 8; i += 2) {
-    int x = coordinates[i] + 1 + 4;
-    int y = coordinates[i + 1] + 4 + 4;
+    int x = coordinates[i];
+    int y = coordinates[i + 1] + 4;
     if (x < 1 || x > NEXT_X || y > NEXT_Y || y < 1) {
-      mvwprintw(next_win, 1, 1,
-                "smth wrong\n x:%d\n y:%d\n center_x:%d\n center_y:%d\n", x, y,
-                1, 4);
+      mvwprintw(next_win, 1, 1, "smth wrong\n x:%d\n y:%d\n", x, y);
       //      break;
     } else {
-      mvwprintw(next_win, y, x, "0 ");
+      wattron(next_win, COLOR_PAIR(type));
+      mvwprintw(next_win, y, x * 2 + 1, "  ");
+      wattroff(next_win, COLOR_PAIR(type));
     }
   }
 
@@ -189,10 +217,23 @@ void render_next_win(WINDOW* next_win, int type) {
 }
 void render_info_win(WINDOW* info_win, int h_score, int score, int level) {
   werase(info_win);
-  mvwprintw(info_win, 1, 1, "high_score:%d", h_score > score ? h_score : score);
-  mvwprintw(info_win, 2, 1, "score:%d", score);
-  mvwprintw(info_win, 3, 1, "level:%d", level);
 
+  wattron(info_win, COLOR_PAIR(4));
+  mvwprintw(info_win, 1, INFO_FIELD / 2, "high_score:");
+  mvwprintw(info_win, 2, INFO_FIELD / 2, "%d",
+            h_score > score ? h_score : score);
+  wattroff(info_win, COLOR_PAIR(4));
+  wattron(info_win, COLOR_PAIR(6));
+
+  mvwprintw(info_win, 4, INFO_FIELD / 2, "score:");
+  mvwprintw(info_win, 5, INFO_FIELD / 2, "%d", score);
+  wattroff(info_win, COLOR_PAIR(6));
+  wattron(info_win, COLOR_PAIR(7));
+
+  mvwprintw(info_win, 7, INFO_FIELD / 2, "level:", level);
+
+  mvwprintw(info_win, 8, INFO_FIELD / 2, "%d", level);
+  wattroff(info_win, COLOR_PAIR(7));
   box(info_win, 0, 0);
   wrefresh(info_win);
   refresh();
@@ -224,8 +265,8 @@ void print_main_menu(WINDOW* main_menu_win) {
 void game_over(WINDOW* game_win) {
   werase(game_win);
   mvwprintw(game_win, MY_ROWS / 2, MY_COLS / 2, "IT's");
-  mvwprintw(game_win, MY_ROWS / 2, MY_COLS / 2, "GAME OVER");
-  mvwprintw(game_win, MY_ROWS / 2, MY_COLS / 2, "BRO");
+  mvwprintw(game_win, MY_ROWS / 2 + 1, MY_COLS / 2, "GAME OVER");
+  mvwprintw(game_win, MY_ROWS / 2 + 2, MY_COLS / 2, "BRO");
 
   box(game_win, 0, 0);
   wrefresh(game_win);

@@ -48,7 +48,9 @@ void game_loop() {
 
       timeout(1);
 #else
-      params->userAction = getSignal(getchar());
+      //      params->userAction = getSignal(getchar());
+
+      params->userAction = getSignal('n');
 
 #endif
     }
@@ -91,7 +93,10 @@ void game_session(Game_Objects_t* params, State* prev) {
         params->state = PAUSE;
         session_is_running = false;
       }
-      if (params->userAction == Terminate) params->state = MAIN_MENU;
+      if (params->userAction == Terminate) {
+        params->state = MAIN_MENU;
+        params->userAction = NONE_ACTION;
+      }
     }
     countTime(params);
 

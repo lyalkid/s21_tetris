@@ -13,6 +13,7 @@ void show_game_field(int** field, int** next, int score, int level);
 void draw_simple(State state, GameInfo_t gameInfo, TetraMino_bro tetraMinoBro);
 
 void init_bro_ncurses(View_bro* views);
+void init_bro_colors();
 void terminate_ncurses_bro(View_bro* views);
 
 void render_game_win(WINDOW* win, int** field, int** next);

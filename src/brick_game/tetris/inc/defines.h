@@ -14,7 +14,7 @@
 #define INFO_Y INFO_FIELD + 2
 
 #define NEXT_X NEXT_FIELD * 2 + 2
-#define NEXT_Y NEXT_FIELD + 2
+#define NEXT_Y NEXT_FIELD
 
 #include <ncurses.h>
 #include <stdio.h>

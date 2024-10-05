@@ -10,15 +10,16 @@ void main_game_fsm(Game_Objects_t* params) {
     } else if (params->userAction == Terminate) {
       //        params->state = EXIT_BRO;
       params->game_is_running = false;
+      deleteGame(&params->gameInfo, &params->tetraMinoBro);
     }
   }
-  if (params->state == GAME_OVER) {
-  }
+
   if (params->state == PAUSE || params->state == GAME_OVER) {
     if (params->userAction == Start) {
       params->state = START;
     } else if (params->userAction == Terminate) {
       params->state = MAIN_MENU;
+      params->userAction = NONE_ACTION;
     }
   }
 }
@@ -73,9 +74,20 @@ int onSpawn(Game_Objects_t* params) {
   int is_all_ok = OK_BRO;
 
   get_new_tetraMino(&params->tetraMinoBro);
+#ifdef debug_bro
+  printf("field\n");
+  out(params->gameInfo.field, MY_ROWS, MY_COLS);
+  printf("\nnext\n");
+  out(params->tetraMinoBro.tmp_current_figure_on_field, MY_ROWS, MY_COLS);
+#endif
   tetra_to_array(params->tetraMinoBro,
                  params->tetraMinoBro.tmp_current_figure_on_field);
-
+#ifdef debug_bro
+  printf("field\n");
+  out(params->gameInfo.field, MY_ROWS, MY_COLS);
+  printf("\nnext\n");
+  out(params->tetraMinoBro.tmp_current_figure_on_field, MY_ROWS, MY_COLS);
+#endif
   is_all_ok = is_all_ok_bro(params->gameInfo.field,
                             params->tetraMinoBro.tmp_current_figure_on_field);
 

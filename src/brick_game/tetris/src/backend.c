@@ -3,10 +3,11 @@
 void out(int** field, int rows, int cols) {
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      if (field[i][j] != 1) {
-        printf(".");
+      int res = field[i][j];
+      if (res != 0) {
+        printf("%d ", field[i][j]);
       } else {
-        printf("0");
+        printf("  ");
       }
     }
     printf("%d\n", i);
@@ -41,12 +42,18 @@ void null_array(int** field, int rows, int cols) {
 }
 
 int can_i_move(TetraMino_bro tetraMino, int** field, UserAction_t key) {
+  int** next = malloc_array(MY_ROWS, MY_COLS);
   int** tmp_next = malloc_array(MY_ROWS, MY_COLS);
-  tetra_to_array(tetraMino, tmp_next);
-  move_tetraMino(&tetraMino, key);
-  tetra_to_array(tetraMino, tmp_next);
 
-  int is_all_ok = is_all_ok_bro(field, tmp_next);
+  int** tmp_field = malloc_array(MY_ROWS, MY_COLS);
+  tetra_to_array(tetraMino, next);
+  move_tetraMino(&tetraMino, key);
+  tetra_to_array(tetraMino, next);
+
+  bin_array_bro(next, tmp_next, MY_ROWS, MY_COLS);
+
+  bin_array_bro(field, tmp_field, MY_ROWS, MY_COLS);
+  int is_all_ok = is_all_ok_bro(tmp_field, tmp_next);
 
   // tetra_to_next(tetraMino, tmp_next);
 
@@ -55,19 +62,51 @@ int can_i_move(TetraMino_bro tetraMino, int** field, UserAction_t key) {
    * если все ок, то вернуть OK_BRO, если не ок, то вернуть ERROR
    * */
   free_array(tmp_next, MY_ROWS);
+  free_array(tmp_field, MY_ROWS);
+  free_array(next, MY_ROWS);
+
   return is_all_ok;
 }
 
+void bin_array_bro(int** src, int** dist, int rows, int cols) {
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      if (src[i][j] == 0)
+        dist[i][j] = 0;
+      else
+        dist[i][j] = 1;
+    }
+  }
+}
+
 int is_all_ok_bro(int** field, int** next) {
+#ifdef debug_bro
+  printf("field\n");
+  out(field, MY_ROWS, MY_COLS);
+  printf("\nnext\n");
+  out(next, MY_ROWS, MY_COLS);
+#endif
+  int** tmp_next = malloc_array(MY_ROWS, MY_COLS);
+
+  int** tmp_field = malloc_array(MY_ROWS, MY_COLS);
+  bin_array_bro(next, tmp_next, MY_ROWS, MY_COLS);
+
+  bin_array_bro(field, tmp_field, MY_ROWS, MY_COLS);
+#ifdef debug_bro
+  printf("field\n");
+  out(tmp_field, MY_ROWS, MY_COLS);
+  printf("\nnext\n");
+  out(tmp_next, MY_ROWS, MY_COLS);
+#endif
   int is_all_ok = OK_BRO;
 
   for (int i = 0; i < MY_ROWS; i++) {
     for (int j = 0; j < MY_COLS; j++) {
-      int n_tmp = next[i][j];
+      int n_tmp = tmp_next[i][j];
       //      if (i == 15) {
       //        int c;
       //      }
-      int f_tmp = field[i][j];
+      int f_tmp = tmp_field[i][j];
       int res = n_tmp + f_tmp;
       if (res > 1) {
         is_all_ok = ERROR;
@@ -76,6 +115,9 @@ int is_all_ok_bro(int** field, int** next) {
     }
     if (is_all_ok == ERROR) break;
   }
+  free_array(tmp_field, MY_ROWS);
+  free_array(tmp_next, MY_COLS);
+
   return is_all_ok;
 }
 
@@ -138,7 +180,7 @@ int calc_level(int current_score) {
 int to_be_destroyed(const int a[], int size) {
   int sum = 0;
   for (int i = 0; i < size; i++) {
-    if (a[i] == 1) sum++;
+    if (a[i] != 0) sum++;
   }
   return sum == size ? YES : NO;
 }
@@ -209,7 +251,7 @@ void get_tetra_two(int coordinates[], int rotate, int type) {
      * */
 
   } else if (rotate % 2 == 1 && type == I) {
-    int coord[] = {5, 0, 5, -1, 5, -2, 5, 1};
+    int coord[] = {5, 2, 5, 1, 5, 0, 5, 3};
     setCoordinates(coordinates, coord);
 
     /* ..#.
@@ -448,8 +490,12 @@ void tetra_to_array(TetraMino_bro tetraMinoBro, int** next) {
   for (int i = 0; i < 8; i += 2) {
     int x = tetraMinoBro.coordinates[i] + tetraMinoBro.center_x;
     int y = tetraMinoBro.coordinates[i + 1] + tetraMinoBro.center_y;
-    next[y][x] = 1;
+    next[y][x] = tetraMinoBro.type;
   }
+#ifdef debug_bro
+  printf("\nnext\n");
+  out(tetraMinoBro.tmp_current_figure_on_field, MY_ROWS, MY_COLS);
+#endif
 }
 
 int get_min(int a, int b) { return a > b ? b : a; }
@@ -472,7 +518,7 @@ int is_rotate_possible(TetraMino_bro tetraMinoBro, int rotate) {
   return possible;
 }
 
-int get_random() { return ((rand() % 7)); }
+int get_random() { return ((rand() % 7) + 1); }
 
 int get_highScore() {
   int h_score = 0;
