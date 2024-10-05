@@ -108,16 +108,20 @@ void init_bro_ncurses(View_bro* views) {
   initscr();
   cbreak();
   noecho();
+  int h = 0, w = 0;
 
   init_bro_colors();
-
+  getmaxyx(stdscr, h, w);
   nodelay(stdscr, TRUE);
   keypad(stdscr, TRUE);
   curs_set(0);
 
-  views->game_win = newwin(FIELD_Y, FIELD_X, 0, 0);
-  views->info_win = newwin(INFO_Y - 2, INFO_X, 0, FIELD_X);
-  views->next_win = newwin(NEXT_Y + 2, NEXT_X, INFO_Y - 2, FIELD_X);
+  views->game_win =
+      newwin(FIELD_Y, FIELD_X, (h - FIELD_Y) / 2, (w - FIELD_X) / 2);
+  views->info_win = newwin(INFO_Y - 2, INFO_X, 0 + (h - FIELD_Y) / 2,
+                           FIELD_X + (w - FIELD_X) / 2);
+  views->next_win = newwin(NEXT_Y + 2, NEXT_X, INFO_Y - 2 + (h - FIELD_Y) / 2,
+                           FIELD_X + (w - FIELD_X) / 2);
 
   refresh();
   box(views->game_win, 0, 0);

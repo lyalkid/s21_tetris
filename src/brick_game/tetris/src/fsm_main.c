@@ -6,6 +6,7 @@ void main_game_fsm(Game_Objects_t* params) {
   if (params->state == MAIN_MENU) {
     if (params->userAction == Start) {
       params->state = START;
+      reset_game(&params->gameInfo, &params->tetraMinoBro);
 
     } else if (params->userAction == Terminate) {
       //        params->state = EXIT_BRO;
