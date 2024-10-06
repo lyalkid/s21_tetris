@@ -8,7 +8,7 @@ void game_loop();
 void game_session(Game_Objects_t* params, State* prev);
 int main() {
   srand(time(0));
-  get_random();
+  get_random(1);
   Game_Objects_t* params = get_instanse();
   *params = init_empty_game_objects();
 #ifndef debug_bro
@@ -64,7 +64,7 @@ void game_session(Game_Objects_t* params, State* prev) {
 #ifndef debug_bro
       key = getch();
 #else
-      key = 's';
+      key = 'f';
 #endif
       if (key != -1) userInput(getSignal(key), session_is_running);
       if (params->userAction == Pause) {

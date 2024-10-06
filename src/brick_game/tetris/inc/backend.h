@@ -30,6 +30,7 @@ void reset_game(GameInfo_t *gameInfo, TetraMino_bro *tetraMino);
 void null_array(int **field, int rows, int cols);
 Game_Objects_t init_empty_game_objects();
 void init_bag(Bag *bag);
+void sort(int array[], int size);
 Shift_timer init_shift_timer();
 
 #ifndef debug_bro
@@ -57,7 +58,10 @@ int check_collision(TetraMino_bro tetraMinoBro, int **field);
 
 void rotate_TetraMino(TetraMino_bro *tetraMinoBro);
 
-int get_random();
+int get_random(int size);
+int get_real_len_of_number(const int a[], int size);
+int find(const int array[], int size, int i);
+void init_array(int array[], int size);
 int get_highScore();
 void write_high_score(int h_score);
 

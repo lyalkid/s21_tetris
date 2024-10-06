@@ -1,5 +1,7 @@
 #include "../inc/fsm_main.h"
 
+#include "../../../gui/cli/frontend.h"
+
 void main_game_fsm(Game_Objects_t* params, State* prev) {
   if (params->state == MAIN_MENU) {
     if (params->userAction == Start) {
@@ -17,11 +19,7 @@ void main_game_fsm(Game_Objects_t* params, State* prev) {
     if (params->userAction == Start) {
       params->state = START;
     } else if (params->userAction == Terminate) {
-      if (params->state == PAUSE) {
-        reset_game(&params->gameInfo, &params->tetraMinoBro);
-      } else {
-        deleteGame(&params->gameInfo, &params->tetraMinoBro);
-      }
+      reset_game(&params->gameInfo, &params->tetraMinoBro);
       params->state = MAIN_MENU;
       params->userAction = NONE_ACTION;
     }

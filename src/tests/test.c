@@ -24,7 +24,7 @@ START_TEST(s21_tetris_test_2) {
   for (int i = 0; i < MY_ROWS; i++) {
     for (int j = 0; j < MY_COLS; j++) {
       for (int r = 0; r < 4; r++) {
-        get_TetraMino(coord, r, get_random());
+        get_TetraMino(coord, r, get_random(7));
       }
     }
   }

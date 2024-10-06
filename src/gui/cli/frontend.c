@@ -175,19 +175,6 @@ void render_pause(WINDOW* game_win) {
 }
 void draw_main(Game_Objects_t* params) {
   GameInfo_t current_state = updateCurrentState();
-
-  mvprintw(0, 0, "count\n");
-
-  for (int i = 1; i < 8; i++) {
-    mvprintw(1, i * 2, "%d", params->tetraMinoBro.meshok.count[i]);
-  }
-
-  mvprintw(2, 0, "pieses\n");
-  for (int i = 0; i < 7; i++) {
-    mvprintw(3, i * 2, "%d", params->tetraMinoBro.meshok.pieses[i]);
-  }
-  // printw("\n");
-  refresh();
   render_game_win(params->views.game_win, current_state.field,
                   params->tetraMinoBro.tmp_current_figure_on_field);
   render_next_win(params->views.next_win, params->tetraMinoBro.next_type);

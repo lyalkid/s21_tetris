@@ -368,23 +368,38 @@ void setCoordinates(int* coordinates, const int* values) {
   }
 }
 void get_new_tetraMino(TetraMino_bro* tetraMinoBro) {
-  int current = tetraMinoBro->next_type;
-  tetraMinoBro->type = current;
+  int current = tetraMinoBro->type;
+  int next = tetraMinoBro->next_type;
   init_bag(&tetraMinoBro->meshok);
+  sort(tetraMinoBro->meshok.pieses, 7);
 
-  while (1) {
-    int next = get_random();
-    int tmp = tetraMinoBro->meshok.pieses[next - 1];
-    if (next != current) {
-      if (tmp == 1) {
-        tetraMinoBro->next_type = next;
+  //  printw("\nfdfdfdfdf");
 
+  if (current == 0) {
+    current = tetraMinoBro->type = get_random(7);
+    tetraMinoBro->next_type = get_random(7);
+
+  } else {
+    int tmp = 1;
+    int flag = 1;
+    while (flag) {
+      //      printw("\nfdfdfdfdf");
+      tmp = get_random(get_real_len_of_number(tetraMinoBro->meshok.pieses, 7));
+      int tmp_q = tetraMinoBro->meshok.pieses[tmp - 1];
+      if (tmp_q != 0) {
+        tetraMinoBro->next_type = tetraMinoBro->meshok.pieses[tmp - 1];
+        current = tetraMinoBro->type = next;
+        flag = 0;
         break;
       }
+      //      for (int i = 0; i < 7; i++) {
+      //        if (tetraMinoBro->meshok.pieses[i] == 1) flag = 0;
+      //      }
     }
   }
   tetraMinoBro->meshok.count[current - 1]++;
-  tetraMinoBro->meshok.pieses[current - 1] = 0;
+  tetraMinoBro->meshok.pieses[find(tetraMinoBro->meshok.pieses, 7, current)] =
+      0;
 
   tetraMinoBro->rotate = COMPLETE;
   tetraMinoBro->center_x = 0;
@@ -392,6 +407,31 @@ void get_new_tetraMino(TetraMino_bro* tetraMinoBro) {
   null_array(tetraMinoBro->tmp_current_figure_on_field, MY_ROWS, MY_COLS);
   get_TetraMino(tetraMinoBro->coordinates, tetraMinoBro->rotate,
                 tetraMinoBro->type);
+}
+
+int find(const int array[], int size, int i) {
+  int res = 0;
+  for (int k = 0; k < size; k++) {
+    if (array[k] == i) {
+      res = k;
+      break;
+    }
+  }
+  return res;
+}
+// получает длину числа без ведущих нулей
+int get_real_len_of_number(const int a[], int size) {
+  int i = 0;
+  int count = 0;
+  for (i = size - 1; i >= 0; i--) {
+    if (a[i] == 0) {
+      count++;
+    } else {
+      break;
+    }
+  }
+
+  return size - count;
 }
 
 void move_tetraMino(TetraMino_bro* tetraMinoBro, UserAction_t key) {
@@ -449,9 +489,6 @@ int check_collision(TetraMino_bro tetraMinoBro, int** field) {
     free_array(tmp_next, MY_ROWS);
   }
 
-  // if (is_all_ok == ERROR) {
-  //   int c = 10;
-  // }
   return is_all_ok;
 }
 
@@ -497,7 +534,7 @@ int is_rotate_possible(TetraMino_bro tetraMinoBro, int rotate) {
   return possible;
 }
 
-int get_random() { return ((rand() % 7) + 1); }
+int get_random(int size) { return ((rand() % size) + 1); }
 
 int get_highScore() {
   int h_score = 0;
@@ -548,8 +585,8 @@ int next_to_field(int** next, int** field) {
 
 TetraMino_bro init_empty_tetraMino() {
   TetraMino_bro tetraMinoBro = (TetraMino_bro){0};
-  // tetraMinoBro.type = get_random();
-  tetraMinoBro.next_type = get_random();
+  tetraMinoBro.type = 0;
+  tetraMinoBro.next_type = 0;
 
   tetraMinoBro.rotate = 0;
   tetraMinoBro.center_x = 0;
@@ -557,15 +594,9 @@ TetraMino_bro init_empty_tetraMino() {
   for (int i = 0; i < 8; i++) {
     tetraMinoBro.coordinates[i] = 0;
   }
-  tetraMinoBro.meshok.count[tetraMinoBro.type - 1] = 1;
-  init_bag(&tetraMinoBro.meshok);
 
   tetraMinoBro.tmp_current_figure_on_field = malloc_array(MY_ROWS, MY_COLS);
-  //          malloc(sizeof(int*) * (MY_ROWS));
-  //  for (int i = 0; i < MY_ROWS; i++) {
-  //    tetraMinoBro.tmp_current_figure_on_field[i] = calloc(MY_COLS,
-  //    sizeof(int));
-  //  }
+
   return tetraMinoBro;
 }
 
@@ -605,7 +636,15 @@ void reset_game(GameInfo_t* gameInfo, TetraMino_bro* tetraMino) {
   null_array(gameInfo->next, NEXT_FIELD, NEXT_FIELD);
   null_array(tetraMino->tmp_current_figure_on_field, MY_ROWS, MY_COLS);
   tetraMino->type = 0;
+  init_array(tetraMino->meshok.count, 7);
+  init_array(tetraMino->meshok.pieses, 7);
+
   get_TetraMino(tetraMino->coordinates, tetraMino->rotate, 0);
+}
+void init_array(int array[], int size) {
+  for (int i = 0; i < size; i++) {
+    array[i] = 0;
+  }
 }
 Game_Objects_t init_empty_game_objects() {
   Game_Objects_t gameObjects = {0};
@@ -635,14 +674,27 @@ Game_Objects_t init_empty_game_objects() {
 }
 
 void init_bag(Bag* bag) {
-  int sum = 7;
-
+  int sum = 0;
+  int tmp = T;
   for (int i = 0; i < 7; i++) {
-    sum -= bag->pieses[i];
+    sum += bag->pieses[i];
   }
-  if (sum == 1 || sum == 7 || sum == 0) {
+  if (sum == 0) {
     for (int i = 0; i < 7; i++) {
-      bag->pieses[i] = 1;
+      bag->pieses[i] = tmp++;
+    }
+  }
+}
+
+void sort(int array[], int size) {
+  for (int i = 0; i < size; i++) {
+    for (int j = i + 1; j < size; j++) {
+      int tmp_a = array[i];
+      int tmp_b = array[j];
+      if (tmp_a < tmp_b) {
+        array[j] = tmp_a;
+        array[i] = tmp_b;
+      }
     }
   }
 }
