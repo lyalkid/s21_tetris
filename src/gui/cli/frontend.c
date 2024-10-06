@@ -2,7 +2,7 @@
 
 #include "../../brick_game/tetris/inc/fsm_main.h"
 void draw_simple(State state, GameInfo_t gameInfo, TetraMino_bro tetraMinoBro) {
-  system("clear");
+  // system("clear");
   switch (state) {
     case MAIN_MENU:
       printf(
@@ -15,7 +15,7 @@ void draw_simple(State state, GameInfo_t gameInfo, TetraMino_bro tetraMinoBro) {
           "ESCAPE or Q to exit\n");
       break;
     case PAUSE:
-      system("clear");
+      // system("clear");
       printf(
           "PAUSE\n press ENTER or N to continue\n press ESCAPE or Q to exit "
           "into main menu\n");
@@ -100,7 +100,17 @@ void init_bro_colors() {
 }
 
 void terminate_ncurses_bro(View_bro* views) {
+  clearok(stdscr, TRUE);  // Устанавливаем флаг перерисовки экрана
+  clear();  // Очищаем экран
+
+  refresh();
   delwin(views->game_win);
+  delwin(views->info_win);
+  delwin(views->next_win);
+  clearok(stdscr, TRUE);  // Устанавливаем флаг перерисовки экрана
+  clear();  // Очищаем экран
+
+  refresh();
   endwin();
 }
 
@@ -239,7 +249,7 @@ void render_info_win(WINDOW* info_win, int h_score, int score, int level) {
   wattroff(info_win, COLOR_PAIR(6));
   wattron(info_win, COLOR_PAIR(7));
 
-  mvwprintw(info_win, 7, INFO_FIELD / 2, "level:", level);
+  mvwprintw(info_win, 7, INFO_FIELD / 2, "level:");
 
   mvwprintw(info_win, 8, INFO_FIELD / 2, "%d", level);
   wattroff(info_win, COLOR_PAIR(7));

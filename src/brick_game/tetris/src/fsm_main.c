@@ -1,19 +1,11 @@
 #include "../inc/fsm_main.h"
 
-void main_game_fsm(Game_Objects_t* params) {
+void main_game_fsm(Game_Objects_t* params, State* prev) {
   if (params->state == MAIN_MENU) {
     if (params->userAction == Start) {
+      *prev = START;
       params->state = START;
       reset_game(&params->gameInfo, &params->tetraMinoBro);
-      clear();
-      for (int i = 0; i < MY_ROWS; i++) {
-        for (int j = 0; j < MY_COLS; j++) {
-          printw("%d ", params->gameInfo.field[i][j]);
-        }
-        printw("\n");
-      }
-      refresh();
-
     } else if (params->userAction == Terminate) {
       params->game_is_running = false;
       deleteGame(&params->gameInfo, &params->tetraMinoBro);
@@ -25,15 +17,7 @@ void main_game_fsm(Game_Objects_t* params) {
       params->state = START;
     } else if (params->userAction == Terminate) {
       if (params->state == PAUSE) {
-        clear();
         reset_game(&params->gameInfo, &params->tetraMinoBro);
-        for (int i = 0; i < MY_ROWS; i++) {
-          for (int j = 0; j < MY_COLS; j++) {
-            printw("%d ", params->gameInfo.field[i][j]);
-          }
-          printw("\n");
-        }
-        refresh();
       } else {
         deleteGame(&params->gameInfo, &params->tetraMinoBro);
       }
@@ -219,8 +203,7 @@ UserAction_t getSignal(int user_input) {
     sig = Right;
   } else if (user_input == ESCAPE || user_input == 'q' || user_input == 'Q') {
     sig = Terminate;
-  } else if (user_input == 'n' || user_input == ENTER_KEY ||
-             user_input == 'N') {
+  } else if (user_input == 'n' || user_input == 'N') {
     sig = Start;
   } else if (user_input == SPACE || user_input == 'p' || user_input == 'P') {
     sig = Pause;

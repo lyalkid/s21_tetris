@@ -1,0 +1,6 @@
+{
+   ncurses_suppression
+   Memcheck:Leak
+   fun:_nc_makenew
+   fun:newterm_sp
+}

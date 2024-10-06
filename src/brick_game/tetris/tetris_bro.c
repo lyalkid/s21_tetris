@@ -15,6 +15,7 @@ int main() {
   init_bro_ncurses(&params->views);
   game_loop();
   terminate_ncurses_bro(&params->views);
+  exit(0);
 #else
   game_loop();
 #endif
@@ -40,7 +41,7 @@ void game_loop() {
       params->userAction = getSignal('n');
 #endif
     }
-    main_game_fsm(params);
+    main_game_fsm(params, &prev);
     if (params->game_is_running == false) {
       break;
     }

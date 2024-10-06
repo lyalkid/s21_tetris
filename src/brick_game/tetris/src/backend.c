@@ -12,11 +12,9 @@ void free_array(int** field, int rows) {
   for (int i = 0; i < rows; i++) {
     if (field[i] != NULL) {
       free(field[i]);
-      field[i] = NULL;
     }
   }
   if (field != NULL) free(field);
-  field = NULL;
 }
 
 void null_array(int** field, int rows, int cols) {
@@ -83,7 +81,7 @@ int is_all_ok_bro(int** field, int** next) {
     if (is_all_ok == ERROR) break;
   }
   free_array(tmp_field, MY_ROWS);
-  free_array(tmp_next, MY_COLS);
+  free_array(tmp_next, MY_ROWS);
 
   return is_all_ok;
 }
@@ -174,6 +172,9 @@ void get_TetraMino(int coordinates[], int rotate, int type) {
     get_tetra_two(coordinates, rotate, type);
   } else if (type == O) {
     int coord[] = {4, 0, 5, 0, 4, 1, 5, 1};
+    setCoordinates(coordinates, coord);
+  } else {
+    int coord[] = {0, 0, 0, 0, 0, 0, 0, 0};
     setCoordinates(coordinates, coord);
   }
 }
@@ -584,6 +585,8 @@ void reset_game(GameInfo_t* gameInfo, TetraMino_bro* tetraMino) {
   null_array(gameInfo->field, MY_ROWS, MY_COLS);
   null_array(gameInfo->next, NEXT_FIELD, NEXT_FIELD);
   null_array(tetraMino->tmp_current_figure_on_field, MY_ROWS, MY_COLS);
+  tetraMino->type = 0;
+  get_TetraMino(tetraMino->coordinates, tetraMino->rotate, 0);
 }
 Game_Objects_t init_empty_game_objects() {
   Game_Objects_t gameObjects = {0};

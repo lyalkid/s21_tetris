@@ -18,7 +18,7 @@ OBJ = brick_game/tetris/obj
 ifeq ($(UNAME_S),Linux)
   	OPEN_CMD = firefox
 	ADD_LIB =  -lm -lrt -lpthread -D_GNU_SOURCE -lncurses 
-	TEST_LIB = -lcheck -lsubunit
+	TEST_LIB = -lcheck -lsubunit -lm
 endif
 ifeq ($(UNAME_S),Darwin)
 	OPEN_CMD = open
@@ -28,9 +28,9 @@ endif
 
 # all, install, uninstall, clean, dvi, dist, test, gcov_report
 
-all: clean intstall #dvi
+all: clean install #dvi
 
-intstall: style tetris
+install: style tetris
 	mkdir $(BIN)
 	$(CC) $(OBJ)/*.o -o $(BIN)/tetris -lncurses
 
@@ -39,20 +39,21 @@ uninstall:
 
 clean: style
 	clear
-	rm -rf *.o $(BIN) $(TETRIS_LIB) $(OBJ) *.out *.o tests/test $(GCOV_FOLDER) report $(DIST_DIR)
+	rm -rf *.o $(BIN) $(TETRIS_LIB) $(OBJ) *.out *.o tests/test $(GCOV_FOLDER) report $(DIST_DIR) dist
 
 
-dvi: misc/doc.tex misc/doc_eng.tex
+dvi: misc/docs/doc.tex misc/docs/doc_eng.tex
 	test -f misc/doc.pdf || ( latex misc/docs/doc.tex && mv doc.pdf misc/ ) 
 	test -f misc/doc_eng.pdf || ( latex misc/docs/doc_eng.tex && mv doc_eng.pdf misc/)
 
 	$(OPEN_CMD) misc/doc.pdf misc/doc_eng.pdf
 
 dist: all
-	mkdir $(DIST_DIR)
-	cp -r brick_game gui Makefile misc $(DIST_DIR)
+	mkdir dist
+	cp -r brick_game gui Makefile misc dist/
+	mv dist $(DIST_DIR)
 	tar -czf tetris-1.0.tar.gz $(DIST_DIR)	
-	mv tetris-1.0.tar.gz misc/dist
+	mv tetris-1.0.tar.gz $(DIST_DIR)
 
 test: style clean
 	gcc $(LDFLAGS) -Ddebug_bro -DTEST_BRO $(BACK) $(FRONT) $(TEST) $(TEST_LIB) -o tests/test  && ./tests/test 
@@ -103,8 +104,10 @@ style:
 	@ clang-format --style=Google -i $(MAIN) $(BACK) $(FRONT) $(TEST) $(HEADERS)
 
 valg: rebuild
-	valgrind --tool=memcheck --leak-check=yes ./$(BIN)/tetris	
+	valgrind --tool=memcheck --leak-check=yes  ./$(BIN)/tetris	
 
+valg_f: rebuild
+	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --suppressions=ncurses_supp.supp ./$(BIN)/tetris	
 
 stvalg: redebug
 	valgrind --tool=memcheck --leak-check=yes ./$(BIN)/tetris

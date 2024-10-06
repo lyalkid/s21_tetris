@@ -66,12 +66,9 @@ typedef struct {
   int yMax;
   int xMax;
 #ifndef debug_bro
-  // WINDOW* main_menu_win;
   WINDOW* game_win;
   WINDOW* info_win;
   WINDOW* next_win;
-  // WINDOW* pause_win;
-  // WINDOW* game_over_win;
 #endif
 } View_bro;
 

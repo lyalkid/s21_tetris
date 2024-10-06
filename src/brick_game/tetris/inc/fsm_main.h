@@ -3,7 +3,7 @@
 
 #include "backend.h"
 
-void main_game_fsm(Game_Objects_t* params);
+void main_game_fsm(Game_Objects_t* params, State* prev);
 void onStatic(Game_Objects_t* params);
 
 void fsm_game_session(Game_Objects_t* params);

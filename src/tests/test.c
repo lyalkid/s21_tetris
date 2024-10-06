@@ -137,7 +137,7 @@ START_TEST(s21_tetris_test_5) {
   State prev = START;
   params->game_is_running = true;
   while (params->game_is_running) {
-    main_game_fsm(params);
+    main_game_fsm(params, &prev);
     while (params->userAction != Start && params->userAction != Terminate) {
       if (ckk <= 1) {
         userInput(getSignal('n'), hold);
@@ -147,7 +147,7 @@ START_TEST(s21_tetris_test_5) {
         userInput(getSignal('q'), hold);
       }
     }
-    main_game_fsm(params);
+    main_game_fsm(params, &prev);
 
     if (params->game_is_running == false) {
       break;
