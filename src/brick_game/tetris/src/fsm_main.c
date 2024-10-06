@@ -6,6 +6,7 @@ void main_game_fsm(Game_Objects_t* params, State* prev) {
       *prev = START;
       params->state = START;
       reset_game(&params->gameInfo, &params->tetraMinoBro);
+      params->timer.time_to_shift = TIME;
     } else if (params->userAction == Terminate) {
       params->game_is_running = false;
       deleteGame(&params->gameInfo, &params->tetraMinoBro);

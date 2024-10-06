@@ -3,13 +3,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-enum status { ERROR, OK_BRO };
-
-enum figures { T = 1, J, L, I, S, Z, O };
-enum degrees { COMPLETE, RIGHT, STRAIGHT, REFLEX };
-
-#define NONE_ACTION 8
-
 typedef enum {
   Start,
   Pause,
@@ -36,12 +29,18 @@ typedef enum {
 } State;
 
 typedef struct {
+  int count[7];
+  int pieses[7];
+} Bag;
+
+typedef struct {
   int type;
   int next_type;
   int rotate;
   int center_x;
   int center_y;
   int coordinates[8];
+  Bag meshok;
   int** tmp_current_figure_on_field;
 } TetraMino_bro;
 
@@ -84,7 +83,6 @@ typedef struct {
 #ifndef debug_bro
   View_bro views;
 #endif
-
 } Game_Objects_t;
 
 #endif  // OBJECTS_H_

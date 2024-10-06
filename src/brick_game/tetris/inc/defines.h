@@ -1,6 +1,12 @@
 #ifndef BRICK_GAME_DEFINES_H_
 #define BRICK_GAME_DEFINES_H_
 
+enum status { ERROR, OK_BRO };
+
+enum figures { T = 1, J, L, I, S, Z, O };
+enum degrees { COMPLETE, RIGHT, STRAIGHT, REFLEX };
+#define NONE_ACTION 8
+
 #define MY_ROWS 20
 #define MY_COLS 10
 

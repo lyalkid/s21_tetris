@@ -64,7 +64,7 @@ void game_session(Game_Objects_t* params, State* prev) {
 #ifndef debug_bro
       key = getch();
 #else
-      key = 'h';
+      key = 's';
 #endif
       if (key != -1) userInput(getSignal(key), session_is_running);
       if (params->userAction == Pause) {
@@ -87,6 +87,7 @@ void game_session(Game_Objects_t* params, State* prev) {
   }
   if (params->state == GAME_OVER) {
     if (params->gameInfo.score > params->gameInfo.high_score)
-      write_high_score(params->gameInfo.score);
+      params->gameInfo.high_score = params->gameInfo.score;
+    write_high_score(params->gameInfo.high_score);
   }
 }

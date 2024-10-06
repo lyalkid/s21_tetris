@@ -19,7 +19,9 @@ void terminate_ncurses_bro(View_bro* views);
 void render_game_win(WINDOW* win, int** field, int** next);
 
 void render_next_win(WINDOW* next_win, int type);
-void render_info_win(WINDOW* info_win, int h_score, int score, int level);
+void render_info_win(WINDOW* info_win, int h_score, int score, int level,
+                     int count[]);
+char piece(int type);
 
 void render_pause(WINDOW* game_field);
 

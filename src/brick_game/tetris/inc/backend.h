@@ -29,6 +29,7 @@ void reset_game(GameInfo_t *gameInfo, TetraMino_bro *tetraMino);
 
 void null_array(int **field, int rows, int cols);
 Game_Objects_t init_empty_game_objects();
+void init_bag(Bag *bag);
 Shift_timer init_shift_timer();
 
 #ifndef debug_bro

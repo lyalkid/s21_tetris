@@ -368,9 +368,24 @@ void setCoordinates(int* coordinates, const int* values) {
   }
 }
 void get_new_tetraMino(TetraMino_bro* tetraMinoBro) {
-  int n = tetraMinoBro->next_type;
-  tetraMinoBro->type = n;
-  tetraMinoBro->next_type = get_random();
+  int current = tetraMinoBro->next_type;
+  tetraMinoBro->type = current;
+  init_bag(&tetraMinoBro->meshok);
+
+  while (1) {
+    int next = get_random();
+    int tmp = tetraMinoBro->meshok.pieses[next - 1];
+    if (next != current) {
+      if (tmp == 1) {
+        tetraMinoBro->next_type = next;
+
+        break;
+      }
+    }
+  }
+  tetraMinoBro->meshok.count[current - 1]++;
+  tetraMinoBro->meshok.pieses[current - 1] = 0;
+
   tetraMinoBro->rotate = COMPLETE;
   tetraMinoBro->center_x = 0;
   tetraMinoBro->center_y = 0;
@@ -533,14 +548,18 @@ int next_to_field(int** next, int** field) {
 
 TetraMino_bro init_empty_tetraMino() {
   TetraMino_bro tetraMinoBro = (TetraMino_bro){0};
-  tetraMinoBro.type = get_random();
+  // tetraMinoBro.type = get_random();
   tetraMinoBro.next_type = get_random();
+
   tetraMinoBro.rotate = 0;
   tetraMinoBro.center_x = 0;
   tetraMinoBro.center_y = 0;
   for (int i = 0; i < 8; i++) {
     tetraMinoBro.coordinates[i] = 0;
   }
+  tetraMinoBro.meshok.count[tetraMinoBro.type - 1] = 1;
+  init_bag(&tetraMinoBro.meshok);
+
   tetraMinoBro.tmp_current_figure_on_field = malloc_array(MY_ROWS, MY_COLS);
   //          malloc(sizeof(int*) * (MY_ROWS));
   //  for (int i = 0; i < MY_ROWS; i++) {
@@ -613,6 +632,19 @@ Game_Objects_t init_empty_game_objects() {
   gameObjects.views = init_view();
 #endif
   return gameObjects;
+}
+
+void init_bag(Bag* bag) {
+  int sum = 7;
+
+  for (int i = 0; i < 7; i++) {
+    sum -= bag->pieses[i];
+  }
+  if (sum == 1 || sum == 7 || sum == 0) {
+    for (int i = 0; i < 7; i++) {
+      bag->pieses[i] = 1;
+    }
+  }
 }
 
 #ifndef debug_bro
